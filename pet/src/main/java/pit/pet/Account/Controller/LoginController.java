@@ -1,4 +1,4 @@
-package pit.pet.Controller;
+package pit.pet.Account.Controller;
 
 import org.springframework.stereotype.Controller;
 

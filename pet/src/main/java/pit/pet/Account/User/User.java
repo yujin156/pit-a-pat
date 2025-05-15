@@ -1,4 +1,4 @@
-package pit.pet.User;
+package pit.pet.Account.User;
 
 
 import jakarta.persistence.Entity;
