@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>견종 선택</title>
+    <style>
+        #autocompleteList {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            background: white;
+            width: 200px;
+        }
+
+        .autocomplete-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+<h1>견종 선택</h1>
+<input type="text" id="breedInput" placeholder="견종명 입력" autocomplete="off"/>
+<div id="autocompleteList"></div>
+
+<script>
+    const input = document.getElementById('breedInput');
+    const list = document.getElementById('autocompleteList');
+
+    input.addEventListener('input', () => {
+        const keyword = input.value.trim();
+        if (!keyword) {
+            list.innerHTML = '';
+            return;
+        }
+
+        fetch(`/api/autocomplete?keyword=${encodeURIComponent(keyword)}`)
+            .then(res => res.json())
+            .then(data => {
+                list.innerHTML = '';
+                data.forEach(name => {
+                    const item = document.createElement('div');
+                    item.textContent = name;
+                    item.className = 'autocomplete-item';
+                    item.onclick = () => {
+                        input.value = name;
+                        list.innerHTML = '';
+                    };
+                    list.appendChild(item);
+                });
+            });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!list.contains(e.target) && e.target !== input) {
+            list.innerHTML = '';
+        }
+    });
+</script>
+</body>
+</html>
