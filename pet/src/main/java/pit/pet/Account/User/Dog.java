@@ -1,6 +1,7 @@
 package pit.pet.Account.User;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,17 +17,17 @@ public class Dog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dno;
 
-    @Column(name = "d_name", nullable = false, unique = true)
+    @Column(name = "d_name", nullable = false)
     private String d_name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "u_gender", nullable = false)
     private Gender u_gender;
 
-    @Column(name = "d_Bday", nullable = false, unique = true)
+    @Column(name = "d_Bday", nullable = false)
     private Date d_Bday;
 
-    @Column(name = "d_intro", nullable = false, unique = true)
+    @Column(name = "d_intro", nullable = false)
     private String d_intro;
 
     @ManyToOne

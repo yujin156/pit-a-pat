@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +36,19 @@ public class User {
     @Column(name = "u_Bday", nullable = false)
     private Date uBday;
 
+    @Column(name = "u_pno", nullable = false)
+    private int upno;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @OneToMany(mappedBy = "owner")
     private List<Dog> dogs = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "uno")
+    private Address address;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 }

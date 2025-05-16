@@ -1,6 +1,7 @@
-package pit.pet.Account.User;
+package pit.pet.Account.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import pit.pet.Account.User.User;
 
 import java.util.Optional;
 

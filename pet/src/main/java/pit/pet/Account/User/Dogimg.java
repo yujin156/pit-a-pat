@@ -17,11 +17,12 @@ public class Dogimg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dino;
 
+    @OneToOne
+    @JoinColumn(name = "dno", nullable = false)
+    private Dog dog;
+
     @Column(name = "di_url", nullable = false)
     private String di_url;
-
-    @Column(name = "di_img", nullable = false)
-    private String  di_img;
 
     @Column(name = "di_title", nullable = false)
     private String di_title;
