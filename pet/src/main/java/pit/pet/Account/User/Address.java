@@ -21,4 +21,8 @@ public class Address {
 
     @Column(name = "town", nullable = false)
     private String town;
+
+    @OneToOne
+    @JoinColumn(name = "uno") // 주소 테이블의 uno → 유저 테이블의 uno를 참조
+    private User user;
 }

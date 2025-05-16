@@ -19,4 +19,13 @@ public enum Gender {
     public String Doglabel() {
         return Doglabel;
     }
+    public static Gender fromUserLabel(String label) {
+        for (Gender gender : Gender.values()) {
+            if (gender.Userlabel.equals(label)) {
+                return gender;
+            }
+        }
+        throw new IllegalArgumentException("올바르지 않은 성별입니다: " + label);
+    }
+
 }
