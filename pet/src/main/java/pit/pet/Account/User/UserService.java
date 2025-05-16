@@ -13,6 +13,7 @@ public class UserService {
 
     @Transactional
     public User userRegister(RegisterRequest request) {
-        if(userRepository.existsByumail(request.))
+        //if(userRepository.existsByumail(request.))
+        return null;
     }
 }
