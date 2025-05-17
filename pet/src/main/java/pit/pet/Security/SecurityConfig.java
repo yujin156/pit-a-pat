@@ -7,9 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pit.pet.Account.Service.CustomUserDetailsService;
+import pit.pet.JWT.JwtTokenFilter;
 
 @Slf4j
 @Configuration
@@ -17,7 +20,7 @@ import pit.pet.Account.Service.CustomUserDetailsService;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-
+    private final JwtTokenFilter jwtTokenFilter;
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,18 +39,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                .formLogin(form -> form
-                        .loginPage("/user/login")               // 커스텀 로그인 페이지 URL
-                        .loginProcessingUrl("/user/login")     // POST 로그인 처리 URL (form action)
-                        .defaultSuccessUrl("/", true)           // 로그인 성공 시 이동 경로
-                        .failureUrl("/user/login?error")        // 로그인 실패 시 이동 경로
-                        .permitAll()
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 유지 허용
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/user/logout")
-                        .logoutSuccessUrl("/user/login?logout")
-                        .permitAll()
-                );
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
