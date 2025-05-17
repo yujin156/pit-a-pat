@@ -4,6 +4,7 @@ package pit.pet.Account.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,12 +14,11 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "UserTable")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uno")
-    private int uno;
+    private Long uno;
 
     @Column(name = "u_email", nullable = false, unique = true)
     private String uemail;
@@ -33,6 +33,7 @@ public class User {
     @Column(name = "u_gender", nullable = false)
     private Gender ugender;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "u_Bday", nullable = false)
     private Date uBday;
 
@@ -42,10 +43,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // User.java (예시)
     @OneToMany(mappedBy = "owner")
     private List<Dog> dogs = new ArrayList<>();
 
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uno")
     private Address address;
 

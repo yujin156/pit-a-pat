@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "dogcountTable")
 public class DogCount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dcno;
+    private Long dcno;
 }
