@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "dogimgTable")
 public class Dogimg {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dino;
+    private Long dino;
 
     @OneToOne
     @JoinColumn(name = "dno", nullable = false)
@@ -23,9 +22,6 @@ public class Dogimg {
 
     @Column(name = "di_url", nullable = false)
     private String di_url;
-
-    @Column(name = "di_title", nullable = false)
-    private String di_title;
 
     @CreationTimestamp
     @Column(name = "di_uploaded_at", nullable = false)

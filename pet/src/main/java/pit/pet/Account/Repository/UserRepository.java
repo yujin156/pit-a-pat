@@ -5,7 +5,7 @@ import pit.pet.Account.User.User;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
-    boolean existsByumail(String uemail);
-    Optional<User> findByUemail(String uemail);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUemail(String email);
+
 }

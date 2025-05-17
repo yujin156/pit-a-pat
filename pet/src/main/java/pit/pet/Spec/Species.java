@@ -13,7 +13,7 @@ public class Species {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(nullable = false, unique = true)
     private String name;

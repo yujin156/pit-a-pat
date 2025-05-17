@@ -7,12 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "DKbesideTable")
 public class DogKeyword2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dkdno;
+    private Long dkdno;
 
     @Column(name = "kb_tag", nullable = false)
-    private String kb_tag;
+    private String kbtag;
 }
