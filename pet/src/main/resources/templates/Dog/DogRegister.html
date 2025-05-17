@@ -1,0 +1,111 @@
+
+<!-- Dog/register.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>강아지 등록</title>
+  <style>
+    .autocomplete-item {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .autocomplete-item:hover {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+<h1>강아지 등록</h1>
+<form th:action="@{/dog/register}" th:object="${dogRegisterRequest}" method="post" enctype="multipart/form-data">
+
+  <label>이름:
+    <input type="text" th:field="*{name}" required />
+  </label><br/>
+
+  <label>성별:
+    <select th:field="*{gender}" required>
+      <option value="">선택</option>
+      <option value="남성">수컷</option>
+      <option value="여성">암컷</option>
+    </select>
+  </label><br/>
+
+  <label>생일:
+    <input type="date" th:field="*{birthday}" required />
+  </label><br/>
+
+  <label>소개:
+    <textarea th:field="*{intro}" /></textarea>
+  </label><br/>
+
+  <label>종:
+    <input type="text" id="breedInput" name="breed" placeholder="견종명 입력" autocomplete="off"/>
+    <div id="autocompleteList"></div>
+    <select th:field="*{speciesId}" hidden>
+      <option th:each="s : ${speciesList}" th:value="${s.id}" th:text="${s.name}"/>
+    </select>
+  </label><br/>
+
+  <label>성격 키워드:
+    <div th:each="k : ${keyword1List}">
+      <input type="checkbox" th:field="*{keyword1Ids}" th:value="${k.dkno}" />
+      <label th:text="${k.k_tag}" />
+    </div>
+  </label><br/>
+
+  <label>습관 키워드:
+    <div th:each="k : ${keyword2List}">
+      <input type="checkbox" th:field="*{keyword2Ids}" th:value="${k.dkdno}" />
+      <label th:text="${k.kb_tag}" />
+    </div>
+  </label><br/>
+
+  <label>이미지 파일:
+    <input type="file" name="imageFile" accept="image/*"/>
+  </label>
+  <button type="submit">등록</button>
+</form>
+
+<script>
+  const input = document.getElementById('breedInput');
+  const list = document.getElementById('autocompleteList');
+
+  input.addEventListener('input', () => {
+    const keyword = input.value.trim();
+    if (!keyword) {
+      list.innerHTML = '';
+      return;
+    }
+
+    fetch(`/api/autocomplete?keyword=${encodeURIComponent(keyword)}`)
+            .then(res => res.json())
+            .then(data => {
+              list.innerHTML = '';
+              data.forEach(name => {
+                const item = document.createElement('div');
+                item.textContent = name;
+                item.className = 'autocomplete-item';
+                item.onclick = () => {
+                  input.value = name;
+                  list.innerHTML = '';
+                  const options = document.querySelectorAll('select[name=\"speciesId\"] option');
+                  options.forEach(opt => {
+                    if (opt.textContent === name) {
+                      opt.selected = true;
+                    }
+                  });
+                };
+                list.appendChild(item);
+              });
+            });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!list.contains(e.target) && e.target !== input) {
+      list.innerHTML = '';
+    }
+  });
+</script>
+</body>
+</html>

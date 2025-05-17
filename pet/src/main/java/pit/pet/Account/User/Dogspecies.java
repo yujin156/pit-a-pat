@@ -7,11 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "speciesTable")
 public class Dogspecies {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dsno;
+    private Long dsno;
 
     @Column(name = "species", nullable = false)
     private String species;
