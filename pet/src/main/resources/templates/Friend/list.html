@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2 th:text="'['+${myDogDno}+'] 친구 목록'"></h2>
+<ul>
+  <li th:each="f : ${friends}">
+    <span th:text="${f.dname}"></span> (주인: <span th:text="${f.owner.uname}"></span>)
+  </li>
+</ul>
+
+</body>
+</html>

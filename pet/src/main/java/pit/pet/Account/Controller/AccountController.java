@@ -4,20 +4,17 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Service.UserService;
 import pit.pet.Account.User.Address;
 import pit.pet.Account.User.User;
-import pit.pet.JWT.JwtTokenProvider;
-
+import pit.pet.Security.JWT.JwtTokenProvider;
+import pit.pet.Account.User.Role;
 import java.util.Optional;
 
 @Controller
@@ -68,7 +65,7 @@ public class AccountController {
             return "Account/Login";
         }
 
-        // ✅ 토큰 발급
+        // ✅ JWT 발급
         String accessToken = jwtTokenProvider.createAccessToken(user.getUemail(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUemail(), user.getRole());
 
@@ -76,21 +73,27 @@ public class AccountController {
         Cookie accessCookie = new Cookie("accessToken", accessToken);
         accessCookie.setHttpOnly(true);
         accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 60); // 1시간
+        accessCookie.setMaxAge(60 * 60);
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24); // 1일
+        refreshCookie.setMaxAge(60 * 60 * 24);
         response.addCookie(refreshCookie);
 
         // ✅ 세션 저장
         session.setAttribute("user", user);
-        session.setMaxInactiveInterval(60 * 60 * 24); // 1일
+        session.setMaxInactiveInterval(60 * 60 * 24);
 
-        return "redirect:/"; // 로그인 성공 후 메인 페이지 등으로 이동
+        // ✅ 역할별 리다이렉트
+        if (user.getRole() == Role.ADMIN) {
+            return "redirect:/";
+        } else {
+            return "redirect:/";
+        }
     }
+
 
 
     @GetMapping("/logout")
@@ -115,6 +118,9 @@ public class AccountController {
         cookie.setPath("/");
         response.addCookie(cookie);
     }
+
+
+
 
 }
 

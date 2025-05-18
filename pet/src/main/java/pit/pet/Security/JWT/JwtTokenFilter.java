@@ -1,4 +1,4 @@
-package pit.pet.JWT;
+package pit.pet.Security.JWT;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

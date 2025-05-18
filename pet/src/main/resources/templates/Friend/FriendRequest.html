@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>강아지 친구 요청</h2>
+<form th:action="@{/dog-friends/request}" method="post">
+  <label>보내는 강아지:
+    <select name="requesterDno">
+      <option th:each="d : ${myDogs}"
+              th:value="${d.dno}"
+              th:text="${d.dname}">강아지</option>
+    </select>
+  </label>
+
+  <label>대상 강아지:
+    <select name="receiverDno" onchange="loadProfiles(this.value)">
+      <option value="">선택하세요</option>
+      <option th:each="d : ${allDogs}"
+              th:value="${d.dno}"
+              th:text="${d.dname}">강아지</option>
+    </select>
+  </label>
+  <button type="submit">요청 보내기</button>
+</form>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var profilesByDog = /*[[${profilesByDog}]]*/ {};
+  function loadProfiles(dno) {
+    var sel = document.getElementById('profileSelect');
+    sel.innerHTML = '<option value="">프로필을 선택하세요</option>';
+    (profilesByDog[dno]||[]).forEach(function(p){
+      var opt = document.createElement('option');
+      opt.value = p.profileNo;
+      opt.text  = p.profileNo + '번 – 주인: '
+              + p.user.uname + ', 사이즈: ' + p.size;
+      sel.add(opt);
+    });
+  }
+  /*]]>*/
+</script>
+
+</body>
+</html>

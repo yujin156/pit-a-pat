@@ -10,6 +10,9 @@
 <div sec:authorize="isAuthenticated()">
     어서오세요, <span th:text="${#authentication.principal.uname}">사용자</span>님
     <a th:href="@{/user/logout}">로그아웃</a>
+    <a th:href="@{/dog/register}">개 추가</a>
+    <a th:href="@{/dog-friends/request}">개 친구추가</a>
+    <a th:href="@{/dog-friends/requests}">친구 신청목록</a>
 </div>
 
 <div sec:authorize="!isAuthenticated()">

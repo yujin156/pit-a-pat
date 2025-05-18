@@ -1,4 +1,4 @@
-package pit.pet.JWT;
+package pit.pet.Security.JWT;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

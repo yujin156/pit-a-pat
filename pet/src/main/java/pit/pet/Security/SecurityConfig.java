@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pit.pet.Account.Service.CustomUserDetailsService;
-import pit.pet.JWT.JwtTokenFilter;
+import pit.pet.Security.JWT.JwtTokenFilter;
 
 @Slf4j
 @Configuration

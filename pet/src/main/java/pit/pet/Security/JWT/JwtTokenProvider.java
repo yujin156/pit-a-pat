@@ -1,4 +1,4 @@
-package pit.pet.JWT;
+package pit.pet.Security.JWT;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
