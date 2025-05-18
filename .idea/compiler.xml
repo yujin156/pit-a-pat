@@ -16,4 +16,11 @@
       <module name="pet_project.test" target="17" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="pet" options="-parameters" />
+      <module name="pet.main" options="-parameters" />
+      <module name="pet.test" options="-parameters" />
+    </option>
+  </component>
 </project>
