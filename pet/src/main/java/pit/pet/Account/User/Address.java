@@ -7,17 +7,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "addressTable")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ano;
+    private Long ano;
 
     @Column(name = "city", nullable = false)
     private String city;
 
     @Column(name = "County", nullable = false)
-    private String County;
+    private String county;
 
     @Column(name = "town", nullable = false)
     private String town;
