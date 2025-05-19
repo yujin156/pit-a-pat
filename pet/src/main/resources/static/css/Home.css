@@ -1,6 +1,8 @@
-.content{
-    max-width: 1450px;
-    margin: auto;
+.content {
+    margin-left: 100px;  /* 80 + 20 + 20 */
+    margin-right: 250px; /* 예: 로그인 패널 너비(200) + 25 + 25 */
+    padding: 15px;
+    width: 1460px;
 }
 /* 메인 베너 이미지*/
 .main-banner {
