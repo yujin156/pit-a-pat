@@ -6,7 +6,7 @@
     <title>Title</title>
 </head>
 <body>
-
+<div th:insert="~{Side_menu :: sidebar}"></div>
 <div sec:authorize="isAuthenticated()">
     어서오세요, <span th:text="${#authentication.principal.uname}">사용자</span>님
     <a th:href="@{/user/logout}">로그아웃</a>

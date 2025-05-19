@@ -4,12 +4,14 @@ package pit.pet.Friend;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pit.pet.Account.Repository.DogProfileRepository;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
@@ -17,6 +19,7 @@ import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.DogProfile;
 import pit.pet.Account.User.User;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,14 +90,31 @@ public class DogFriendController {
     /** ⑥ 내 친구 목록 보기(원하시면) **/
     @GetMapping("/list")
     public String listFriends(Model model,
-                              @AuthenticationPrincipal UserDetails principal) {
+                              @AuthenticationPrincipal UserDetails principal,
+                              RedirectAttributes redirectAttrs) {
+        // 1) principal 이 null 이면 → 로그인 안 된 상태
+        if (principal == null) {
+            redirectAttrs.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/user/login";
+        }
+
+        // 2) 로그인 된 경우 기존 로직
         User me = userRepo.findByUemail(principal.getUsername())
-                .orElseThrow();
-        // 예: 첫 번째 강아지 기준으로…
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         List<Dog> myDogs = dogRepo.findByOwner(me);
         if (!myDogs.isEmpty()) {
-            model.addAttribute("friends",
-                    friendService.getFriends(myDogs.get(0).getDno()));
+            Dog selectedDog  = myDogs.get(0);
+            Long  myDogDno   = selectedDog.getDno();
+            String myDogName = selectedDog.getDname();
+
+            List<Dog> friends = friendService.getFriends(myDogDno);
+
+            model.addAttribute("myDogName", myDogName);
+            model.addAttribute("friends",    friends);
+        } else {
+            model.addAttribute("myDogName", null);
+            model.addAttribute("friends",   Collections.emptyList());
         }
         return "Friend/list";
     }
