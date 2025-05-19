@@ -12,7 +12,7 @@ public class DogKeyword1 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dkno;
 
-    @Column(name = "k_tag", nullable = false)
-    private String ktag;
+    @Column(name = "dk_tag", nullable = false)
+    private String dktag;
 
 }
