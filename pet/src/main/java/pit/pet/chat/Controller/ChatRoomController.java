@@ -1,13 +1,13 @@
-package pit.pet.chat.Controller;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import pit.pet.chat.DTO.ChatRoomDto;
-import pit.pet.chat.DTO.ChatMessageResponseDto;
-import pit.pet.chat.Service.ChatService;
-
-import java.util.List;
-
+//package pit.pet.chat.Controller;
+//
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.*;
+//import pit.pet.chat.DTO.ChatRoomDto;
+//import pit.pet.chat.DTO.ChatMessageResponseDto;
+//import pit.pet.chat.Service.ChatService;
+//
+//import java.util.List;
+//
 //@RestController
 //@RequiredArgsConstructor
 //@RequestMapping("/api/chat")

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Side_menu</title>
-    <link rel="stylesheet" href="./../static/css/Content.css">
-    <link rel="stylesheet" href="./../static/css/Side_menu.css">
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
+    <link rel="stylesheet" th:href="@{/js/Side_menu.js}">
 </head>
 <body>
 
-<div class="menu">
+<div class="menu" th:fragment="sidebar">
     <!-- 로고 영역 -->
     <div class="logo">
         <a href="#" class="blind">로고</a>
@@ -79,7 +80,7 @@
 
         <!-- FRIEND 메뉴 -->
         <div class="friend">
-            <a href="#" class="menu_a">
+            <a href="/dog-friends/list" class="menu_a">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20.08" height="16.2" viewBox="0 0 20.08 16.2">
                         <g id="그룹_162440" data-name="그룹 162440" transform="translate(-9.96 -11.9)">

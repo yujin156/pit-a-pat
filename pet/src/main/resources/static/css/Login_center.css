@@ -1,8 +1,10 @@
-.wrap{
-    position: absolute;
+.wrap {
+    position: fixed;    /* ← absolute → fixed */
     top: 15px;
     right: 25px;
+    z-index: 999;
 }
+
 .BWrap{
     width: 280px;
     height: 430px;
