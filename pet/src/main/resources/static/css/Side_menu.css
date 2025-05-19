@@ -1,22 +1,20 @@
 .menu {
-    width: 80px; /* 기본 너비 */
+    width: 80px;
     height: calc(100vh - 30px);
     margin-top: 15px;
     margin-left: 20px;
     position: relative;
-
     background-color: #387FEB;
     border-radius: 20px;
-
-    transition: width 0.3s ease; /* 부드럽게 전환 */
-    overflow: hidden; /* 내부 내용 잘림 방지 */
+    transition: width 0.3s ease;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .menu:hover {
-    width: 150px; /* 마우스 올렸을 때 확장 */
+    width: 155px;
 }
 
 /*로고*/
@@ -46,7 +44,6 @@
     visibility: hidden;
 }
 
-/* 메뉴 확장 시 로고 레이블 표시 */
 .menu:hover .logoImg_label {
     opacity: 1;
     visibility: visible;
@@ -61,44 +58,84 @@
     gap: 15px;
 }
 
-/* 메뉴 아이템 공통 스타일 - 모두 동일하게 적용 */
 .main, .mach, .friend, .group, .myPage {
     width: 45px;
     height: 45px;
     position: relative;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-radius: 50%;
+    border-radius: 25px;
     transition: all 0.3s ease;
     cursor: pointer;
-    background-color: transparent; /* 기본적으로 배경색 없음 */
+    background-color: transparent;
     border: 1px solid #F4E7F1;
+
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-/* 모든 아이콘 기본 색상 */
+.menu_a {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 13px;
+
+    position: relative;
+}
+
+.menu:hover .menu_a {
+    flex-wrap: nowrap;
+}
+
+.menu:hover .icon {
+    width: auto;
+    height: auto;
+}
+
+.icon {
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+    z-index: 2;
+    width: 45px;
+    height: 100%;
+}
+
 .icon svg {
     fill: #F4E7F1;
     transition: fill 0.3s ease;
 }
 
-/* 메뉴 확장 시 모든 아이템 동일하게 조정 */
+.label {
+    opacity: 0;
+    color: #F4E7F1;
+    font-weight: 500;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+
+    position: absolute;
+
+    left: 43px;
+}
+
+.menu:hover .label {
+    opacity: 1;
+}
+
 .menu:hover .main,
 .menu:hover .mach,
 .menu:hover .friend,
 .menu:hover .group,
 .menu:hover .myPage {
     width: 120px;
-    border-radius: 30px; /* 확장 시 둥근 모서리 */
+    border-radius: 30px;
     justify-content: center;
-
-    background-color: transparent; /* 기본적으로 배경색 없음 */
+    background-color: transparent;
     border: 1px solid #F4E7F1;
 }
 
-/* 호버 시 메뉴 아이템 배경색 - 모든 메뉴 적용 */
 .menu:hover .main:hover:not(.active),
 .menu:hover .mach:hover:not(.active),
 .menu:hover .friend:hover:not(.active),
@@ -108,7 +145,6 @@
     border: none;
 }
 
-/* 호버 시 아이콘 색상 - 모든 메뉴 적용 */
 .menu:hover .main:hover .icon svg,
 .menu:hover .mach:hover .icon svg,
 .menu:hover .friend:hover .icon svg,
@@ -117,7 +153,6 @@
     fill: #212121;
 }
 
-/* 호버 시 텍스트 색상 - 모든 메뉴 적용 */
 .menu:hover .main:hover .label,
 .menu:hover .mach:hover .label,
 .menu:hover .friend:hover .label,
@@ -126,159 +161,34 @@
     color: #212121;
 }
 
-/* 활성화된 메뉴 아이템 스타일 - 모든 메뉴 적용 */
 .main.active, .mach.active, .friend.active, .group.active, .myPage.active {
     background-color: #F4E7F1;
     border: none;
 }
 
-/* 다른 메뉴에 호버 시 활성화된 메뉴 원상복구 */
 .menu:hover .temp-inactive {
     background-color: transparent !important;
     border: 1px solid #F4E7F1 !important;
 }
 
-/* 다른 메뉴에 호버 시 활성화된 메뉴의 아이콘 색상 원상복구 */
 .menu:hover .temp-inactive .icon svg {
     fill: #F4E7F1 !important;
 }
 
-/* 다른 메뉴에 호버 시 활성화된 메뉴의 텍스트 색상 원상복구 */
 .menu:hover .temp-inactive .label {
     color: #F4E7F1 !important;
 }
 
-/* 활성화된 메뉴 아이템의 아이콘 색상 - 모든 메뉴 적용 */
 .main.active .icon svg, .mach.active .icon svg,
 .friend.active .icon svg, .group.active .icon svg,
 .myPage.active .icon svg {
     fill: #212121;
 }
 
-/*스트 색상 -  활성화된 메뉴 아이템의 텍모든 메뉴 적용 */
 .main.active .label, .mach.active .label,
 .friend.active .label, .group.active .label,
 .myPage.active .label {
     color: #212121;
-}
-
-/* 아이콘 컨테이너 */
-.icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
-}
-
-/* 메뉴 확장 시 아이콘 이동 */
-.menu:hover .icon {
-    margin-right: auto; /* 왼쪽 정렬 */
-}
-
-/* 라벨 스타일 */
-.label {
-    opacity: 0;
-    color: #F4E7F1;
-    font-weight: 500;
-    font-size: 14px;
-
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    overflow: hidden;
-
-    position: absolute;
-    right: 15px;
-}
-
-/* 메뉴 확장 시 라벨 표시 */
-.menu:hover .label {
-    opacity: 1;
-}
-
-/* 하단 고객센터, 불만접수 */
-.csc_com {
-    position: absolute;
-    bottom: 40px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.CSC, .complaint {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-}
-
-/* 메뉴 확장 시 하단 메뉴 조정 */
-.menu:hover .CSC,
-.menu:hover .complaint {
-    width: 120px;
-    justify-content: flex-start;
-    padding-left: 20px;
-}
-
-.CSCImg, .complaintImg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.CSCImg svg, .complaintImg svg {
-    fill: rgba(244, 231, 241, 0.7);
-    transition: fill 0.3s ease;
-}
-
-/* 메뉴 확장 시 하단 아이콘 이동 */
-.menu:hover .CSCImg,
-.menu:hover .complaintImg {
-    margin-right: auto; /* 왼쪽 정렬 */
-}
-
-/* 아이콘 컨테이너 */
-.icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
-}
-
-/* 아이콘 내부 SVG */
-.icon svg {
-    fill: #F4E7F1;
-    transition: fill 0.3s ease;
-}
-
-/* 메뉴 확장 시 아이콘 이동 */
-.menu:hover .icon {
-    margin-right: auto; /* 왼쪽 정렬 */
-}
-
-/* 라벨 스타일 */
-.label {
-    opacity: 0;
-    color: #F4E7F1;
-    font-weight: 500;
-    font-size: 14px;
-
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    overflow: hidden;
-
-    position: absolute;
-    right: 15px;
-}
-
-/* 메뉴 확장 시 라벨 표시 */
-.menu:hover .label {
-    opacity: 1;
 }
 
 /* 하단 고객센터, 불만접수 */
@@ -303,7 +213,6 @@
     position: relative;
 }
 
-/* 메뉴 확장 시 하단 메뉴 조정 */
 .menu:hover .CSC,
 .menu:hover .complaint {
     width: 100px;
@@ -322,10 +231,9 @@
     transition: fill 0.3s ease;
 }
 
-/* 메뉴 확장 시 하단 아이콘 이동 */
 .menu:hover .CSCImg,
 .menu:hover .complaintImg {
-    margin-right: auto; /* 왼쪽 정렬 */
+    margin-right: auto;
 }
 
 /* 시각적으로 숨겨진 요소 */

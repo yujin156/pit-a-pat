@@ -1,0 +1,663 @@
+.wrap{
+    position: absolute;
+    top: 15px;
+    right: 25px;
+}
+.BWrap{
+    width: 280px;
+    height: 430px;
+
+    background-color: #F4E7F1;
+    border-radius: 20px;
+
+    padding: 23px 20px;
+    box-sizing: border-box;
+
+     display: flex;
+     flex-direction: column;
+     justify-content: space-evenly;
+
+     margin-bottom: 40px;
+}
+
+h3{
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    color: #212121;
+}
+/*로그인 이메일, 비밀번호 input*/
+.id, .pw{
+    width: 100%;
+    height: 40px;
+    font-size: 15px;
+    border: 0;
+    border-radius: 10px;
+    outline: none;
+
+    padding-left: 10px;
+    box-sizing: border-box;
+
+    background-color: #ffffff;
+
+    /*text-align: center;*/
+    line-height: 15px;
+}
+
+.login_btn{
+    width: 100%;
+    height: 40px;
+
+    background-color: #387FEB;
+    border-radius: 10px;
+    /*중앙 정렬*/
+    text-align: center;
+    line-height: 40px;
+}
+
+.login_btn > span{
+    color: #F4E7F1;
+    font-size: 15px;
+}
+
+/*회원가입*/
+.singUp_btn{
+    width: 100%;
+    height: 40px;
+
+    background-color: #F4E7F1;
+    border: 1px solid #387FEB;
+    border-radius: 10px;
+    box-sizing: border-box;
+    /*중앙 정렬*/
+    text-align: center;
+    line-height: 40px;
+}
+
+.singUp_btn > span{
+    color: #387FEB;
+    font-size: 15px;
+}
+
+
+/* 로그인 유지하기, 아이디, 비밀번호 찾기*/
+.find_userInfo{
+    width: 100%;
+    height: auto;
+    line-height: 16px;
+
+    display: flex;
+    justify-content: space-between;
+}
+.hr{
+    width: 1px;
+    height: auto;
+    background-color: #387FEB;
+    border-radius: 1px;
+}
+ .find_userInfo > input[type="checkbox"] {
+     appearance: none;
+     margin: 0;
+     width: 16px;
+     height: 16px;
+     border-radius: 50%;
+     background-clip: content-box;
+     border: 1px solid #387FEB;
+     background-color: #F4F4F4;
+     box-sizing: border-box;
+     position: relative;
+     cursor: pointer;
+ }
+
+ /* 체크됐을 때 배경색 변경 */
+ .find_userInfo > input[type="checkbox"]:checked {
+     background-color: #387FEB;
+ }
+
+ /* 체크 표시 추가 */
+ .find_userInfo > input[type="checkbox"]:checked::after {
+     content: "";
+     position: absolute;
+     top: 1px;
+     left: 4px;
+     width: 4px;
+     height: 8px;
+     border: solid white;
+     border-width: 0 2px 2px 0;
+     transform: rotate(45deg);
+ }
+
+.find_userInfo > span, a {
+    font-size: 12px;
+    color: #B7B7B7;
+}
+
+/*간편 로그인 안내*/
+ .simple_login{
+     width: 100%;
+     height: auto;
+     display: flex;
+     align-items: center;
+     justify-content: space-evenly;
+ }
+ .vl{
+     width: 20%;
+     height: 1px;
+     border-radius: 1px;
+     background-color: #387FEB;
+ }
+ .simple_login > span{
+     font-size: 13px;
+     color: #387FEB;
+     padding: 10px;
+ }
+
+
+
+/*구글 로그인*/
+ .google{
+     width: 100%;
+     height: 40px;
+     background-color: #ffffff;
+     border-radius: 10px;
+
+    display: flex;
+     justify-content: center;
+     gap: 10px;
+ }
+
+.G_icon{
+    display: flex;
+    align-items: center;
+}
+.google > span{
+    display: flex;
+    align-items: center;
+    color: #212121;
+}
+
+/*친구 찾으러 가기*/
+ .find_friend{
+     width: 280px;
+     height: 60px;
+
+     border-radius: 20px;
+     background-color: #387FEB;
+
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 35px;
+ }
+ .find_friend > span {
+     font-size: 15px;
+     color: #ffffff;
+ }
+
+/* ////////////////////////////*/
+/*/////////로그인 후/////////////*/
+/* ////////////////////////////*/
+
+.AWrap {
+    width: 280px;
+    height: auto;
+
+    min-height: 500px;
+    background-color: #F4E7F1;
+    border-radius: 20px;
+    padding: 23px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.userTop_icon {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.alarmIcon, .logout_btn {
+    cursor: pointer;
+}
+
+.u_name {
+    font-size: 20px;
+    color: #212121;
+    text-align: center;
+    margin: 15px 0 25px 0;
+}
+
+.profiles_grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.profile_item {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.profile_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ffffff;
+    margin: 20px 0;
+}
+
+.pet_statuses {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.pet_status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.status_label {
+    font-size: 20px;
+    color: #212121;
+}
+
+.status_select {
+    width: 60%;
+    background-color: #ffffff;
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+}
+
+.status_select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #387feb;
+    pointer-events: none;
+}
+
+select {
+    width: 100%;
+    padding: 8px 15px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 16px;
+    appearance: none;
+    cursor: pointer;
+}
+
+.add_family {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    color: #387feb;
+    cursor: pointer;
+}
+
+.plus_btn {
+    margin-right: 8px;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 1000px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.modal-left {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-right {
+    width: 60%;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+
+.modal-txt{
+    display: block;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.modal-subtitle {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.modal_all{
+    display: flex;
+    gap: 20px;
+}
+
+.image-upload-area {
+    flex: 1;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.upload-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
+    fill: #ccc;
+}
+
+.upload-text {
+    color: #999;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #B7B7B7;
+    font-size: 10px;
+}
+
+.form-control {
+    padding: 12px;
+    border: 1px solid #387FEB;
+    border-radius: 5px;
+    font-size: 15px;
+    color: #387FEB;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group-half {
+    flex: 1;
+}
+
+.form-group-half > label {
+    font-size: 10px;
+    color: #B7B7B7;
+}
+
+.dog-type-row {
+    display: flex;
+    gap: 10px;
+}
+
+.dog-type-input {
+    flex: 1;
+}
+
+.search-button {
+    width: 80px;
+    background-color: #4a77fb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.select-group {
+    display: flex;
+    gap: 10px;
+}
+
+.select-group select {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    appearance: auto;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.form-button {
+    padding: 12px 0;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    width: 30%;
+}
+
+.btn-cancel {
+    background-color: #ffffff;
+    border: 1px solid #4a77fb;
+    color: #4a77fb;
+}
+
+.btn-submit {
+    background-color: #4a77fb;
+    color: white;
+}
+
+/* 파일 업로드 input 숨기기 */
+#fileInput {
+    display: none;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 700px) {
+    .modal-content {
+        flex-direction: column;
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    .modal-left, .modal-right {
+        width: 100%;
+    }
+
+    .modal-left {
+        height: 250px;
+    }
+}
+
+ /*////////////////*/
+/*//////친한친구/////*/
+
+.favorites-container {
+    width: 280px;
+    background-color: #F5F6F8;
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.favorites-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.favorites-title {
+    font-size: 20px;
+}
+
+.favorites-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background-color: #eee;
+}
+
+.friend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 999px;
+    padding: 8px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.friend-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.friend-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.friend-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.friend-status {
+    background-color: #F4E7F1;
+    color: #212121;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+}
+
+.btn-remove {
+    color: #e53e3e;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.btn-remove:hover {
+    background-color: #fed7d7;
+}
+
+.editing .btn-remove {
+    display: block;
+}
+
+.editing .friend-status {
+    display: none;
+}
+
+.btn-add {
+    width: 100%;
+    /*background-color: #f4edfd;*/
+    color: #B7B7B7;
+    border: none;
+    border-radius: 999px;
+    padding: 10px;
+    margin-top: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-add:hover {
+    background-color: #F4E7F1;
+}
+
+.editing .btn-add {
+    display: flex;
+}
+
+.hidden {
+    display: none;
+}
