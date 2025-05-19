@@ -39,6 +39,8 @@ public class Dog {
     @JoinColumn(name = "species_id")
     private Species species;
 
+
+
     // ✅ 키워드 연결 (다대다)
     @ManyToMany
     @JoinTable(
