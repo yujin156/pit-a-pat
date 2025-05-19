@@ -43,7 +43,7 @@ public class AccountController {
 
     @GetMapping("/login")
     public String loginForm() {
-        return "Account/Login";
+        return "Account/Login_center";
     }
 
     @PostMapping("/login")
@@ -56,13 +56,13 @@ public class AccountController {
         Optional<User> optionalUser = userRepository.findByUemail(email);
         if (optionalUser.isEmpty()) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            return "Account/Login";
+            return "Account/Login_center";
         }
 
         User user = optionalUser.get();
         if (!bCryptPasswordEncoder.matches(password, user.getUpwd())) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            return "Account/Login";
+            return "Account/Login_center";
         }
 
         // ✅ JWT 발급

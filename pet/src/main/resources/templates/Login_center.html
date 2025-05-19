@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="./../static/css/Content.css">
-    <link rel="stylesheet" href="./../static/css/Login_center.css">
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 </head>
 <body>
 
-<div class="wrap">
+<div class="wrap" th:fragment="login"  sec:authorize="isAuthenticated()">
     <!--///////// 로그인 전 ///////// -->
-    <div class="BWrap">
+    <div class="BWrap" sec:authorize="!isAuthenticated()">
         <h3>LOGIN</h3>
-
-        <input class="id" type="text" placeholder="이메일을 입력하세요.">
-        <input class="pw" type="password" placeholder="비밀번호를 입력하세요.">
-        <div class="login_btn">
-            <span>로그인</span>
-        </div>
+        <form th:action="@{/login}" method="post">
+            <input class="id" type="email" name="email" required />
+            <input class="pw" type="password" name="password" required />
+                <button type="submit" class="login_btn">로그인</button>
+        </form>
         <div class="singUp_btn">
             <span>이메일로 회원가입</span>
         </div>
@@ -51,23 +51,24 @@
             </div>
             <span>Google로 시작하기</span>
         </div>
-    </div>
-    <!--  친구 찾으러가기  -->
-    <div class="find_friend">
-        <span>친구 찾으러 가기</span>
-        <div class="move_icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
-                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
-                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <div class="find_friend">
+            <span>친구 찾으러 가기</span>
+            <div class="move_icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
+                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
+                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
         </div>
     </div>
+    <!--  친구 찾으러가기  -->
+
 
     <!--/////////////////////////////-->
     <!--/////////  로그인 후 ///////// -->
     <!--/////////////////////////////-->
 
-    <div class="AWrap">
+    <div class="AWrap" sec:authorize="isAuthenticated()">
         <div class="userTop_icon">
             <div class="alarmIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="21.42" height="26.191" viewBox="0 0 21.42 26.191">
@@ -95,7 +96,7 @@
             <!-- 프로필 이미지들은 여기에 동적으로 추가됩니다 -->
         </div>
 
-        <div class="u_name">UserName님</div>
+        <div class="u_name" th:text="${#authentication.principal.uname}" >UserName님</div>
 
         <div class="divider"></div>
 
