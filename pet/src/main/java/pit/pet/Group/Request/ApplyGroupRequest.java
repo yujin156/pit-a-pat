@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProfileRequest {
-
+public class ApplyGroupRequest {
+    private Long dogId;
 }
