@@ -1,0 +1,90 @@
+package pit.pet.Group.Service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import pit.pet.Account.User.Dog;
+import pit.pet.Group.Repository.GroupMemberRepository;
+import pit.pet.Group.Repository.GroupRepository;
+import pit.pet.Group.entity.GroupMemberTable;
+import pit.pet.Group.entity.GroupTable;
+import pit.pet.Group.entity.MemberStatus;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class GroupMemberService {
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupRepository groupRepository;
+
+    /**
+     * ✅ 그룹 가입 신청 (대기 상태로 등록)
+     */
+    public GroupMemberTable applyMembership(Long gno, Dog dog) {
+        GroupTable group = groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("해당 그룹이 존재하지 않습니다."));
+
+        // 중복 가입 방지 (선택)
+        Optional<GroupMemberTable> exists = groupMemberRepository.findByDogAndGroupTable(dog, group);
+        if (exists.isPresent()) {
+            throw new RuntimeException("이미 가입 신청 또는 등록된 강아지입니다.");
+        }
+
+        GroupMemberTable member = new GroupMemberTable();
+        member.setGroupTable(group);
+        member.setDog(dog);
+        member.setState(MemberStatus.WAIT); // 기본 상태
+
+        return groupMemberRepository.save(member);
+    }
+
+    /**
+     * ✅ 가입 요청 승인 / 거부 (리더만 가능)
+     */
+    public void handleJoinRequest(Long gmno, MemberStatus status, Long leaderGmno) {
+        GroupMemberTable member = groupMemberRepository.findById(gmno)
+                .orElseThrow(() -> new RuntimeException("가입 요청 멤버가 존재하지 않습니다."));
+        GroupTable group = member.getGroupTable();
+
+        // 리더 권한 확인
+        if (!group.getG_leader().equals(leaderGmno)) {
+            throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다.");
+        }
+
+        if (status == MemberStatus.ACCEPTED) {
+            // 상태가 처음 승인될 경우에만 인원수 +1
+            if (status == MemberStatus.ACCEPTED) {
+                if (member.getState() != MemberStatus.ACCEPTED) {
+                    member.setState(MemberStatus.ACCEPTED);
+                    group.setG_membercount(group.getG_membercount() + 1);
+                    groupRepository.save(group);
+                }
+                groupMemberRepository.save(member);
+            } else if (status == MemberStatus.REJECTED) {
+                // 무조건 삭제 (가입 요청 거부)
+                groupMemberRepository.delete(member);
+            }
+        }
+    }
+
+    /**
+     * ✅ 멤버 탈퇴 (본인만 가능)
+     */
+    public void withdraw(Long gmno, Long requesterGmno) {
+        if (!gmno.equals(requesterGmno)) {
+            throw new RuntimeException("탈퇴는 본인만 가능합니다.");
+        }
+
+        GroupMemberTable member = groupMemberRepository.findById(gmno)
+                .orElseThrow(() -> new RuntimeException("멤버 정보가 없습니다."));
+        GroupTable group = member.getGroupTable();
+
+        // 승인 상태였다면 인원수 차감
+        if (member.getState() == MemberStatus.ACCEPTED) {
+            group.setG_membercount(group.getG_membercount() - 1);
+            groupRepository.save(group);
+        }
+
+        groupMemberRepository.delete(member);
+    }
+}
