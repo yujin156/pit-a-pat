@@ -1,0 +1,435 @@
+.content{
+    max-width: 1450px;
+    margin: auto;
+}
+/* 메인 베너 이미지*/
+.main-banner {
+    max-width: 100%;
+    width: 100%;
+    height: 600px;
+
+    margin: 15px auto 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 20px;
+    padding: 30px 60px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+
+    box-sizing: border-box;
+    gap: 40px;
+}
+
+.banner-image > img {
+    width: 50%;
+    height: auto;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.banner-content {
+    flex: 1;
+    color: #212121;
+}
+
+.title {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.banner-button {
+    padding: 12px 28px;
+    background-color: #387FEB;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+/* hover */
+.banner-button:hover {
+    background-color: #2c6cd6;
+}
+
+/* 반응형 처리 */
+@media (max-width: 1024px) {
+    .main-banner {
+        flex-direction: column;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .banner-image img {
+        width: 200px;
+    }
+
+    .banner-content {
+        padding: 0;
+    }
+
+    .title {
+        font-size: 26px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+
+    .banner-button {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-banner {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+    }
+
+    .banner-button {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+}
+
+.p_dog_title, .dog_group_title{
+    font-size: 25px;
+    color: #212121;
+    margin-bottom: 50px;
+}
+
+/*////////////////////////////*/
+/* //// 우리동네 인기 멍스타 //// */
+/*////////////////////////////*/
+
+.popular-dog {
+    width: 1460px;
+    padding: 20px 0;
+    overflow: hidden;
+}
+
+.p_dog_title {
+    font-size: 25px;
+    color: #212121;
+    margin-bottom: 20px;
+}
+
+.dog-slider-wrapper {
+    position: relative;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.dog-slider-track {
+    padding-top: 20px;
+    display: flex;
+    width: max-content;
+    animation: slideLoop 30s linear infinite;
+}
+
+.dog-slider-wrapper:hover .dog-slider-track {
+    animation-play-state: paused;
+}
+
+.p_dog {
+    flex: 0 0 auto;
+    width: 280px;
+    height: 320px;
+    margin: 0 10px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #387FEB;
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.p_dog:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.dog_img {
+    width: 100%;
+    height: 220px;
+    border-radius: 20px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 10px;
+}
+
+.name_hart,
+.keyword {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.name_hart {
+    align-items: center;
+}
+
+.hart_icon {
+    fill: none;
+    stroke: #EDA9DD;
+    cursor: pointer;
+}
+
+.hart_icon.active {
+    fill: #EDA9DD;
+}
+
+.dog_name {
+    font-size: 20px;
+    color: #212121;
+    font-weight: 600;
+}
+
+.white_label, .blue_label {
+    width: 70px;
+    height: 20px;
+    border-radius: 10px;
+    font-size: 10px;
+    text-align: center;
+    line-height: 20px;
+}
+
+.white_label {
+    background-color: #ffffff;
+    border: 1px solid #387FEB;
+    color: #387FEB;
+}
+
+.blue_label {
+    background-color: #387FEB;
+    color: #ffffff;
+}
+
+@keyframes slideLoop {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 768px) {
+    .popular-dog {
+        width: 100%;
+        padding: 10px;
+    }
+    .p_dog {
+        width: 240px;
+        height: 300px;
+    }
+    .dog_img {
+        height: 180px;
+    }
+}
+/*////중간 베너////*/
+.mid_banner{
+    width: 100%;
+    height: 120px;
+    background-color: #F4E7F1;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+/*////////////////////////////*/
+/*//// 그룹 ////*/
+/*////////////////////////////*/
+.dog_group {
+    max-width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+    gap: 20px;
+}
+
+/* 그룹 카드 스타일 */
+.group {
+    background-color: #F5F6F8;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.group:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.group_list {
+    display: flex;
+}
+
+.group1 {
+    display: flex;
+    width: 100%;
+    padding: 20px;
+}
+
+.groupImg {
+    width: 250px;
+    height: 180px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.groupInfo {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    flex-grow: 1;
+}
+
+.g_title {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #212121;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.g_title::after {
+    content: ">";
+    color: #4a7dff;
+    font-size: 24px;
+}
+
+.g_sub_title {
+    font-size: 14px;
+    color: #B7B7B7;
+    margin-bottom: 15px;
+}
+
+.g_keyword1, .g_keyword2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.g_city {
+    background-color: #F4E7F1;
+    color: #212121;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.g_label {
+    background-color: #e0e9ff;
+    color: #212121;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.g_member {
+    display: flex;
+    margin-top: 15px;
+}
+
+.member1 {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #F4E7F1;
+    border: 2px solid white;
+    margin-right: -10px;
+    background-size: cover;
+    background-position: center;
+}
+
+.more-members {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.g_member_count {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #4a7dff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .group1 {
+        flex-direction: column;
+    }
+
+    .groupImg {
+        width: 100%;
+        height: 180px;
+        margin-bottom: 15px;
+    }
+
+    .groupInfo {
+        padding-left: 0;
+    }
+
+    .g_member_count {
+        position: static;
+        margin-top: 10px;
+    }
+}
+
+.more_group_btn{
+    width: 180px;
+    height: 40px;
+
+    margin: 40px auto;
+    padding: 10px;
+    background-color: #387FEB;
+    border-radius: 30px;
+    color: #ffffff;
+    font-size: 15px;
+    text-align: center;
+    line-height: 30px;
+}
+
+footer{
+    width: 100%;
+    height: 80px;
+    background-color: #F4E7F1;
+}

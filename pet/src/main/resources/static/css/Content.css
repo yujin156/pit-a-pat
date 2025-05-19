@@ -1,4 +1,7 @@
-body { margin: 0; }
+body {
+    margin: 0;
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
+}
 ul {
     list-style: none;
     padding: 0;
