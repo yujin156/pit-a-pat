@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>강아지 채팅</title>
+    <link rel="stylesheet" href="/static/css/chatCSS/chat.css">
+    <script src="/static/js/chatJS/chat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="user-select">
+        <button class="user-btn" onclick="selectUser(1)">유저 1 (멍이)</button>
+        <button class="user-btn" onclick="selectUser(2)">유저 2 (멍멍이)</button>
+        <div id="selected-user">유저를 선택해주세요</div>
+    </div>
+
+    <div class="chat-box" id="chat-box"></div>
+
+    <div class="input-area">
+        <input type="text" id="message-input" placeholder="메시지를 입력하세요..." disabled>
+        <button type="submit" onclick="sendMessage()">전송</button>
+    </div>
+</div>
+
+<div class="logs" id="logs"></div>
+
+<script src="/js/chatJS/chat.js"></script>
+</body>
+</html>
