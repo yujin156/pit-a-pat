@@ -14,13 +14,17 @@ public class GroupTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gno; // 그룹 번호 (PK)
+    @Column(name = "gno")
+    private Long gno;
 
-    private String gname; // 그룹 이름
+    @Column(name = "g_name")
+    private String gname;
 
-    private Integer g_membercount; // 그룹 총 인원
+    @Column(name = "g_membercount")
+    private Integer gmembercount;
 
-    private Long g_leader; // 리더(생성자)의 그룹멤버 번호
+    @Column(name = "g_leader")
+    private Long gleader;
 
     @OneToMany(mappedBy = "groupTable", cascade = CascadeType.ALL)
     private List<GroupMemberTable> groupMembers = new ArrayList<>();

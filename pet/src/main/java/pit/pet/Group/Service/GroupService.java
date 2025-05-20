@@ -25,7 +25,7 @@ public class GroupService {
         // 1. 그룹 객체 생성
         GroupTable group = new GroupTable();
         group.setGname(gname);
-        group.setG_membercount(1); // 생성자 포함 1명
+        group.setGmembercount(1); // 생성자 포함 1명
 
         // 2. 일단 그룹 저장 (gno 생성)
         groupRepository.save(group);
@@ -40,7 +40,7 @@ public class GroupService {
         groupMemberRepository.save(creator);
 
         // 5. 생성자의 gmno를 그룹 리더로 등록
-        group.setG_leader(creator.getGmno());
+        group.setGleader(creator.getGmno());
         return groupRepository.save(group); // 최종 저장
     }
 
