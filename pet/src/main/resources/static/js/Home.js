@@ -1,6 +1,6 @@
 //인기 멍스타
 const dogsData = [
-    { name: "강군", image: '/../static/img/강군.png', liked: true, keywords: [
+    { name: "강군", image: '/img/강군.png', liked: true, keywords: [
             { label: "중성화", type: "white" }, { label: "외향적", type: "blue" }, { label: "다 놀아", type: "blue" }] },
     { name: "또또", image: '/../static/img/또또.png', liked: false, keywords: [
             { label: "성별", type: "white" }, { label: "차분", type: "blue" }, { label: "소형견", type: "blue" }] },
@@ -38,7 +38,7 @@ for (let i = 0; i < 3; i++) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => { console.log('스크립트 로드 OK');
     document.querySelectorAll('.hart_icon').forEach(icon => {
         icon.addEventListener('click', () => {
             icon.classList.toggle('active');
@@ -58,7 +58,7 @@ const groupsData = [
         memberCount: 12,
         imgSrc: './../static/img/내향적강아지.png',
         memberImgs: [
-            '/../static/img/쪼꼬.png',
+            '/img/쪼꼬.png',
             '/../static/img/구름.png',
             '/../static/img/또또.png'
         ]

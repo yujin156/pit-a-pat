@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +33,7 @@ public class MainController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final DogRepository dogRepository;
 
 
     // ────────────────────────────────────────────────────────────
@@ -37,13 +44,29 @@ public class MainController {
     @GetMapping({ "", "login" })
     public String mainPage(
             @RequestParam(value = "error", required = false) String error,
+            @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
+        if (principal != null) {
+            // 1) 로그인한 유저 엔티티 조회
+            User me = userRepository.findByUemail(principal.getUsername())
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException("User not found: " + principal.getUsername()));
+
+            // 2) 그 유저가 등록한 강아지 리스트만 조회
+            List<Dog> myDogs = dogRepository.findByOwner(me);
+            model.addAttribute("do+gs", myDogs);
+
+            // (선택) 템플릿에서 ${uname} 으로 이름을 쓰고 싶다면:
+            model.addAttribute("uname", me.getUname());
+        }
+
         if (error != null) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
-        return "Home";   // src/main/resources/templates/Home.html
+        return "Home";
     }
+
 
     // ────────────────────────────────────────────────────────────
     // 2) 로그인 처리 POST

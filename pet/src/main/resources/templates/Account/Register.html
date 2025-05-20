@@ -1,29 +1,91 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
+    <meta charset="UTF-8"/>
     <title>회원가입</title>
+    <!-- jQuery를 쓰려면 아래 스크립트도 추가하세요 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <h1>회원가입</h1>
-<form th:action="@{/user/signup}" method="post" th:object="${user}">
-    <label>이메일: <input type="email" th:field="*{uemail}" /></label><br/>
-    <label>비밀번호: <input type="password" th:field="*{upwd}" /></label><br/>
-    <label>이름: <input type="text" th:field="*{uname}" /></label><br/>
+<form th:action="@{/user/signup}" th:object="${user}" method="post">
+    <label>이메일: <input type="email" th:field="*{uemail}" required /></label><br/>
+    <label>비밀번호: <input type="password" th:field="*{upwd}" required /></label><br/>
+    <label>이름: <input type="text" th:field="*{uname}" required /></label><br/>
     <label>성별:
-        <select th:field="*{ugender}">
+        <select th:field="*{ugender}" required>
+            <option value="">— 선택 —</option>
             <option value="MALE">남성</option>
             <option value="FEMALE">여성</option>
         </select>
     </label><br/>
-    <label>생일: <input type="date" th:field="*{uBday}" /></label><br/>
-    <label>전화번호: <input type="text" th:field="*{upno}" /></label><br/>
+    <label>생일: <input type="date" th:field="*{uBday}" required /></label><br/>
+    <label>전화번호: <input type="text" th:field="*{upno}" required /></label><br/>
 
     <h3>주소 정보</h3>
-    <label>도시: <input type="text" name="city" /></label><br/>
-    <label>구/군: <input type="text" name="county" /></label><br/>
-    <label>동/면: <input type="text" name="town" /></label><br/>
+    <label>시/도:
+        <select id="sido" th:field="*{address.city}" required>
+            <option value="">— 선택 —</option>
+        </select>
+    </label><br/>
+    <label>시/군/구:
+        <select id="sigungu" th:field="*{address.county}" disabled required>
+            <option value="">— 선택 —</option>
+        </select>
+    </label><br/>
+    <label>동:
+        <select id="dong" th:field="*{address.town}" disabled required>
+            <option value="">— 선택 —</option>
+        </select>
+    </label><br/>
 
     <button type="submit">회원가입</button>
 </form>
+
+<script>
+    // jQuery 사용 예시
+    $(function() {
+        const $sido    = $("#sido"),
+            $sigungu = $("#sigungu"),
+            $dong    = $("#dong");
+
+        // 1) 시/도 목록
+        fetch("/api/regions/sido")
+            .then(res => res.json())
+            .then(list => list.forEach(r => {
+                $sido.append(new Option(r.name, r.code));
+            }));
+
+        // 2) 시/도 선택 → 시/군/구
+        $sido.on("change", () => {
+            const code = $sido.val();
+            $sigungu.prop("disabled", !code)
+                .empty().append("<option value=''>— 선택 —</option>");
+            $dong   .prop("disabled", true)
+                .empty().append("<option value=''>— 선택 —</option>");
+            if (!code) return;
+
+            fetch(`/api/regions/sigungu?code=${encodeURIComponent(code)}`)
+                .then(res => res.json())
+                .then(list => list.forEach(r => {
+                    $sigungu.append(new Option(r.name, r.code));
+                }));
+        });
+
+        // 3) 시/군/구 선택 → 동
+        $sigungu.on("change", () => {
+            const code = $sigungu.val();
+            $dong.prop("disabled", !code)
+                .empty().append("<option value=''>— 선택 —</option>");
+            if (!code) return;
+
+            fetch(`/api/regions/dong?code=${encodeURIComponent(code)}`)
+                .then(res => res.json())
+                .then(list => list.forEach(r => {
+                    $dong.append(new Option(r.name, r.code));
+                }));
+        });
+    });
+</script>
 </body>
 </html>

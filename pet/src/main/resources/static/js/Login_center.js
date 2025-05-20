@@ -1,5 +1,6 @@
 <!--    프로필 추가 팝업   -->
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('스크립트 로드 OK');
     // 가족(강아지) 데이터 배열
     let pets = [
         {
@@ -23,8 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // 프로필 초기 렌더링
-    renderProfilesGrid();
-    renderPetStatuses();
+    const profilesGrid = document.querySelector('.profiles_grid');
+    if (profilesGrid) renderProfilesGrid();
+
+    const petStatusesContainer = document.querySelector('.pet_statuses');
+    if (petStatusesContainer) renderPetStatuses();
 
     // 프로필 그리드 렌더링 함수
     function renderProfilesGrid() {
