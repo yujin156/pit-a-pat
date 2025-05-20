@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/Content.css}">
-<!--    <link rel="stylesheet" th:href="@{/css/Login_center.css}">-->
-    <link rel="stylesheet" href="../static/css/Login_center.css">
+    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
     <script src="../static/js/Login_center.js"></script>
 </head>
 <body>
@@ -53,14 +52,14 @@
             </div>
             <span>Google로 시작하기</span>
         </div>
-        <div class="find_friend">
-            <span>친구 찾으러 가기</span>
-            <div class="move_icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
-                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
-                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
+    </div>
+    <div class="find_friend" sec:authorize="!isAuthenticated()">
+        <span>친구 찾으러 가기</span>
+        <div class="move_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
+                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
+                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </div>
     </div>
     <!--  친구 찾으러가기  -->
@@ -316,7 +315,7 @@
 
 </div>
 
-<script src="../static/js/Login_center.js" defer></script>
+<script defer th:src="@{js/Login_center.js}"></script>
 
 </body>
 </html>
