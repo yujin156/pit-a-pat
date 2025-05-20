@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/user/verify-code}" method="post">
+    <input type="hidden" name="email" th:value="${email}"/>
+    <label>인증 코드: <input type="text" name="code" required/></label>
+    <button type="submit">확인</button>
+</form>
+<div th:if="${error}" th:text="${error}" style="color:red;"></div>
+</body>
+</html>

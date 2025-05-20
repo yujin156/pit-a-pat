@@ -38,7 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf-> csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 유지 허용
