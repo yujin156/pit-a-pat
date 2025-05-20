@@ -8,6 +8,11 @@ const dogsData = [
             { label: "암컷", type: "white" }, { label: "명랑", type: "blue" }, { label: "순함", type: "blue" }] },
 ];
 
+
+// /////////////////////////////
+// //////슬라이드 파트/////////////
+// /////////////////////////////
+
 const sliderTrack = document.getElementById('sliderTrack');
 
 function createCard(dog) {
@@ -45,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => { console.log('스크립트 
         });
     });
 });
+
+
+// /////////////////////////////
+// /////////////////////////////
 
 // 모임//////////
 // 모임 데이터 배열
