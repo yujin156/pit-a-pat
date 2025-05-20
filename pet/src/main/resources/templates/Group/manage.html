@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>가입 요청 관리</title></head>
+<body>
+<h1>가입 요청 승인/거절</h1>
+
+<table border="1">
+    <thead>
+    <tr><th>멤버 ID</th><th>강아지 ID</th><th>처리</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${waitingMembers}">
+        <td th:text="${member.gmno}">gmno</td>
+        <td th:text="${member.dog.dno}">dog id</td>
+        <td>
+            <form th:action="@{'/groups/' + ${groupId} + '/members/' + ${member.gmno} + '/status'}"
+                  method="post">
+                <select name="status">
+                    <option value="ACCEPTED">승인</option>
+                    <option value="REJECTED">거절</option>
+                </select>
+                <input type="hidden" name="leaderGmno" th:value="${leaderGmno}" />
+                <button type="submit">처리</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/groups/list}">← 그룹 목록</a>
+</body>
+</html>

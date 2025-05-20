@@ -9,6 +9,7 @@ import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
 import pit.pet.Group.entity.MemberStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,30 @@ public class GroupMemberService {
     /**
      * ✅ 가입 요청 승인 / 거부 (리더만 가능)
      */
+
+    public List<GroupMemberTable> getWaitingMembers(Long gno) {
+        return groupMemberRepository.findByGroupTable_GnoAndState(gno, MemberStatus.WAIT);
+    }
+    /**
+     * ✅ 현재 로그인 유저의 강아지들 중 그룹 리더인지 판단
+     */
+    public Long getLeaderGmno(Long gno, List<Dog> myDogs) {
+        GroupTable group = groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+
+        for (Dog dog : myDogs) {
+            Optional<GroupMemberTable> memberOpt = groupMemberRepository.findByGroupTableAndDog(group, dog);
+            if (memberOpt.isPresent()) {
+                Long gmno = memberOpt.get().getGmno();
+                if (group.getGleader().equals(gmno)) {
+                    return gmno; // ✅ 리더 맞음
+                }
+            }
+        }
+
+        throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다.");
+    }
+
     public void handleJoinRequest(Long gmno, MemberStatus status, Long leaderGmno) {
         GroupMemberTable member = groupMemberRepository.findById(gmno)
                 .orElseThrow(() -> new RuntimeException("가입 요청 멤버가 존재하지 않습니다."));

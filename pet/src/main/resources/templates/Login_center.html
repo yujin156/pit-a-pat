@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div class="wrap" th:fragment="login"  sec:authorize="isAuthenticated()">
+<div class="wrap" th:fragment="login">
     <!--///////// 로그인 전 ///////// -->
     <div class="BWrap" sec:authorize="!isAuthenticated()">
         <h3>LOGIN</h3>
