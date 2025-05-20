@@ -47,7 +47,7 @@ public class GroupMemberService {
         GroupTable group = member.getGroupTable();
 
         // 리더 권한 확인
-        if (!group.getG_leader().equals(leaderGmno)) {
+        if (!group.getGleader().equals(leaderGmno)) {
             throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다.");
         }
 
@@ -56,7 +56,7 @@ public class GroupMemberService {
             if (status == MemberStatus.ACCEPTED) {
                 if (member.getState() != MemberStatus.ACCEPTED) {
                     member.setState(MemberStatus.ACCEPTED);
-                    group.setG_membercount(group.getG_membercount() + 1);
+                    group.setGmembercount(group.getGmembercount() + 1);
                     groupRepository.save(group);
                 }
                 groupMemberRepository.save(member);
@@ -81,7 +81,7 @@ public class GroupMemberService {
 
         // 승인 상태였다면 인원수 차감
         if (member.getState() == MemberStatus.ACCEPTED) {
-            group.setG_membercount(group.getG_membercount() - 1);
+            group.setGmembercount(group.getGmembercount() - 1);
             groupRepository.save(group);
         }
 
