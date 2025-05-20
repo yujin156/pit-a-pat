@@ -114,9 +114,10 @@
         <div class="u_name" th:text="${uname}">UserName님</div>
 
         <div class="divider"></div>
-
+        <p th:text="'강아지 수: ' + ${dogs.size()}">강아지 수: 0</p>
         <div class="pet_statuses" th:each="dog : ${dogs}">
-            <span class="status_label" th:text="${dog.dname}"></span>
+
+            <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
             <div class="pet_status"></div>
         </div>
 

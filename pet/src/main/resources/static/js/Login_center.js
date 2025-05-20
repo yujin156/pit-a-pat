@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // 프로필 초기 렌더링
-    const profilesGrid = document.querySelector('.profiles_grid');
-    if (profilesGrid) renderProfilesGrid();
-
-    const petStatusesContainer = document.querySelector('.pet_statuses');
-    if (petStatusesContainer) renderPetStatuses();
+    // const profilesGrid = document.querySelector('.profiles_grid');
+    // if (profilesGrid) renderProfilesGrid();
+    //
+    // const petStatusesContainer = document.querySelector('.pet_statuses');
+    // if (petStatusesContainer) renderPetStatuses();
 
     // 프로필 그리드 렌더링 함수
     function renderProfilesGrid() {
