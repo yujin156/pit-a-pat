@@ -13,7 +13,7 @@
 <body>
 
 <div th:insert="~{Side_menu :: sidebar}" ></div>
-<div th:insert="~{Login_center :: login}" ></div>
+<div th:insert="~{Login_center :: login }" ></div>
 <div class="content">
     <!--    메인배너    -->
     <div class="main-banner">
@@ -108,12 +108,8 @@
 </div>
 
 <footer></footer>
-<script  src="../static/js/Home.js" defer></script>
-
-  <!--성현-->
 <script th:src="@{/js/Home.js}" defer></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
-
 </body>
 </html>

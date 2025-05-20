@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +34,7 @@ public class MainController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final DogRepository dogRepository;
 
 
     // ────────────────────────────────────────────────────────────
@@ -34,16 +42,37 @@ public class MainController {
     //    • Home.html 에 로그인 폼 프래그먼트(Login_center)와 사이드 메뉴( Side_menu )를 포함
     //    • error 가 있을 때 Model 에 담아주면, 뷰에서 에러 메시지 표시
     // ────────────────────────────────────────────────────────────
-    @GetMapping({ "", "login" })
+    @GetMapping({"/", "/login"})
     public String mainPage(
             @RequestParam(value = "error", required = false) String error,
+            @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
+        // 1) principal이 null이 아닐 때만
+        if (principal != null) {
+            // 2) 로그인한 유저 엔티티 조회
+            String email = principal.getUsername();
+            User me = userRepository.findByUemail(email)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException("User not found: " + email));
+
+            // 3) 그 유저의 강아지 리스트만 조회
+            List<Dog> myDogs = dogRepository.findByOwner(me);
+            model.addAttribute("dogs", myDogs);
+
+            // (선택) 사용자 이름도 넘겨주면 뷰에서 편하게 쓸 수 있습니다
+            model.addAttribute("uname", me.getUname());
+        } else {
+            // 비로그인 상태인 경우 빈 리스트라도 넘겨주면 Thymeleaf 오류 방지
+            model.addAttribute("dogs", Collections.emptyList());
+        }
+
         if (error != null) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
-        return "Home";   // src/main/resources/templates/Home.html
+        return "Home";
     }
+
 
     // ────────────────────────────────────────────────────────────
     // 2) 로그인 처리 POST
