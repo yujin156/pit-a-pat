@@ -110,10 +110,23 @@ public class GroupController {
     }
 
     // ✅ 멤버 탈퇴
-    @DeleteMapping("/members/{gmno}/withdraw")
+    @GetMapping("/mygroups")
+    public String myGroups(@AuthenticationPrincipal UserDetails principal,
+                           Model model) {
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+
+        List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
+
+        model.addAttribute("myMemberships", myMemberships);
+        return "group/mygroups";
+    }
+
+    @PostMapping("/members/{gmno}/withdraw")
     public String withdraw(@PathVariable Long gmno,
                            @RequestParam Long requesterGmno) {
         groupMemberService.withdraw(gmno, requesterGmno);
-        return "redirect:/groups/list";
+        return "redirect:/groups/mygroups";
     }
 }

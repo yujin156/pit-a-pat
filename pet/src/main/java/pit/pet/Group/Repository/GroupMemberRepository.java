@@ -17,4 +17,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMemberTable, L
     List<GroupMemberTable> findByGroupTable_GnoAndState(Long gno, MemberStatus state);
 
     Optional<GroupMemberTable> findByGroupTableAndDog(GroupTable group, Dog dog);
+
+    List<GroupMemberTable> findByDogIn(List<Dog> dogs);
 }

@@ -46,6 +46,10 @@ public class GroupMemberService {
     public List<GroupMemberTable> getWaitingMembers(Long gno) {
         return groupMemberRepository.findByGroupTable_GnoAndState(gno, MemberStatus.WAIT);
     }
+    public List<GroupMemberTable> findByDogs(List<Dog> dogs) {
+        return groupMemberRepository.findByDogIn(dogs);
+    }
+
     /**
      * ✅ 현재 로그인 유저의 강아지들 중 그룹 리더인지 판단
      */
@@ -104,12 +108,19 @@ public class GroupMemberService {
                 .orElseThrow(() -> new RuntimeException("멤버 정보가 없습니다."));
         GroupTable group = member.getGroupTable();
 
-        // 승인 상태였다면 인원수 차감
-        if (member.getState() == MemberStatus.ACCEPTED) {
-            group.setGmembercount(group.getGmembercount() - 1);
-            groupRepository.save(group);
-        }
+        boolean wasAccepted = member.getState() == MemberStatus.ACCEPTED;
 
-        groupMemberRepository.delete(member);
+        groupMemberRepository.delete(member); // ✅ 먼저 멤버 삭제
+
+        if (wasAccepted) {
+            group.setGmembercount(group.getGmembercount() - 1);
+
+            if (group.getGmembercount() == 0) {
+                // ✅ 마지막 멤버였으면 그룹도 삭제
+                groupRepository.delete(group);
+            } else {
+                groupRepository.save(group);
+            }
+        }
     }
 }
