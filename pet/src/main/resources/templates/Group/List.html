@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>그룹 목록</title>
+</head>
+<body>
+<h1>전체 그룹 목록</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>그룹명</th>
+        <th>멤버 수</th>
+        <th>리더 ID</th>
+        <th>가입</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="group : ${groupList}">
+        <td th:text="${group.gname}">그룹명</td>
+        <td th:text="${group.gmembercount}">0</td>
+        <td th:text="${group.gleader}">리더 ID</td>
+        <td>
+            <a th:href="@{'/groups/' + ${group.gno} + '/apply'}">가입하기</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/groups/create}">← 그룹 만들기</a>
+</body>
+</html>

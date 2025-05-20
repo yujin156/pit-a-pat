@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>내 그룹 목록</title></head>
+<body>
+<h1>내가 가입한 그룹 목록</h1>
+
+<table border="1">
+    <thead>
+    <tr><th>그룹명</th><th>상태</th><th>탈퇴</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="membership : ${myMemberships}">
+        <td th:text="${membership.groupTable.gname}">그룹명</td>
+        <td th:text="${membership.state}">상태</td>
+        <td>
+            <!-- ✅ 탈퇴 버튼 form -->
+            <form th:action="@{'/groups/members/' + ${membership.gmno} + '/withdraw'}"
+                  method="post">
+                <input type="hidden" name="requesterGmno" th:value="${membership.gmno}" />
+                <button type="submit">탈퇴</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/groups/list}">← 그룹 목록</a>
+</body>
+</html>
