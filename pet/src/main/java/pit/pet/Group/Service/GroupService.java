@@ -1,5 +1,6 @@
 package pit.pet.Group.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pit.pet.Account.User.Dog;
@@ -8,6 +9,8 @@ import pit.pet.Group.Repository.GroupRepository;
 import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
 import pit.pet.Group.entity.MemberStatus;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,11 +24,14 @@ public class GroupService {
      * - 생성자도 그룹 멤버로 등록 + 상태는 ACCEPTED
      * - 생성자의 gmno를 그룹의 g_leader로 설정
      */
+    @Transactional
     public GroupTable createGroup(String gname, Dog dog) {
         // 1. 그룹 객체 생성
         GroupTable group = new GroupTable();
         group.setGname(gname);
         group.setGmembercount(1); // 생성자 포함 1명
+
+        group.setDog(dog);
 
         // 2. 일단 그룹 저장 (gno 생성)
         groupRepository.save(group);
@@ -50,5 +56,28 @@ public class GroupService {
     public GroupTable findGroup(Long gno) {
         return groupRepository.findById(gno)
                 .orElseThrow(() -> new RuntimeException("해당 그룹이 존재하지 않습니다."));
+    }
+
+    public List<GroupTable> getAllGroups() {
+        return groupRepository.findAll();
+    }
+
+    public void changeLeader(Long gno, Long currentLeaderGmno, Long newLeaderGmno) {
+        GroupTable group = groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+
+        if (!group.getGleader().equals(currentLeaderGmno)) {
+            throw new RuntimeException("리더만 권한을 위임할 수 있습니다.");
+        }
+
+        GroupMemberTable newLeader = groupMemberRepository.findById(newLeaderGmno)
+                .orElseThrow(() -> new RuntimeException("대상 멤버가 존재하지 않습니다."));
+
+        if (!newLeader.getGroupTable().equals(group)) {
+            throw new RuntimeException("같은 그룹 소속이 아닙니다.");
+        }
+
+        group.setGleader(newLeaderGmno);
+        groupRepository.save(group);
     }
 }

@@ -5,6 +5,12 @@
     z-index: 999;
 }
 
+.before_login_box{
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
 .BWrap{
     width: 280px;
     height: 430px;
@@ -17,7 +23,8 @@
 
      display: flex;
      flex-direction: column;
-     justify-content: space-evenly;
+     /*justify-content: space-evenly;*/
+    gap: 15px;
 
      margin-bottom: 40px;
 }
@@ -28,6 +35,14 @@ h3{
     font-weight: normal;
     color: #212121;
 }
+
+.login_box{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
 /*로그인 이메일, 비밀번호 input*/
 .id, .pw{
     width: 100%;
@@ -49,6 +64,11 @@ h3{
 .login_btn{
     width: 100%;
     height: 40px;
+
+    border: none;
+    font-size: 15px;
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
+    color: #ffffff;
 
     background-color: #387FEB;
     border-radius: 10px;
@@ -76,7 +96,7 @@ h3{
     line-height: 40px;
 }
 
-.singUp_btn > span{
+.singUp_btn > a{
     color: #387FEB;
     font-size: 15px;
 }
