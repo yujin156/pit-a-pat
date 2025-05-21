@@ -1,0 +1,205 @@
+friend_wrap {
+    width: 1460px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/*///////타이틀///////*/
+.friend_title {
+    font-size: 45px;
+    margin: 0;
+    color: #0B0B0B;
+}
+
+.friend_sub_title {
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    color: #B7B7B7;
+}
+
+/*//////검색//////*/
+.friend_input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search_type {
+    width: 180px;
+}
+
+.search_friend {
+    width: 370px;
+}
+
+.search_type,
+.search_friend {
+    height: 37px;
+    font-size: 15px;
+    border: 1px solid #B7B7B7;
+    border-radius: 25px;
+    box-sizing: border-box;
+    outline: none;
+    padding-left: 25px;
+    background-color: #ffffff;
+}
+
+/*//////content//////*/
+.friend_content {
+    width: 100%;
+    min-height: 900px;
+    border-radius: 20px;
+    background-color: #F5F6F8;
+    padding: 25px 30px;
+    box-sizing: border-box;
+}
+
+/* 그리드 컨테이너 기본 스타일 */
+.dog-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+}
+
+/* 검색 결과일 때 (왼쪽 정렬) */
+.dog-grid-container.search-results {
+    justify-content: flex-start;
+}
+
+/* 모든 결과 표시일 때 (간격 균등) */
+.dog-grid-container.all-results {
+    justify-content: center;
+}
+
+/* 카드 래퍼 스타일 */
+.card-wrapper {
+    flex: 0 0 300px; /* 고정 너비 300px, 플렉스 아이템 크기 고정 */
+    margin-bottom: 20px;
+}
+
+/*//////친구 강아지 카드//////*/
+.friend_dog_card {
+    width: 300px;
+    height: 400px;
+    border-radius: 30px;
+    background-color: #ffffff;
+    padding: 30px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.friend_dog_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.f_dog_card_cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    transform: translateY(-25px);
+}
+
+.f_dog_hbtn {
+    transform: translateX(98%);
+    cursor: pointer;
+}
+
+.f_dog_img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #387FEB;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.f_dog_name {
+    font-size: 25px;
+    margin: 0;
+}
+
+.f_dog_group {
+    border: 1px solid #387FEB;
+    color: #387FEB;
+    font-size: 15px;
+    padding: 7px 25px;
+    border-radius: 35px;
+}
+
+.dog_keyword_row {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.dog_keyword {
+    border: 1px solid #B7B7B7;
+    color: #B7B7B7;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 35px;
+}
+
+/* 반응형 처리 */
+@media screen and (max-width: 1500px) {
+    .friend_wrap {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .dog-grid-container > div {
+        width: calc(33.333% - 20px);
+    }
+
+    .card-wrapper {
+        flex: 0 0 calc(33.333% - 20px); /* 3열 레이아웃 */
+        max-width: calc(33.333% - 20px);
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .dog-grid-container > div {
+        width: calc(50% - 20px);
+    }
+
+    .card-wrapper {
+        flex: 0 0 calc(50% - 20px); /* 2열 레이아웃 */
+        max-width: calc(50% - 20px);
+    }
+
+    .friend_title {
+        font-size: 36px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .dog-grid-container > div {
+        width: 100%;
+    }
+
+    .friend_input {
+        flex-direction: column;
+    }
+
+    .search_friend, .search_type {
+        width: 100%;
+    }
+
+    .card-wrapper {
+        flex: 0 0 100%; /* 1열 레이아웃 */
+        max-width: 100%;
+    }
+
+    .dog-grid-container {
+        gap: 15px; /* 간격 줄이기 */
+    }
+}

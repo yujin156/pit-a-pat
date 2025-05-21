@@ -1,12 +1,43 @@
+/*//////////////////*/
+/*로그인 창 좁아졌을때 사라지는거*/
+.login-panel{
+    opacity: 1;
+}
+@media (max-width: 1024px) {
+    .login-panel{
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+}
+
+/*//////////////////*/
+.layout-container{
+    display: flex;
+}
+.main_content{
+    width: 100%;
+    height: auto;
+    margin-left: 120px;
+    margin-right: 325px;
+
+}
+@media (max-width: 1024px) {
+
+    .main_content{
+        margin-right: 25px;
+    }
+}
+
+/*
 .content {
-    margin-left: 100px;  /* 80 + 20 + 20 */
-    margin-right: 250px; /* 예: 로그인 패널 너비(200) + 25 + 25 */
+    margin-left: 100px;
+    margin-right: 250px;
     padding: 15px;
     width: 1460px;
-}
+}*/
+
 /* 메인 베너 이미지*/
 .main-banner {
-    max-width: 100%;
     width: 100%;
     height: 600px;
 
@@ -66,6 +97,7 @@
 }
 
 /* 반응형 처리 */
+
 @media (max-width: 1024px) {
     .main-banner {
         flex-direction: column;
@@ -123,8 +155,8 @@
 /* //// 우리동네 인기 멍스타 //// */
 /*////////////////////////////*/
 
-.popular-dog {
-    width: 1460px;
+.popular_dog {
+    width: 100%;
     padding: 20px 0;
     overflow: hidden;
 }
@@ -135,109 +167,102 @@
     margin-bottom: 20px;
 }
 
-.dog-slider-wrapper {
-    /*position: relative;*/
-    /*padding: 20px 0;*/
+.slider_outer {
     width: 100%;
-    overflow: hidden;
-    padding: 20px 0;
-}
-
-.dog-slider-track {
-    /*padding-top: 20px;*/
-    /*display: flex;*/
-    /*width: max-content;*/
-    /*animation: slideLoop 30s linear infinite;*/
-    display: flex;
-    width: max-content;
-    animation: scrollSlide 35s linear infinite;
-}
-
-.dog-slider-wrapper:hover .dog-slider-track {
-    animation-play-state: paused;
-}
-
-.p_dog {
-    flex: 0 0 auto;
-    width: 280px;
-    height: 320px;
-    /*margin: 0 10px;*/
-    margin: 16px;
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #387FEB;
-    border-radius: 20px;
-    transition: transform 0.3s ease;
+    height: 400px;
+    margin: 0 auto;
     position: relative;
-
-
+    overflow: hidden;
+}
+.slider_container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: absolute;
+    left: 0;
+    transition: left 0.5s ease; /* 부드러운 전환 효과 */
+}
+/* 강아지 카드 스타일 */
+.p_dog {
+    min-width: 280px;
+    height: 350px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 1px #387FEB;
+    background: white;
+    margin: 25px 10px;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .p_dog:hover {
     transform: scale(1.05);
+    box-shadow: 0 0 1px #387FEB;
     z-index: 10;
+    transition: all 0.5s ease;
 }
 
 .dog_img {
     width: 100%;
-    height: 220px;
-    border-radius: 20px;
+    height: 70%;
     background-size: cover;
     background-position: center;
-    margin-bottom: 10px;
-}
+    background-repeat: no-repeat;
 
-.name_hart,
-.keyword {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    border-radius: 20px;
 }
 
 .name_hart {
-    align-items: center;
-}
-
-.hart_icon {
-    fill: #F5F6F8;
-    stroke: none;
-    cursor: pointer;
-
-    transition: all 0.3s ease;
-}
-
-.hart_icon.active {
-    fill: #EDA9DD;
+    display: flex;
+    padding: 20px 0;
 }
 
 .dog_name {
-    font-size: 20px;
-    color: #212121;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.hart_icon {
+    cursor: pointer;
+}
+
+.hart_icon svg {
+    fill: #F5F6F8;
+    transition: fill 0.3s ease;
+}
+
+.hart_icon.active svg {
+    fill: #EDA9DD;
+}
+
+.keyword {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .white_label, .blue_label {
-    width: 70px;
-    height: 20px;
-    border-radius: 10px;
+    padding: 5px 20px;
+    border-radius: 15px;
     font-size: 10px;
-    text-align: center;
-    line-height: 20px;
 }
 
 .white_label {
-    background-color: #ffffff;
     border: 1px solid #387FEB;
-    color: #387FEB;
+    color: #212121;
 }
 
 .blue_label {
-    background-color: #387FEB;
-    color: #ffffff;
+    background: #387FEB;
+    color: white;
 }
 
-@keyframes scrollSlide {
-    0% {transform: translateX(0);}
-    100% {transform: translateX(-50%);}
+.controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none; /* 인디케이터 숨김 */
 }
 
 @media (max-width: 768px) {
@@ -439,8 +464,3 @@
     line-height: 40px;
 }
 
-footer{
-    width: 100%;
-    height: 80px;
-    background-color: #F4E7F1;
-}
