@@ -92,11 +92,11 @@ public class GroupController {
         List<Dog> myDogs = dogRepository.findByOwner(me);
 
         Long leaderGmno = groupMemberService.getLeaderGmno(gno, myDogs);
-        List<GroupMemberTable> waitingList = groupMemberService.getWaitingMembers(gno);
+        List<GroupMemberTable> members = groupMemberService.getAllMembers(gno);
 
         model.addAttribute("groupId", gno);
         model.addAttribute("leaderGmno", leaderGmno);
-        model.addAttribute("waitingMembers", waitingList);
+        model.addAttribute("members", members);
         return "group/manage";
     }
 
@@ -128,5 +128,13 @@ public class GroupController {
                            @RequestParam Long requesterGmno) {
         groupMemberService.withdraw(gmno, requesterGmno);
         return "redirect:/groups/mygroups";
+    }
+
+    @PostMapping("/{gno}/delegate")
+    public String delegateLeader(@PathVariable Long gno,
+                                 @RequestParam Long newLeaderGmno,
+                                 @RequestParam Long currentLeaderGmno) {
+        groupService.changeLeader(gno, currentLeaderGmno, newLeaderGmno);
+        return "redirect:/groups/list";
     }
 }

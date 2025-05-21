@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>가입 요청 관리</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>가입 요청 관리</title>
+</head>
 <body>
 <h1>가입 요청 승인/거절</h1>
 
 <table border="1">
     <thead>
-    <tr><th>멤버 ID</th><th>강아지 ID</th><th>처리</th></tr>
+    <tr>
+        <th>멤버 ID</th>
+        <th>강아지 ID</th>
+        <th>상태</th>
+        <th>처리</th>
+        <th>리더 위임</th>
+    </tr>
     </thead>
     <tbody>
-    <tr th:each="member : ${waitingMembers}">
+    <tr th:each="member : ${members}">
         <td th:text="${member.gmno}">gmno</td>
-        <td th:text="${member.dog.dno}">dog id</td>
+        <td th:text="${member.dog.dname}">강아지 이름</td>
+        <td th:text="${member.state}">상태</td>
+
+        <!-- 가입 승인/거절 폼 -->
         <td>
-            <form th:action="@{'/groups/' + ${groupId} + '/members/' + ${member.gmno} + '/status'}"
-                  method="post">
+            <form th:action="@{'/groups/' + ${groupId} + '/members/' + ${member.gmno} + '/status'}" method="post">
                 <select name="status">
                     <option value="ACCEPTED">승인</option>
                     <option value="REJECTED">거절</option>
@@ -23,6 +34,24 @@
                 <button type="submit">처리</button>
             </form>
         </td>
+
+        <!-- 리더 여부 표시 -->
+        <td>
+            <span th:if="${member.gmno == leaderGmno}">👑 리더</span>
+            <span th:if="${member.gmno != leaderGmno}">-</span>
+        </td>
+
+        <!-- 리더 위임 폼 (ACCEPTED 상태인 경우만 보여줌) -->
+        <td th:if="${member.state.name() == 'ACCEPTED'}">
+            <form th:action="@{'/groups/' + ${groupId} + '/delegate'}" method="post">
+                <input type="hidden" name="newLeaderGmno" th:value="${member.gmno}" />
+                <input type="hidden" name="currentLeaderGmno" th:value="${leaderGmno}" />
+                <button type="submit">위임</button>
+            </form>
+        </td>
+
+        <!-- 비승인 멤버는 위임 버튼 없음 -->
+        <td th:if="${member.state.name() != 'ACCEPTED'}">-</td>
     </tr>
     </tbody>
 </table>
