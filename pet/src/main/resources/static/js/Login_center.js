@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let pets = [
         {
             name: '쪼꼬',
-            image: './../static/img/Choco.jpg',
+            image: '/img/Choco.jpg',
             status: '산책 중',
             gender: 'male',
             type: '푸들',
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             name: '강군',
-            image: './../static/img/kangKun.JPG',
+            image: '/img/kangKun.JPG',
             status: '으르렁',
             gender: 'male',
             type: '푸들',
@@ -288,11 +288,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
     // 초기 친구 데이터
     let friends = [
-{ id: 1, name: '구름', image: '/../static/img/구름.png', status: '밥 먹는 중' },
-{ id: 2, name: '월이', image: '/../static/img/월이.png', status: '밥 먹는 중' },
-{ id: 3, name: '콩이', image: '/../static/img/콩이.png', status: '밥 먹는 중' },
-{ id: 4, name: '먹보', image: '/../static/img/구름이.png', status: '밥 먹는 중' },
-{ id: 5, name: '또또', image: '/../static/img/또또.png', status: '밥 먹는 중' }
+{ id: 1, name: '구름', image: '/img/구름.png', status: '밥 먹는 중' },
+{ id: 2, name: '월이', image: '/img/월이.png', status: '밥 먹는 중' },
+{ id: 3, name: '콩이', image: '/img/콩이.png', status: '밥 먹는 중' },
+{ id: 4, name: '먹보', image: '/img/구름이.png', status: '밥 먹는 중' },
+{ id: 5, name: '또또', image: '/img/또또.png', status: '밥 먹는 중' }
     ];
 
     // DOM 요소
