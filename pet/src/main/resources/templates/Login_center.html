@@ -14,13 +14,13 @@
     <!--///////// 로그인 전 ///////// -->
     <div class="BWrap" sec:authorize="!isAuthenticated()">
         <h3>LOGIN</h3>
-        <form th:action="@{/login}" method="post">
-            <input class="id" type="email" name="email" required />
-            <input class="pw" type="password" name="password" required />
+        <form th:action="@{/login}" method="post" class="login_box">
+            <input class="id" type="email" name="email" required placeholder="이메일" />
+            <input class="pw" type="password" name="password" required placeholder="비밀번호" />
                 <button type="submit" class="login_btn">로그인</button>
         </form>
         <div class="singUp_btn">
-            <span> <a href="/user/signup">이메일로 회원가입</a></span>
+            <a href="/user/signup">이메일로 회원가입</a>
         </div>
 
         <!--        -->
