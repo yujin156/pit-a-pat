@@ -1,0 +1,31 @@
+.friend_profile_wrap {
+    width: 1460px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/*///////타이틀///////*/
+.friend_profile_title {
+    font-size: 45px;
+    margin: 0;
+    color: #0B0B0B;
+}
+
+.friend_profile_sub_title {
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    color: #B7B7B7;
+}
+
+/*//////content//////*/
+
+.f_profile_container {
+    width: 100%;
+    min-height: 900px;
+    border-radius: 20px;
+    background-color: #F5F6F8;
+    padding: 25px 30px;
+    box-sizing: border-box;
+}
+
+/*//////content//////*/
