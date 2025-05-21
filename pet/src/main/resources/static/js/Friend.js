@@ -1,62 +1,62 @@
 // 강아지 데이터 배열 - 실제 강아지 데이터로 수정하거나 확장할 수 있습니다
-const dogData = [
-    {
-        id: 1,
-        name: "구름",
-        group: "내향적 강아지",
-        keywords: ["수유동", "수컷", "비숑"],
-        image: "path/to/dog1.jpg" // 실제 이미지 경로로 교체하세요
-    },
-    {
-        id: 2,
-        name: "월이",
-        group: "사자가 되지 못한 라이언",
-        keywords: ["서교동", "수컷", "포메"],
-        image: "path/to/dog2.jpg"
-    },
-    {
-        id: 3,
-        name: "콩이",
-        group: "사자가 되지 못한 라이언",
-        keywords: ["정자동", "암컷", "포메"],
-        image: "path/to/dog3.jpg"
-    },
-    {
-        id: 4,
-        name: "또또",
-        group: "내향적 강아지",
-        keywords: ["상도동", "암컷", "푸들"],
-        image: "path/to/dog4.jpg"
-    },
-    {
-        id: 5,
-        name: "구름",
-        group: "행복 산책 3시간",
-        keywords: ["동백동", "암컷", "시골잡종"],
-        image: "path/to/dog5.jpg"
-    },
-    {
-        id: 6,
-        name: "베리",
-        group: "털 속성 강아지",
-        keywords: ["서초동", "수컷", "골든리트리버"],
-        image: "path/to/dog6.jpg"
-    },
-    {
-        id: 7,
-        name: "체리",
-        group: "장난감 부서",
-        keywords: ["부평동", "암컷", "리트리버"],
-        image: "path/to/dog7.jpg"
-    },
-    {
-        id: 8,
-        name: "송송",
-        group: "다리가 짧아",
-        keywords: ["철산동", "암컷", "웰시코기"],
-        image: "path/to/dog8.jpg"
-    }
-];
+// const dogData = [
+//     {
+//         id: 1,
+//         name: "구름",
+//         group: "내향적 강아지",
+//         keywords: ["수유동", "수컷", "비숑"],
+//         image: "path/to/dog1.jpg" // 실제 이미지 경로로 교체하세요
+//     },
+//     {
+//         id: 2,
+//         name: "월이",
+//         group: "사자가 되지 못한 라이언",
+//         keywords: ["서교동", "수컷", "포메"],
+//         image: "path/to/dog2.jpg"
+//     },
+//     {
+//         id: 3,
+//         name: "콩이",
+//         group: "사자가 되지 못한 라이언",
+//         keywords: ["정자동", "암컷", "포메"],
+//         image: "path/to/dog3.jpg"
+//     },
+//     {
+//         id: 4,
+//         name: "또또",
+//         group: "내향적 강아지",
+//         keywords: ["상도동", "암컷", "푸들"],
+//         image: "path/to/dog4.jpg"
+//     },
+//     {
+//         id: 5,
+//         name: "구름",
+//         group: "행복 산책 3시간",
+//         keywords: ["동백동", "암컷", "시골잡종"],
+//         image: "path/to/dog5.jpg"
+//     },
+//     {
+//         id: 6,
+//         name: "베리",
+//         group: "털 속성 강아지",
+//         keywords: ["서초동", "수컷", "골든리트리버"],
+//         image: "path/to/dog6.jpg"
+//     },
+//     {
+//         id: 7,
+//         name: "체리",
+//         group: "장난감 부서",
+//         keywords: ["부평동", "암컷", "리트리버"],
+//         image: "path/to/dog7.jpg"
+//     },
+//     {
+//         id: 8,
+//         name: "송송",
+//         group: "다리가 짧아",
+//         keywords: ["철산동", "암컷", "웰시코기"],
+//         image: "path/to/dog8.jpg"
+//     }
+// ];
 
 // 강아지 카드 HTML을 생성하는 함수
 function createDogCard(dog) {

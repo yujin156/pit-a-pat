@@ -15,14 +15,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pit.pet.Account.Repository.DogProfileRepository;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.User.Address;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.DogProfile;
 import pit.pet.Account.User.User;
+import pit.pet.Api.SgisRegionService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,7 +31,7 @@ public class DogFriendController {
     private final FriendService      friendService;
     private final DogRepository      dogRepo;
     private final UserRepository     userRepo;
-
+    private final SgisRegionService sgisRegionService;
     /** ① 신청 폼 **/
     @GetMapping("/request")
     public String requestForm(Model model,
@@ -89,33 +88,45 @@ public class DogFriendController {
 
     /** ⑥ 내 친구 목록 보기(원하시면) **/
     @GetMapping("/list")
-    public String listFriends(Model model,
-                              @AuthenticationPrincipal UserDetails principal,
-                              RedirectAttributes redirectAttrs) {
-        // 1) principal 이 null 이면 → 로그인 안 된 상태
+    public String listFriends(
+            @RequestParam(value = "dogId", required = false) Long dogId,
+            Model model,
+            @AuthenticationPrincipal UserDetails principal,
+            RedirectAttributes redirectAttrs) {
+
         if (principal == null) {
             redirectAttrs.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
             return "redirect:/";
         }
 
-        // 2) 로그인 된 경우 기존 로직
         User me = userRepo.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         List<Dog> myDogs = dogRepo.findByOwner(me);
-        if (!myDogs.isEmpty()) {
-            Dog selectedDog  = myDogs.get(0);
-            Long  myDogDno   = selectedDog.getDno();
-            String myDogName = selectedDog.getDname();
 
-            List<Dog> friends = friendService.getFriends(myDogDno);
-
-            model.addAttribute("myDogName", myDogName);
-            model.addAttribute("friends",    friends);
-        } else {
-            model.addAttribute("myDogName", null);
-            model.addAttribute("friends",   Collections.emptyList());
+        if (dogId == null && !myDogs.isEmpty()) {
+            dogId = myDogs.get(0).getDno();
         }
-        return "Friend/list";
+
+        List<Dog> friends = dogId != null ? friendService.getFriends(dogId) : Collections.emptyList();
+
+        // 친구별 주소 이름 매핑
+        Map<Long, String> friendAddressMap = new HashMap<>();
+        for (Dog friend : friends) {
+            Address addr = friend.getOwner().getAddress();
+            String fullAddress = sgisRegionService.getFullAddress(
+                    addr.getCity(), addr.getCounty(), addr.getTown()
+            );
+            friendAddressMap.put(friend.getDno(), fullAddress);
+        }
+
+        model.addAttribute("myDogs", myDogs);
+        model.addAttribute("selectedDogId", dogId);
+        model.addAttribute("friends", friends);
+        model.addAttribute("friendAddressMap", friendAddressMap);  // 추가된 부분
+
+        return "Friend/Friend";
     }
+
+
 }

@@ -10,14 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pit.pet.Account.Repository.DogRepository;
-import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Repository.*;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
@@ -35,7 +31,6 @@ public class MainController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final DogRepository dogRepository;
-
 
     // ────────────────────────────────────────────────────────────
     // 1) 메인 페이지 GET
