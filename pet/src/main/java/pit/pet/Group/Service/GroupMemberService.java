@@ -96,6 +96,11 @@ public class GroupMemberService {
         }
     }
 
+    public List<GroupMemberTable> getAllMembers(Long gno) {
+        return groupMemberRepository.findByGroupTable_Gno(gno);
+    }
+
+
     /**
      * ✅ 멤버 탈퇴 (본인만 가능)
      */

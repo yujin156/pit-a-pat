@@ -62,4 +62,22 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
+    public void changeLeader(Long gno, Long currentLeaderGmno, Long newLeaderGmno) {
+        GroupTable group = groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+
+        if (!group.getGleader().equals(currentLeaderGmno)) {
+            throw new RuntimeException("리더만 권한을 위임할 수 있습니다.");
+        }
+
+        GroupMemberTable newLeader = groupMemberRepository.findById(newLeaderGmno)
+                .orElseThrow(() -> new RuntimeException("대상 멤버가 존재하지 않습니다."));
+
+        if (!newLeader.getGroupTable().equals(group)) {
+            throw new RuntimeException("같은 그룹 소속이 아닙니다.");
+        }
+
+        group.setGleader(newLeaderGmno);
+        groupRepository.save(group);
+    }
 }
