@@ -95,7 +95,7 @@ public class DogFriendController {
         // 1) principal 이 null 이면 → 로그인 안 된 상태
         if (principal == null) {
             redirectAttrs.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
-            return "redirect:/user/login";
+            return "redirect:/";
         }
 
         // 2) 로그인 된 경우 기존 로직

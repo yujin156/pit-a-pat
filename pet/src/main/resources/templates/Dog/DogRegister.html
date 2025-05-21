@@ -1,4 +1,3 @@
-
 <!-- Dog/register.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
@@ -50,14 +49,14 @@
   <label>성격 키워드:
     <div th:each="k : ${keyword1List}">
       <input type="checkbox" th:field="*{keyword1Ids}" th:value="${k.dkno}" />
-      <label th:text="${k.k_tag}" />
+      <label th:text="${k.dktag}" />
     </div>
   </label><br/>
 
   <label>습관 키워드:
     <div th:each="k : ${keyword2List}">
-      <input type="checkbox" th:field="*{keyword2Ids}" th:value="${k.dkdno}" />
-      <label th:text="${k.kb_tag}" />
+      <input type="checkbox" th:field="*{keyword2Ids}" th:value="${k.dkbtag}" />
+      <label th:text="${k.dkbtag}" />
     </div>
   </label><br/>
 
