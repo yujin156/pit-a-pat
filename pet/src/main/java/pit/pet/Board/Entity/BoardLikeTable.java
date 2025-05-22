@@ -10,14 +10,16 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "boardLikeTable")
 public class BoardLikeTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer blikeno;
+    @Column(name = "blikeno")
+    private Long blikeno;
 
     @ManyToOne
-    @JoinColumn(name = "bno")
+    @JoinColumn(name = "bno", nullable = false)
     private BoardTable board;
 
     @ManyToOne

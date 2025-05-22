@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <link rel="stylesheet" th:href="@{/css/boardCSS/boardDetail.css}">
+  <script th:src="@{/js/boardJS/boardDetail.js}" defer></script>
+</head>
+<body>
+<div class="board-detail-container">
+
+  <div th:if="${errorMessage}" class="error-box">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+  </div>
+
+  <!-- 게시글 헤더 -->
+  <div class="board-header">
+    <img th:src="@{'/dog/profile/' + ${board.writerdog.dno}}" alt="프로필 이미지" />
+    <span th:text="${board.writerdog.dname}">Dog_writer</span>
+  </div>
+
+  <!-- 게시글 이미지 -->
+  <div class="board-images">
+    <div th:each="img : ${board.images}">
+      <img th:src="@{${img.biurl}}" alt="첨부 이미지" class="board-image"/>
+    </div>
+  </div>
+
+  <!-- 좋아요 & 북마크 -->
+  <div class="board-actions">
+    <button onclick="toggleLike([[${board.bno}]])">❤️ 좋아요</button>
+    <button onclick="toggleBookmark([[${board.bno}]])">📌 북마크</button>
+    <span>♥ <span th:text="${board.blikecount}">0</span></span>
+    <span>💬 <span th:text="${commentList.size()}">0</span></span>
+  </div>
+
+  <!-- 게시글 설명 -->
+  <div class="board-description">
+    <p th:text="${board.bcontent}" style="white-space: pre-line;"></p>
+  </div>
+
+  <div th:if="${loginDog != null and loginDog.dno.equals(board.writerdog.dno)}" class="board-manage-buttons">
+    <a th:href="@{'/board/edit/' + ${board.bno}}" class="edit-button">✏ 수정</a>
+    <form th:action="@{'/board/delete'}" method="post">
+      <input type="hidden" name="bno" th:value="${board.bno}" />
+      <button type="submit" class="delete-button">🗑 삭제</button>
+    </form>
+  </div>
+
+  <hr/>
+
+  <!-- 댓글 리스트 -->
+  <div class="comment-list">
+    <h3>댓글</h3>
+    <div th:each="comment : ${commentList}" class="comment-item">
+      <strong th:text="${comment.dog.dname}">댓글작성자</strong>
+      <span th:id="'comment-content-' + ${comment.bcno}" th:text="${comment.bccomment}">댓글 내용</span>
+      <span class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>
+
+      <!-- 수정/삭제 권한: 작성자만 가능 -->
+      <span th:if="${loginDog != null and comment.dog.dno == loginDog.dno}">
+    <button type="button" th:onclick="'showEdit(' + ${comment.bcno} + ')'">수정</button>
+
+        <!-- 삭제 -->
+    <form th:action="@{'/board/comment/' + ${comment.bcno} + '/delete'}" method="post" style="display:inline;">
+      <input type="hidden" name="bno" th:value="${board.bno}" />
+      <input type="hidden" name="dno" th:value="${loginDog.dno}" />
+      <button type="submit">삭제</button>
+    </form>
+  </span>
+
+      <!-- 댓글 수정 폼 (JS로 토글) -->
+      <form th:id="'edit-form-' + ${comment.bcno}"
+            th:action="@{'/board/comment/' + ${comment.bcno} + '/edit'}"
+            method="post"
+            style="display:none; margin-top: 10px;">
+        <input type="hidden" name="bno" th:value="${board.bno}" />
+        <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
+        <input type="text" name="bccomment" th:value="${comment.bccomment}" />
+        <button type="submit">수정 완료</button>
+      </form>
+    </div>
+
+  <hr/>
+
+  <!-- 댓글 작성 -->
+  <div class="comment-form">
+    <form th:action="@{/board/comment/create}" method="post">
+      <input type="hidden" name="bno" th:value="${board.bno}" />
+      <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
+      <textarea name="bccontent" placeholder="댓글을 입력하세요..." required></textarea>
+      <button type="submit">댓글 작성</button>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>
