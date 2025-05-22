@@ -13,6 +13,7 @@ import pit.pet.Account.Repository.SpeciesRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
+import pit.pet.Account.User.DogSize;
 
 import java.security.Principal;
 
@@ -31,7 +32,7 @@ public class DogController {
 
     @GetMapping("/register")
     public String showDogRegisterForm(Model model) {
-        model.addAttribute("dogRegisterRequest", new DogRegisterRequest());
+        model.addAttribute("dogRegisterRequest", new DogRegisterRequest()); 
         model.addAttribute("speciesList", speciesRepository.findAll());
         model.addAttribute("keyword1List", keyword1Repository.findAll());
         model.addAttribute("keyword2List", keyword2Repository.findAll());

@@ -41,6 +41,7 @@ public class DogService {
         Dog dog = new Dog();
         dog.setDname(request.getName());
         dog.setUgender(Gender.fromUserLabel(request.getGender()));
+        dog.setSize(DogSize.valueOf(request.getSize()));
         dog.setDBday(request.getBirthday());
         dog.setDintro(request.getIntro());
         dog.setOwner(user);

@@ -39,7 +39,9 @@ public class Dog {
     @JoinColumn(name = "species_id")
     private Species species;
 
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "d_size", nullable = false)
+    private DogSize size;
 
     // ✅ 키워드 연결 (다대다)
     @ManyToMany
