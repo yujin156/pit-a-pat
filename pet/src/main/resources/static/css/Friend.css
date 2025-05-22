@@ -1,6 +1,7 @@
 .friend_wrap {
     width: 1460px;
     margin: 30px auto;
+    /*합칠시 마진 auto 변경*/
     padding: 0 20px;
 }
 
