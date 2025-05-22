@@ -21,6 +21,8 @@ public class DogRegisterRequest {
     private String intro;
 
     private Long speciesId;
+    private String size;
+
     private List<Long> keyword1Ids;
     private List<Long> keyword2Ids;
 

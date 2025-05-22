@@ -16,12 +16,15 @@ public class Dogimg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dino;
 
+    @Column(name="di_title",nullable = false)
+    private String dititle;
+
     @OneToOne
-    @JoinColumn(name = "dno", nullable = false)
+    @JoinColumn(name = "dno", nullable = false, unique = true)
     private Dog dog;
 
     @Column(name = "di_url", nullable = false)
-    private String di_url;
+    private String diurl;
 
     @CreationTimestamp
     @Column(name = "di_uploaded_at", nullable = false)

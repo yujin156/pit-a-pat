@@ -30,6 +30,14 @@
     </select>
   </label><br/>
 
+  <label>크기:
+    <select th:field="*{size}" required>
+      <option value="LARGE">대형견</option>
+      <option value="MEDIUM">중형견</option>
+      <option value="SMALL">소형견</option>
+    </select>
+  </label>
+
   <label>생일:
     <input type="date" th:field="*{birthday}" required />
   </label><br/>

@@ -36,13 +36,19 @@ public class DogFriendController {
     @GetMapping("/request")
     public String requestForm(Model model,
                               @AuthenticationPrincipal UserDetails principal) {
-        User me      = userRepo.findByUemail(principal.getUsername())
-                .orElseThrow();
-        List<Dog> myDogs  = dogRepo.findByOwner(me);
-        List<Dog> allDogs = dogRepo.findAll();
+        User me = userRepo.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        model.addAttribute("myDogs",  myDogs);
-        model.addAttribute("allDogs", allDogs);
+        // 1) 내 강아지 목록
+        List<Dog> myDogs = dogRepo.findByOwner(me);
+
+        // 2) 전체 강아지 목록 중 내 강아지 제외
+        List<Dog> otherDogs = dogRepo.findAll().stream()
+                .filter(dog -> !dog.getOwner().getUno().equals(me.getUno()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("myDogs", myDogs);
+        model.addAttribute("otherDogs", otherDogs);
         return "Friend/FriendRequest";
     }
 

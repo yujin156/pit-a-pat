@@ -39,7 +39,9 @@ public class Dog {
     @JoinColumn(name = "species_id")
     private Species species;
 
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "d_size", nullable = false)
+    private DogSize size;
 
     // ✅ 키워드 연결 (다대다)
     @ManyToMany
@@ -57,4 +59,7 @@ public class Dog {
             inverseJoinColumns = @JoinColumn(name = "keyword2_id")
     )
     private List<DogKeyword2> keywords2 = new ArrayList<>();
+
+    @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Dogimg image;
 }
