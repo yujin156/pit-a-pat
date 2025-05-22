@@ -1,10 +1,42 @@
-.friend_wrap {
-    width: 1460px;
-    margin: 30px auto;
-    /*합칠시 마진 auto 변경*/
-    padding: 0 20px;
+/*합칠떄 봐야하는거*/
+
+.login-panel{
+    opacity: 1;
+}
+@media (max-width: 1024px) {
+    .login-panel{
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+}
+.layout-container{
+    display: flex;
+}
+.main_content{
+    width: 100%;
+    height: auto;
+    margin-left: 120px;
+    margin-right: 325px;
+
+}
+@media (max-width: 1024px) {
+
+    .main_content{
+        margin-right: 25px;
+    }
 }
 
+/*//////////////////*/
+/*//////////////////*/
+
+.friend_wrap {
+    width: 100%;
+    height: auto;
+    margin-left: 120px;
+    margin-right: 325px;
+}
+
+/*//////////////////*/
 /*///////타이틀///////*/
 .friend_title {
     font-size: 45px;
