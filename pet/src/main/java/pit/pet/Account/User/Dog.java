@@ -59,4 +59,7 @@ public class Dog {
             inverseJoinColumns = @JoinColumn(name = "keyword2_id")
     )
     private List<DogKeyword2> keywords2 = new ArrayList<>();
+
+    @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Dogimg image;
 }

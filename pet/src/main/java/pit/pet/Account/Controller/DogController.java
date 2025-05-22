@@ -32,7 +32,7 @@ public class DogController {
 
     @GetMapping("/register")
     public String showDogRegisterForm(Model model) {
-        model.addAttribute("dogRegisterRequest", new DogRegisterRequest()); 
+        model.addAttribute("dogRegisterRequest", new DogRegisterRequest());
         model.addAttribute("speciesList", speciesRepository.findAll());
         model.addAttribute("keyword1List", keyword1Repository.findAll());
         model.addAttribute("keyword2List", keyword2Repository.findAll());
