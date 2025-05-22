@@ -294,7 +294,8 @@
     max-width: 100%;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+    /* 560px에서 400px로 줄여서 더 작은 화면에서도 표시되도록 수정 */
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
 }
 
@@ -323,8 +324,8 @@
 }
 
 .groupImg {
-    width: 250px;
-    height: 180px;
+    width: 200px;  /* 250px에서 200px로 줄임 */
+    height: 150px; /* 180px에서 150px로 줄임 */
     border-radius: 10px;
     background-size: cover;
     background-position: center;
@@ -341,7 +342,7 @@
 }
 
 .g_title {
-    font-size: 20px;
+    font-size: 18px;  /* 20px에서 18px로 줄임 */
     margin-bottom: 5px;
     color: #212121;
     display: flex;
@@ -356,7 +357,7 @@
 }
 
 .g_sub_title {
-    font-size: 14px;
+    font-size: 13px;  /* 14px에서 13px로 줄임 */
     color: #B7B7B7;
     margin-bottom: 15px;
 }
@@ -371,18 +372,18 @@
 .g_city {
     background-color: #F4E7F1;
     color: #212121;
-    padding: 5px 12px;
+    padding: 4px 10px;  /* 5px 12px에서 줄임 */
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;    /* 12px에서 11px로 줄임 */
     font-weight: 500;
 }
 
 .g_label {
     background-color: #e0e9ff;
     color: #212121;
-    padding: 5px 12px;
+    padding: 4px 10px;  /* 5px 12px에서 줄임 */
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;    /* 12px에서 11px로 줄임 */
     font-weight: 500;
 }
 
@@ -392,26 +393,26 @@
 }
 
 .member1 {
-    width: 30px;
-    height: 30px;
+    width: 28px;        /* 30px에서 28px로 줄임 */
+    height: 28px;       /* 30px에서 28px로 줄임 */
     border-radius: 50%;
     background-color: #F4E7F1;
     border: 2px solid white;
-    margin-right: -10px;
+    margin-right: -8px; /* -10px에서 -8px로 줄임 */
     background-size: cover;
     background-position: center;
 }
 
 .more-members {
-    width: 30px;
-    height: 30px;
+    width: 28px;        /* 30px에서 28px로 줄임 */
+    height: 28px;       /* 30px에서 28px로 줄임 */
     border-radius: 50%;
     background-color: #f0f0f0;
     border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;    /* 14px에서 12px로 줄임 */
     color: #666;
 }
 
@@ -420,14 +421,20 @@
     right: 0;
     bottom: 0;
     color: #4a7dff;
-    font-size: 14px;
+    font-size: 13px;    /* 14px에서 13px로 줄임 */
     font-weight: 600;
 }
 
-/* 반응형 스타일 */
+/* 반응형 스타일 개선 */
+@media (max-width: 1200px) {
+    .dog_group {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
-    .container {
-        grid-template-columns: 1fr;
+    .dog_group {
+        grid-template-columns: 1fr;  /* 작은 화면에서는 1열로 */
     }
 
     .group1 {
@@ -450,10 +457,23 @@
     }
 }
 
+@media (max-width: 480px) {
+    .dog_group {
+        gap: 15px;
+    }
+
+    .group1 {
+        padding: 15px;
+    }
+
+    .groupImg {
+        height: 150px;
+    }
+}
+
 .more_group_btn{
     width: 180px;
     height: 40px;
-
     margin: 40px auto;
     padding: 10px;
     background-color: #387FEB;
@@ -462,5 +482,10 @@
     font-size: 15px;
     text-align: center;
     line-height: 40px;
+    cursor: pointer;
 }
 
+.more_group_btn:hover {
+    background-color: #2c6cd6;
+    transition: background-color 0.3s ease;
+}
