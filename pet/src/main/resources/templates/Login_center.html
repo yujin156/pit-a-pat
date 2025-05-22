@@ -135,9 +135,49 @@
                     </g>
                 </svg>
             </div>
-            <span>새로운 가족 추가하기</span>
+            <span><a th:href="@{/dog/register}">새로운 가족 추가하기</a></span>
         </div>
     </div>
+<!--    <div class="modal" id="addFamilyModal">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-txt">-->
+<!--                <h2 class="modal-title">가족 추가하기</h2>-->
+<!--                <p class="modal-subtitle">키워드 추가 및 자세한 설정은 My page에서 가능합니다</p>-->
+<!--            </div>-->
+<!--            <div class="modal_all">-->
+<!--                <div class="modal-left">-->
+<!--                    <div class="image-upload-area" id="imageUploadArea">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" width="29.015" height="29" viewBox="0 0 29.015 29">-->
+<!--                            <path id="upload-image" d="M25.482,17.573A1.381,1.381,0,0,0,24.1,18.955v.525l-2.044-2.044a3.854,3.854,0,0,0-5.428,0l-.967.967-3.426-3.426a3.937,3.937,0,0,0-5.428,0L4.763,17.021V9.286A1.381,1.381,0,0,1,6.144,7.9h9.669a1.381,1.381,0,0,0,0-2.763H6.144A4.144,4.144,0,0,0,2,9.286V25.861A4.144,4.144,0,0,0,6.144,30H22.719a4.144,4.144,0,0,0,4.144-4.144V18.955A1.381,1.381,0,0,0,25.482,17.573ZM6.144,27.242a1.381,1.381,0,0,1-1.381-1.381V20.93l4.006-4.006a1.091,1.091,0,0,1,1.506,0L14.652,21.3h0l5.939,5.939ZM24.1,25.861a1.229,1.229,0,0,1-.249.732l-6.23-6.257.967-.967a1.064,1.064,0,0,1,1.519,0l3.992,4.02ZM30.606,5.542,26.462,1.4a1.428,1.428,0,0,0-1.961,0L20.357,5.542A1.387,1.387,0,0,0,22.319,7.5l1.782-1.8V13.43a1.381,1.381,0,1,0,2.763,0V5.708l1.782,1.8a1.387,1.387,0,1,0,1.961-1.961Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>-->
+<!--                        </svg>-->
+<!--                        <p class="upload-text">강아지 사진 올리기</p>-->
+<!--                    </div>-->
+<!--                    <input type="file" id="fileInput" accept="image/*">-->
+<!--                </div>-->
+<!--                <div class="modal-right">-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="form-group-half">-->
+<!--                            <label for="dogName">Dog Name</label>-->
+<!--                            <input type="text" id="dogName" class="form-control" placeholder="강아지 이름">-->
+<!--                        </div>-->
+<!--                        <div class="form-group-half">-->
+<!--                            <label for="dogGender">Gender</label>-->
+<!--                            <select id="dogGender" class="form-control">-->
+<!--                                <option value="" disabled selected>성별 ▼</option>-->
+<!--                                <option value="male">수컷</option>-->
+<!--                                <option value="female">암컷</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="form-group-half">-->
+<!--                            <label for="dogSurgery">Surgery</label>-->
+<!--                            <select id="dogSurgery" class="form-control">-->
+<!--                                <option value="" disabled selected>중성화 ▼</option>-->
+<!--                                <option value="male">중성화 O</option>-->
+<!--                                <option value="female">중성화 X</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
 
     <!-- 가족 추가 팝업창 - id를 modal로 변경 -->
     <div class="modal" id="modal">
@@ -188,46 +228,55 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Dog Birthday</label>
-                        <div class="select-group">
-                            <select id="birthYear" class="form-control">
-                                <option value="" disabled selected>생년 ▼</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                                <option value="2022">2022</option>
-                                <option value="2021">2021</option>
-                                <option value="2020">2020</option>
-                                <option value="2019">2019</option>
-                                <option value="2018">2018</option>
-                                <option value="2017">2017</option>
-                                <option value="2016">2016</option>
-                                <option value="2015">2015</option>
-                                <option value="2014">2014</option>
-                                <option value="2013">2013</option>
-                                <option value="2012">2012</option>
-                            </select>
-                            <select id="birthMonth" class="form-control">
-                                <option value="" disabled selected>월 ▼</option>
-                            </select>
-                            <select id="birthDay" class="form-control">
-                                <option value="" disabled selected>일 ▼</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="dogType">Dog Type</label>-->
+<!--                        <div class="dog-type-row">-->
+<!--                            <input type="text" id="dogType" class="form-control dog-type-input" placeholder="견종 검색 하기">-->
+<!--                            <button class="search-button">검색</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="form-group">
-                        <label for="dogIntro">Dog Introduction</label>
-                        <textarea id="dogIntro" class="form-control" rows="4" placeholder="강아지 간단 소개 및 주의사항"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="button-group">
-                <button class="form-button btn-cancel" id="cancelButton">닫기</button>
-                <button class="form-button btn-submit" id="addPetButton">다음</button>
-            </div>
-        </div>
-    </div>
+
+<!--                    <div class="form-group">-->
+<!--                        <label>Dog Birthday</label>-->
+<!--                        <div class="select-group">-->
+<!--                            <select id="birthYear" class="form-control">-->
+<!--                                <option value="" disabled selected>생년 ▼</option>-->
+<!--                                <option value="2024">2024</option>-->
+<!--                                <option value="2023">2023</option>-->
+<!--                                <option value="2022">2022</option>-->
+<!--                                <option value="2021">2021</option>-->
+<!--                                <option value="2020">2020</option>-->
+<!--                                <option value="2019">2019</option>-->
+<!--                                <option value="2018">2018</option>-->
+<!--                                <option value="2017">2017</option>-->
+<!--                                <option value="2016">2016</option>-->
+<!--                                <option value="2015">2015</option>-->
+<!--                                <option value="2014">2014</option>-->
+<!--                                <option value="2013">2013</option>-->
+<!--                                <option value="2012">2012</option>-->
+<!--                            </select>-->
+<!--                            <select id="birthMonth" class="form-control">-->
+<!--                                <option value="" disabled selected>월 ▼</option>-->
+<!--                            </select>-->
+<!--                            <select id="birthDay" class="form-control">-->
+<!--                                <option value="" disabled selected>일 ▼</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="form-group">-->
+<!--                        <label for="dogIntro">Dog Introduction</label>-->
+<!--                        <textarea id="dogIntro" class="form-control" rows="4" placeholder="강아지 간단 소개 및 주의사항"></textarea>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="button-group">-->
+<!--                <button class="form-button btn-cancel" id="cancelButton">닫기</button>-->
+<!--                <button class="form-button btn-submit" id="addPetButton">다음</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 
     <!-- 키워드 추가 모달 -->
     <div class="modal" id="keywordModal">
@@ -315,6 +364,7 @@
 </div>
 
 <script th:src="@{/js/Login_center.js}"></script>
+
 
 </body>
 </html>

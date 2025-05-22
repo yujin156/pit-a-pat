@@ -76,6 +76,21 @@ public class SgisRegionService {
                 .toList();
     }
 
+    public String getFullAddress(String cityCode, String countyCode, String townCode){
+        String townName = getNameByCode(countyCode, townCode);         // 읍면동 조회
+
+        return String.format("%s",townName);
+    }
+
+    // 코드로 지역명 조회하는 내부 메서드
+    private String getNameByCode(String parentCode, String targetCode) {
+        List<RegionDto> regions = fetchStage(parentCode);
+        return regions.stream()
+                .filter(region -> region.code().equals(targetCode))
+                .map(RegionDto::name)
+                .findFirst()
+                .orElse("알 수 없음");
+    }
     public List<RegionDto> getSido() {
         return fetchStage(null);
     }
