@@ -294,8 +294,7 @@
     max-width: 100%;
     margin: 0 auto;
     display: grid;
-    /* 560px에서 400px로 줄여서 더 작은 화면에서도 표시되도록 수정 */
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
     gap: 20px;
 }
 
