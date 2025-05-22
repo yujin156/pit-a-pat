@@ -8,7 +8,6 @@
 /*///////타이틀///////*/
 .friend_title {
     font-size: 45px;
-    margin: 0;
     color: #0B0B0B;
 }
 
@@ -21,6 +20,7 @@
 /*//////검색//////*/
 .friend_input {
     display: flex;
+    justify-content: flex-end;
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -106,7 +106,7 @@
 }
 
 .f_dog_hbtn {
-    transform: translateX(98%);
+    transform: rotate(180deg);
     cursor: pointer;
 }
 

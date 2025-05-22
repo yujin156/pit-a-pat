@@ -6,7 +6,6 @@
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
-    <script src="../static/js/Login_center.js"></script>
 </head>
 <body>
 
@@ -17,7 +16,7 @@
         <form th:action="@{/login}" method="post" class="login_box">
             <input class="id" type="email" name="email" required placeholder="이메일" />
             <input class="pw" type="password" name="password" required placeholder="비밀번호" />
-                <button type="submit" class="login_btn">로그인</button>
+            <button type="submit" class="login_btn">로그인</button>
         </form>
         <div class="singUp_btn">
             <a href="/user/signup">이메일로 회원가입</a>
@@ -42,7 +41,7 @@
         <div class="google">
             <div class="G_icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="19.827" height="19.827" viewBox="0 0 19.827 19.827">
-                    <g id="icons8-구글-로고" transform="translate(-4 -4)">
+                    <g id="icons8-구글-로고" transform="translate(-4 -4)">
                         <path id="패스_83353" data-name="패스 83353" d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z" fill="#ffc107"/>
                         <path id="패스_83354" data-name="패스 83354" d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z" transform="translate(-1.163)" fill="#ff3d00"/>
                         <path id="패스_83355" data-name="패스 83355" d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z" transform="translate(-1.107 -12.131)" fill="#4caf50"/>
@@ -116,14 +115,14 @@
         <div class="divider"></div>
         <p th:text="'강아지 수: ' + ${dogs.size()}">강아지 수: 0</p>
         <div class="pet_statuses" th:each="dog : ${dogs}">
-
             <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
             <div class="pet_status"></div>
         </div>
 
         <div class="divider"></div>
 
-        <div class="add_family">
+        <!-- addFamilyBtn 클래스를 id로 변경 -->
+        <div class="add_family" id="addFamilyBtn">
             <div class="plus_btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                     <g id="그룹_161716" data-name="그룹 161716" transform="translate(-1828 -308)">
@@ -140,8 +139,8 @@
         </div>
     </div>
 
-    <!-- 가족 추가 팝업창 -->
-    <div class="modal" id="addFamilyModal">
+    <!-- 가족 추가 팝업창 - id를 modal로 변경 -->
+    <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-txt">
                 <h2 class="modal-title">가족 추가하기</h2>
@@ -313,10 +312,9 @@
         </button>
     </div>
 
-
 </div>
 
-<script defer th:src="@{js/Login_center.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
 
 </body>
 </html>

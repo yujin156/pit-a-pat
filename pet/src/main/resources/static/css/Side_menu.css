@@ -60,7 +60,7 @@
     gap: 15px;
 }
 
-.main, .mach, .friend, .group, .myPage {
+.main, .mach, .friend, .menu_group, .myPage {
     width: 45px;
     height: 45px;
     position: relative;
@@ -129,7 +129,7 @@
 .menu:hover .main,
 .menu:hover .mach,
 .menu:hover .friend,
-.menu:hover .group,
+.menu:hover .menu_group,
 .menu:hover .myPage {
     width: 120px;
     border-radius: 30px;
@@ -141,7 +141,7 @@
 .menu:hover .main:hover:not(.active),
 .menu:hover .mach:hover:not(.active),
 .menu:hover .friend:hover:not(.active),
-.menu:hover .group:hover:not(.active),
+.menu:hover .menu_group:hover:not(.active),
 .menu:hover .myPage:hover:not(.active) {
     background-color: #F4E7F1;
     border: none;
@@ -150,7 +150,7 @@
 .menu:hover .main:hover .icon svg,
 .menu:hover .mach:hover .icon svg,
 .menu:hover .friend:hover .icon svg,
-.menu:hover .group:hover .icon svg,
+.menu:hover .menu_group:hover .icon svg,
 .menu:hover .myPage:hover .icon svg {
     fill: #212121;
 }
@@ -158,12 +158,12 @@
 .menu:hover .main:hover .label,
 .menu:hover .mach:hover .label,
 .menu:hover .friend:hover .label,
-.menu:hover .group:hover .label,
+.menu:hover .menu_group:hover .label,
 .menu:hover .myPage:hover .label {
     color: #212121;
 }
 
-.main.active, .mach.active, .friend.active, .group.active, .myPage.active {
+.main.active, .mach.active, .friend.active, .menu_group.active, .myPage.active {
     background-color: #F4E7F1;
     border: none;
 }
@@ -182,13 +182,13 @@
 }
 
 .main.active .icon svg, .mach.active .icon svg,
-.friend.active .icon svg, .group.active .icon svg,
+.friend.active .icon svg, .menu_group.active .icon svg,
 .myPage.active .icon svg {
     fill: #212121;
 }
 
 .main.active .label, .mach.active .label,
-.friend.active .label, .group.active .label,
+.friend.active .label, .menu_group.active .label,
 .myPage.active .label {
     color: #212121;
 }
