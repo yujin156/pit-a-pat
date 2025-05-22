@@ -128,4 +128,8 @@ public class GroupMemberService {
             }
         }
     }
+
+    public boolean isInGroup(Long dno, Long gno) {
+        return groupMemberRepository.existsByDog_DnoAndGroupTable_Gno(dno, gno);
+    }
 }

@@ -1,0 +1,53 @@
+.board-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.board-card {
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.board-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.board-writer {
+    font-weight: bold;
+    padding: 10px;
+}
+
+.board-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.board-desc {
+    padding: 0 10px 10px 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.write-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 16px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.write-button:hover {
+    background-color: #0056b3;
+}

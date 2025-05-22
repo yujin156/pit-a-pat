@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pit.pet.Account.User.Dog;
+import pit.pet.Board.Entity.BoardListTable;
+import pit.pet.Board.Repository.BoardListRepository;
 import pit.pet.Group.Repository.GroupMemberRepository;
 import pit.pet.Group.Repository.GroupRepository;
 import pit.pet.Group.entity.GroupMemberTable;
@@ -17,9 +19,10 @@ import java.util.List;
 public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final BoardListRepository boardListRepository;
 
     /**
-     * ✅ 그룹 생성
+     * 그룹 생성
      * - 그룹명, 생성자 강아지를 받아서 그룹 생성
      * - 생성자도 그룹 멤버로 등록 + 상태는 ACCEPTED
      * - 생성자의 gmno를 그룹의 g_leader로 설정
@@ -47,6 +50,12 @@ public class GroupService {
 
         // 5. 생성자의 gmno를 그룹 리더로 등록
         group.setGleader(creator.getGmno());
+
+        BoardListTable boardList = new BoardListTable();
+        boardList.setGroupTable(group);
+        boardList.setBlContent("기본 게시판");
+        boardListRepository.save(boardList);
+
         return groupRepository.save(group); // 최종 저장
     }
 
@@ -79,5 +88,10 @@ public class GroupService {
 
         group.setGleader(newLeaderGmno);
         groupRepository.save(group);
+    }
+
+    public GroupTable findById(Long gno) {
+        return groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("해당 그룹이 존재하지 않습니다."));
     }
 }

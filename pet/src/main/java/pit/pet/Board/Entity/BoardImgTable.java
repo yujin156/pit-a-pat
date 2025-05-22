@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "boardImgTable")
 public class BoardImgTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,7 @@ public class BoardImgTable {
     private Integer bino;
 
     @ManyToOne
-    @JoinColumn(name = "bno")
+    @JoinColumn(name = "bno", nullable = false)
     private BoardTable board;
 
     @ManyToOne
@@ -32,4 +33,5 @@ public class BoardImgTable {
 
     @Column(name = "bi_uploaded_at")
     private LocalDateTime biuploadedat;
+
 }

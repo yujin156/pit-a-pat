@@ -6,7 +6,7 @@ import pit.pet.Group.entity.GroupTable;
 
 import java.util.Optional;
 
-public interface BoardListRepository extends JpaRepository<BoardListTable, Integer> {
-    // 그룹 번호로 게시판 찾기
-    Optional<BoardListTable> findByGroupTable(GroupTable group);
+public interface BoardListRepository extends JpaRepository<BoardListTable, Long> {
+    // 그룹 번호로 게시판 찾기;
+    Optional<BoardListTable> findByGroupTableGno(Long gno);
 }

@@ -1,0 +1,43 @@
+.board-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.board-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.board-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.board-header img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.board-image {
+    width: 100%;
+    height: auto;
+}
+
+.board-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.board-description {
+    padding: 0 10px 10px 10px;
+    font-size: 14px;
+}

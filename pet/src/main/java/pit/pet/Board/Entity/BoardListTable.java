@@ -10,12 +10,13 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "boardListTable")
 public class BoardListTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "blno")
-    private Integer blno;
+    private Long blno;
 
     @OneToOne
     @JoinColumn(name = "gno", nullable = false)
@@ -24,6 +25,6 @@ public class BoardListTable {
     @Column(name = "bl_content", length = 25, nullable = false)
     private String blContent;
 
-    @OneToMany(mappedBy = "boardList", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardListTable") // ✅ boardListTable로 수정
     private List<BoardTable> boardList;
 }
