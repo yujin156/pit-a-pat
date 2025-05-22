@@ -13,6 +13,7 @@ import pit.pet.Account.Repository.SpeciesRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
+import pit.pet.Account.User.DogSize;
 
 import java.security.Principal;
 

@@ -28,11 +28,17 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
+        // AuthenticationManagerBuilder 꺼내기
+        AuthenticationManagerBuilder authBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        // UserDetailsService, PasswordEncoder 설정
+        authBuilder
                 .userDetailsService(customUserDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder())
-                .and()
-                .build();
+                .passwordEncoder(bCryptPasswordEncoder());
+
+        // 그리고 바로 build()
+        return authBuilder.build();
     }
 
     @Bean

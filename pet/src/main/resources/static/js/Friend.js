@@ -151,11 +151,11 @@ function setupSearchListeners() {
     nameSearch.addEventListener('input', handleSearch);
 }
 
-// 페이지 초기화
-function initPage() {
-    renderDogCards(dogData);
-    setupSearchListeners();
-}
-
-// DOM이 완전히 로드되면 초기화 실행
-document.addEventListener('DOMContentLoaded', initPage);
+// // 페이지 초기화
+// function initPage() {
+//     renderDogCards(dogData);
+//     setupSearchListeners();
+// }
+//
+// // DOM이 완전히 로드되면 초기화 실행
+// document.addEventListener('DOMContentLoaded', initPage);
