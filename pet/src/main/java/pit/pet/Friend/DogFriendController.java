@@ -2,6 +2,8 @@ package pit.pet.Friend;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/dog-friends")
 @RequiredArgsConstructor
+@Log4j2
 public class DogFriendController {
     private final FriendService      friendService;
     private final DogRepository      dogRepo;
@@ -130,7 +133,7 @@ public class DogFriendController {
         model.addAttribute("selectedDogId", dogId);
         model.addAttribute("friends", friends);
         model.addAttribute("friendAddressMap", friendAddressMap);  // 추가된 부분
-
+log.info("model: " + model);
         return "Friend/Friend";
     }
 
