@@ -14,7 +14,10 @@
   </div>
 
   <div class="board-header">
-    <img th:src="@{'/dog/profile/' + ${board.writerdog.dno}}" alt="프로필 이미지" />
+    <img
+            th:if="${board.writerdog.image != null}"
+            th:src="@{${board.writerdog.image.diurl}}"
+            alt="프로필 이미지" />
     <span th:text="${board.writerdog.dname}">Dog_writer</span>
   </div>
 
