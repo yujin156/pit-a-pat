@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMemberTable, Long> {
-    List<GroupMemberTable> findByGroupTable(GroupTable groupTable);
+    boolean existsByDog_DnoAndGroupTable_Gno(Long dno, Long gno);
 
     Optional<GroupMemberTable> findByDogAndGroupTable(Dog dog, GroupTable groupTable);
 

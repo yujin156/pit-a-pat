@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${group.gname} + ' 그룹'">그룹 디테일</title>
+  <link rel="stylesheet" th:href="@{/css/groupCSS/groupDetail.css}">
+</head>
+<body>
+<h1 th:text="${group.gname}">그룹명</h1>
+<p>멤버 수: <span th:text="${group.gmembercount}"></span></p>
+
+<hr/>
+
+<h2>게시글 목록</h2>
+
+<!-- 게시글 작성 버튼: 항상 표시 -->
+<div style="margin: 20px 0;">
+  <a th:href="@{'/board/write?gno=' + ${group.gno}}" class="write-button">✏ 게시글 작성하러 가기</a>
+</div>
+
+<!-- 게시글이 없는 경우 안내 문구 -->
+<div th:if="${#lists.isEmpty(boardList)}" style="margin: 20px 0;">
+  <p>아직 게시글이 없습니다. 첫 글을 작성해보세요!</p>
+  <a th:href="@{'/board/write?gno=' + ${group.gno}}">✏ 게시글 작성하러 가기</a>
+</div>
+
+<!-- 게시글이 있을 때 카드 뿌리기 -->
+
+<div class="board-container">
+  <div th:each="board : ${boardList}" class="board-card">
+    <!-- 작성자 이름 -->
+    <div class="board-writer" th:text="${board.writerdog.dname}">작성자</div>
+
+    <!-- 게시글 이미지 -->
+    <a th:href="@{'/board/view/' + ${board.bno}}">
+      <img th:src="@{${board.firstImgName}}" alt="게시글 이미지" class="board-image"/>
+    </a>
+
+    <!-- 설명 -->
+    <a th:href="@{'/board/view/' + ${board.bno}}" class="board-title" th:text="${board.getBdesc()}">제목</a>
+
+    <!-- 좋아요 & 댓글 수 -->
+    <div class="board-actions">
+      ♥ <span th:text="${board.blikecount}">0</span>
+      💬 <span th:text="${board.commentCount}">0</span>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
