@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/dog-friends")
 @RequiredArgsConstructor
-public class DogFriendController {
+public class  DogFriendController {
     private final FriendService      friendService;
     private final DogRepository      dogRepo;
     private final UserRepository     userRepo;

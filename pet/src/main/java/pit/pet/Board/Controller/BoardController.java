@@ -86,7 +86,7 @@ public class BoardController {
         }
 
         model.addAttribute("board", board);
-        return "board/edit";
+        return "Board/edit";
     }
 
 
@@ -143,7 +143,7 @@ public class BoardController {
         model.addAttribute("gno", gno);
         model.addAttribute("myGroupDogs", myGroupDogs);  // 👈 뷰에서 선택
         model.addAttribute("boardWriteRequest", new BoardCreateRequest());
-        return "board/write";
+        return "Board/write";
     }
 
     @GetMapping("/view/{bno}")
@@ -174,6 +174,8 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("commentList", commentList);
         model.addAttribute("myGroupDogs", myGroupDogs); // ✅ 이게 핵심
-        return "board/detail";
+        model.addAttribute("boardWriter", board.getWriterdog());
+
+        return "Board/detail";
     }
 }

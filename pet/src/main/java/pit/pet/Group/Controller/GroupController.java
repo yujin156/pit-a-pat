@@ -45,7 +45,7 @@ public class GroupController {
         List<Dog> myDogs = dogRepository.findByOwner(me);
         model.addAttribute("createGroupRequest", new CreateGroupRequest());
         model.addAttribute("myDogs", myDogs);
-        return "group/create";
+        return "Group/Create";
     }
 
     // 그룹 생성 처리
@@ -82,7 +82,7 @@ public class GroupController {
         List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
         model.addAttribute("myMemberships", myMemberships);
 
-        return "group/list";
+        return "Group/List";
     }
 
     // 그룹 가입 신청 폼 (강아지 선택)
@@ -96,7 +96,7 @@ public class GroupController {
 
         model.addAttribute("gno", gno);
         model.addAttribute("myDogs", myDogs);
-        return "group/apply";
+        return "Group/Apply";
     }
 
     // 그룹 가입 신청 처리
@@ -129,7 +129,7 @@ public class GroupController {
         model.addAttribute("groupId", gno);
         model.addAttribute("leaderGmno", leaderGmno);
         model.addAttribute("members", members);
-        return "group/manage";
+        return "Group/Manage";
     }
 
     // 가입 승인/거절 처리
@@ -152,7 +152,7 @@ public class GroupController {
         List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
 
         model.addAttribute("myMemberships", myMemberships);
-        return "group/mygroups";
+        return "Group/Mygroups";
     }
 
     @PostMapping("/members/{gmno}/withdraw")
@@ -178,6 +178,7 @@ public class GroupController {
 
         model.addAttribute("group", group);
         model.addAttribute("boardList", boardList);
-        return "group/detail";
+
+        return "Group/Detail";
     }
 }
