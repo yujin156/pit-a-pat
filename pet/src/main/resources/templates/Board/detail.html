@@ -13,28 +13,35 @@
     <p th:text="${errorMessage}" style="color:red;"></p>
   </div>
 
-  <!-- 게시글 헤더 -->
   <div class="board-header">
     <img th:src="@{'/dog/profile/' + ${board.writerdog.dno}}" alt="프로필 이미지" />
     <span th:text="${board.writerdog.dname}">Dog_writer</span>
   </div>
 
-  <!-- 게시글 이미지 -->
   <div class="board-images">
     <div th:each="img : ${board.images}">
       <img th:src="@{${img.biurl}}" alt="첨부 이미지" class="board-image"/>
     </div>
   </div>
 
-  <!-- 좋아요 & 북마크 -->
   <div class="board-actions">
-    <button onclick="toggleLike([[${board.bno}]])">❤️ 좋아요</button>
-    <button onclick="toggleBookmark([[${board.bno}]])">📌 북마크</button>
-    <span>♥ <span th:text="${board.blikecount}">0</span></span>
+    <input type="hidden" id="boardBno" th:value="${board.bno}" />
+    <input type="hidden" id="loginDogDno" th:value="${loginDog != null ? loginDog.dno : ''}" />
+
+    <button onclick="toggleLike()"
+            th:text="${isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"
+            th:style="${isLiked ? 'color: red;' : 'color: black;'}">
+      🤍 좋아요
+    </button>
+    <button onclick="toggleBookmark()"
+            th:text="${isBookmarked ? '📌 북마크 취소' : '📍 북마크'}"
+            th:style="${isBookmarked ? 'color: blue;' : 'color: black;'}">
+      📍 북마크
+    </button>
+    <span>♥ <span id="likeCount" th:text="${board.blikecount}">0</span></span>
     <span>💬 <span th:text="${commentList.size()}">0</span></span>
   </div>
 
-  <!-- 게시글 설명 -->
   <div class="board-description">
     <p th:text="${board.bcontent}" style="white-space: pre-line;"></p>
   </div>
@@ -49,7 +56,6 @@
 
   <hr/>
 
-  <!-- 댓글 리스트 -->
   <div class="comment-list">
     <h3>댓글</h3>
     <div th:each="comment : ${commentList}" class="comment-item">
@@ -57,19 +63,15 @@
       <span th:id="'comment-content-' + ${comment.bcno}" th:text="${comment.bccomment}">댓글 내용</span>
       <span class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>
 
-      <!-- 수정/삭제 권한: 작성자만 가능 -->
-      <span th:if="${loginDog != null and comment.dog.dno == loginDog.dno}">
-    <button type="button" th:onclick="'showEdit(' + ${comment.bcno} + ')'">수정</button>
+      <div th:if="${loginDog != null and comment.dog.dno == loginDog.dno}">
+        <button type="button" th:onclick="'showEdit(' + ${comment.bcno} + ')'">수정</button>
+        <form th:action="@{'/board/comment/' + ${comment.bcno} + '/delete'}" method="post" style="display:inline;">
+          <input type="hidden" name="bno" th:value="${board.bno}" />
+          <input type="hidden" name="dno" th:value="${loginDog.dno}" />
+          <button type="submit">삭제</button>
+        </form>
+      </div>
 
-        <!-- 삭제 -->
-    <form th:action="@{'/board/comment/' + ${comment.bcno} + '/delete'}" method="post" style="display:inline;">
-      <input type="hidden" name="bno" th:value="${board.bno}" />
-      <input type="hidden" name="dno" th:value="${loginDog.dno}" />
-      <button type="submit">삭제</button>
-    </form>
-  </span>
-
-      <!-- 댓글 수정 폼 (JS로 토글) -->
       <form th:id="'edit-form-' + ${comment.bcno}"
             th:action="@{'/board/comment/' + ${comment.bcno} + '/edit'}"
             method="post"
@@ -81,18 +83,18 @@
       </form>
     </div>
 
-  <hr/>
+    <hr/>
 
-  <!-- 댓글 작성 -->
-  <div class="comment-form">
-    <form th:action="@{/board/comment/create}" method="post">
-      <input type="hidden" name="bno" th:value="${board.bno}" />
-      <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
-      <textarea name="bccontent" placeholder="댓글을 입력하세요..." required></textarea>
-      <button type="submit">댓글 작성</button>
-    </form>
+    <div class="comment-form">
+      <form th:action="@{/board/comment/create}" method="post">
+        <input type="hidden" name="bno" th:value="${board.bno}" />
+        <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
+        <textarea name="bccontent" placeholder="댓글을 입력하세요..." required></textarea>
+        <button type="submit">댓글 작성</button>
+      </form>
+    </div>
+
   </div>
-
 </div>
 </body>
 </html>
