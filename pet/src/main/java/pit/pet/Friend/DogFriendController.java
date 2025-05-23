@@ -109,14 +109,21 @@ public class DogFriendController {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         List<Dog> myDogs = dogRepo.findByOwner(me);
+        model.addAttribute("myDogs", myDogs);
 
+        // 기본 선택 강아지: 첫 번째
         if (dogId == null && !myDogs.isEmpty()) {
             dogId = myDogs.get(0).getDno();
         }
+        model.addAttribute("selectedDogId", dogId);
 
-        List<Dog> friends = dogId != null ? friendService.getFriends(dogId) : Collections.emptyList();
+        // dogId 있으면 그 강아지 친구만, 없으면 내 모든 강아지 친구 합집합
+        List<Dog> friends = (dogId != null)
+                ? friendService.getFriends(dogId)
+                : friendService.getAllFriendsOfUser(me);
+        model.addAttribute("friends", friends);
 
-        // 친구별 주소 이름 매핑
+        // 친구별 주소 매핑 (기존 코드)
         Map<Long, String> friendAddressMap = new HashMap<>();
         for (Dog friend : friends) {
             Address addr = friend.getOwner().getAddress();
@@ -125,11 +132,7 @@ public class DogFriendController {
             );
             friendAddressMap.put(friend.getDno(), fullAddress);
         }
-
-        model.addAttribute("myDogs", myDogs);
-        model.addAttribute("selectedDogId", dogId);
-        model.addAttribute("friends", friends);
-        model.addAttribute("friendAddressMap", friendAddressMap);  // 추가된 부분
+        model.addAttribute("friendAddressMap", friendAddressMap);
 
         return "Friend/Friend";
     }
