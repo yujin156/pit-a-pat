@@ -9,8 +9,9 @@
     <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 </head>
-<body><div th:insert="~{Side_menu :: sidebar}" ></div>
-<div th:insert="~{Login_center :: login }" ></div>
+<body>
+<div class="layout-container">
+    <div class="side-menu" th:insert="~{Side_menu :: sidebar}" ></div>
     <div class="friend_wrap">
         <h2 class="friend_title">Friend</h2>
         <p class="friend_sub_title">좋아하는 강아지 친구들</p>
@@ -36,7 +37,11 @@
                     </div>
                     <div class="f_dog_card_cont">
                         <!-- 친구 정보 표시 -->
-                        <div class="f_dog_img"></div>
+                        <img class="f_dog_img"
+                             th:if="${friend.image != null}"
+                             th:src="@{${friend.image.diurl}}"
+                             th:alt="|${friend.dname} 사진|" />
+                        <span th:if="${friend.image == null}">이미지 없음</span>
                         <p class="f_dog_name" th:text="${friend.dname}">이름</p>
                         <div class="dog_keyword_row">
                             <label class="dog_keyword"
@@ -48,11 +53,11 @@
                 </div>
             </div>
         </div>
-
     </div>
-    <script defer th:src="@{/js/Friend.js}"></script>
+    <div class="login-panel" th:insert="~{Login_center :: login }" ></div>
+</div>
+<script defer th:src="@{/js/Friend.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
-
 </body>
 </html>

@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class DogService {
         Dog dog = new Dog();
         dog.setDname(request.getName());
         dog.setUgender(Gender.fromUserLabel(request.getGender()));
+        dog.setSize(DogSize.valueOf(request.getSize()));
         dog.setDBday(request.getBirthday());
         dog.setDintro(request.getIntro());
         dog.setOwner(user);
@@ -49,16 +51,15 @@ public class DogService {
                 .orElseThrow(() -> new RuntimeException("종을 찾을 수 없습니다."));
         dog.setSpecies(species);
 
-        // ✅ 널이면 빈 리스트 처리
-        List<Long> keyword1Ids = request.getKeyword1Ids() != null ? request.getKeyword1Ids() : Collections.emptyList();
-        List<Long> keyword2Ids = request.getKeyword2Ids() != null ? request.getKeyword2Ids() : Collections.emptyList();
-
+        // 키워드 세팅
+        List<Long> keyword1Ids = Optional.ofNullable(request.getKeyword1Ids()).orElse(Collections.emptyList());
+        List<Long> keyword2Ids = Optional.ofNullable(request.getKeyword2Ids()).orElse(Collections.emptyList());
         dog.setKeywords1(keyword1Repository.findAllById(keyword1Ids));
         dog.setKeywords2(keyword2Repository.findAllById(keyword2Ids));
 
         dogRepository.save(dog);
 
-        // ✅ 이미지 업로드 처리
+        // 이미지 업로드 처리
         MultipartFile image = request.getImageFile();
         if (image != null && !image.isEmpty()) {
             try {
@@ -69,7 +70,11 @@ public class DogService {
 
                 Dogimg dogimg = new Dogimg();
                 dogimg.setDog(dog);
-                dogimg.setDi_url("/uploads/" + filename);
+
+                // 반드시 title 필드도 세팅
+                dogimg.setDititle(image.getOriginalFilename());    // 원본 파일명 or 원하는 텍스트
+                dogimg.setDiurl("/uploads/" + filename);           // 컬럼명이 di_url 이면 setDiUrl
+
                 dogimgRepository.save(dogimg);
 
             } catch (IOException e) {

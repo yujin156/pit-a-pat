@@ -2,6 +2,8 @@ package pit.pet.Friend;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/dog-friends")
 @RequiredArgsConstructor
+@Log4j2
 public class DogFriendController {
     private final FriendService      friendService;
     private final DogRepository      dogRepo;
@@ -36,13 +39,19 @@ public class DogFriendController {
     @GetMapping("/request")
     public String requestForm(Model model,
                               @AuthenticationPrincipal UserDetails principal) {
-        User me      = userRepo.findByUemail(principal.getUsername())
-                .orElseThrow();
-        List<Dog> myDogs  = dogRepo.findByOwner(me);
-        List<Dog> allDogs = dogRepo.findAll();
+        User me = userRepo.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        model.addAttribute("myDogs",  myDogs);
-        model.addAttribute("allDogs", allDogs);
+        // 1) 내 강아지 목록
+        List<Dog> myDogs = dogRepo.findByOwner(me);
+
+        // 2) 전체 강아지 목록 중 내 강아지 제외
+        List<Dog> otherDogs = dogRepo.findAll().stream()
+                .filter(dog -> !dog.getOwner().getUno().equals(me.getUno()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("myDogs", myDogs);
+        model.addAttribute("otherDogs", otherDogs);
         return "Friend/FriendRequest";
     }
 
@@ -124,7 +133,7 @@ public class DogFriendController {
         model.addAttribute("selectedDogId", dogId);
         model.addAttribute("friends", friends);
         model.addAttribute("friendAddressMap", friendAddressMap);  // 추가된 부분
-
+log.info("model: " + model);
         return "Friend/Friend";
     }
 
