@@ -21,7 +21,7 @@ import pit.pet.Board.Request.BoardCreateRequest;
 import pit.pet.Board.Request.BoardImgUploadRequest;
 import pit.pet.Board.Request.BoardUpdateRequest;
 import pit.pet.Board.Service.BoardCommentService;
-import pit.pet.Board.Service.BoardManageService;
+import pit.pet.Board.Service.BoardManageService; // BoardManageService 임포트 추가
 import pit.pet.Board.Service.BoardWriteService;
 import pit.pet.Board.Entity.BoardListTable;
 import pit.pet.Board.Repository.BoardListRepository;
@@ -43,6 +43,7 @@ public class BoardController {
     private final BoardRepository boardRepository;
     private final BoardCommentService boardCommentService;
     private final BoardCommentRepository boardCommentRepository;
+    private final BoardManageService boardManageService; // ✅ BoardManageService 주입 추가
 
 
     // ✅ 게시글 작성
@@ -64,7 +65,6 @@ public class BoardController {
     }
 
     // ✅ 게시글 수정 폼
-
     @GetMapping("/edit/{bno}")
     public String editForm(@PathVariable Long bno,
                            @AuthenticationPrincipal UserDetails principal,
@@ -86,22 +86,31 @@ public class BoardController {
         }
 
         model.addAttribute("board", board);
-        return "Board/edit";
+        return "board/edit";
     }
 
 
     // ✅ 게시글 수정
     @PostMapping("/update")
-    public String updatePost(
-            @ModelAttribute BoardUpdateRequest request,
-            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
-            @AuthenticationPrincipal UserDetails userDetails) {
+    public String updateBoard(@ModelAttribute BoardUpdateRequest request,
+                              @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+                              @RequestParam(value = "deleteImgIds", required = false) List<Integer> deleteImgIds,
+                              @AuthenticationPrincipal UserDetails principal) {
 
-        User user = userRepository.findByUemail(userDetails.getUsername()).orElseThrow();
-        Long dno = dogRepository.findByOwner(user).stream().findFirst()
-                .map(Dog::getDno).orElseThrow();
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(); // ✅ 로그인 유저 가져오기
+        if (me == null) {
+            throw new IllegalStateException("로그인 유저 정보가 없습니다.");
+        }
 
-        boardWriteService.updateBoardReplaceImages(request, newImages, dno);
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno(); // ✅ 대표 강아지 dno
+
+        if (dno == null) {
+            throw new IllegalStateException("대표 강아지를 찾을 수 없습니다.");
+        }
+
+        boardWriteService.updateBoard(request, newImages, deleteImgIds, dno);
         return "redirect:/board/view/" + request.getBno();
     }
 
@@ -141,11 +150,12 @@ public class BoardController {
         model.addAttribute("blno", boardList.getBlno());
 
         model.addAttribute("gno", gno);
-        model.addAttribute("myGroupDogs", myGroupDogs);  // 👈 뷰에서 선택
+        model.addAttribute("myGroupDogs", myGroupDogs);
         model.addAttribute("boardWriteRequest", new BoardCreateRequest());
-        return "Board/write";
+        return "board/write";
     }
 
+    // ✅ 게시글 상세 보기
     @GetMapping("/view/{bno}")
     public String viewBoard(@PathVariable Long bno,
                             @AuthenticationPrincipal UserDetails principal,
@@ -155,27 +165,36 @@ public class BoardController {
 
         List<BoardCommentTable> commentList = boardCommentRepository.findByBoard(board);
 
-        // 로그인 유저 정보로부터 강아지 목록 필터링
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow();
 
         List<Dog> myDogs = dogRepository.findByOwner(me);
 
-        // 이 게시글의 그룹에 가입된 강아지만 필터링
         GroupTable group = board.getGroup();
         List<Dog> myGroupDogs = myDogs.stream()
                 .filter(dog -> groupMemberService.isInGroup(dog.getDno(), group.getGno()))
                 .toList();
 
+        Dog loginDog = null;
         if (!myGroupDogs.isEmpty()) {
-            model.addAttribute("loginDog", myGroupDogs.get(0));
+            loginDog = myGroupDogs.get(0); // 첫 번째 그룹 소속 강아지를 대표로 사용
+            model.addAttribute("loginDog", loginDog); // loginDog를 모델에 추가
         }
+
+        // 좋아요/북마크 상태 확인 및 모델에 추가
+        boolean isLiked = false;
+        boolean isBookmarked = false;
+        if (loginDog != null) {
+            isLiked = boardManageService.isBoardLiked(bno, loginDog.getDno());
+            isBookmarked = boardManageService.isBoardBookmarked(bno, loginDog.getDno());
+        }
+        model.addAttribute("isLiked", isLiked);
+        model.addAttribute("isBookmarked", isBookmarked);
+
 
         model.addAttribute("board", board);
         model.addAttribute("commentList", commentList);
-        model.addAttribute("myGroupDogs", myGroupDogs); // ✅ 이게 핵심
-        model.addAttribute("boardWriter", board.getWriterdog());
-
-        return "Board/detail";
+        model.addAttribute("myGroupDogs", myGroupDogs);
+        return "board/detail";
     }
 }

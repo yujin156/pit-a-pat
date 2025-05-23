@@ -97,7 +97,11 @@ public class BoardWriteService {
 
     // ✅ 게시글 내용 수정 (작성자 본인인지 확인)
     @Transactional
-    public void updateBoardReplaceImages(BoardUpdateRequest request, List<MultipartFile> newImages, Long dno) {
+    public void updateBoard(BoardUpdateRequest request,
+                            List<MultipartFile> newImages,
+                            List<Integer> deleteImgIds,
+                            Long dno) {
+
         BoardTable board = boardRepository.findById(request.getBno())
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글 없음"));
 
@@ -105,22 +109,26 @@ public class BoardWriteService {
             throw new SecurityException("수정 권한 없음");
         }
 
-        // 기존 이미지 모두 제거
-        for (BoardImgTable img : board.getImages()) {
-            try {
-                String path = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static" + img.getBiurl();
-                Files.deleteIfExists(Path.of(path));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            img.setBoard(null); // orphanRemoval 유도
+        // ✅ 1. 삭제 대상 이미지 제거
+        if (deleteImgIds != null && !deleteImgIds.isEmpty()) {
+            board.getImages().removeIf(img -> {
+                if (deleteImgIds.contains(img.getBino())) {
+                    try {
+                        String path = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static" + img.getBiurl();
+                        Files.deleteIfExists(Path.of(path));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+                return false;
+            });
         }
-        board.getImages().clear();
 
-        // 내용 수정
+        // ✅ 2. 내용 수정
         board.setBcontent(request.getNewContent());
 
-        // 새 이미지 업로드
+        // ✅ 3. 새 이미지 업로드 추가
         if (newImages != null && !newImages.isEmpty()) {
             for (MultipartFile image : newImages) {
                 if (image.isEmpty()) continue;
