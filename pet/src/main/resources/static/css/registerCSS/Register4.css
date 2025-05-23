@@ -1,0 +1,165 @@
+/* 기본 스타일 초기화 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Gmarket Sans', sans-serif;
+    overflow: hidden; /* 스크롤바 방지 */
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 전체 회원가입 컨테이너 */
+.signup-container {
+    position: relative;
+    width: 1920px; /* */
+    height: 1080px; /* */
+    background: #FFFFFF; /* */
+    overflow: hidden; /* 내용이 넘치지 않도록 */
+}
+
+/* 왼쪽 배경 이미지 (강아지 사진) */
+.left-side {
+    position: absolute;
+    left: 0%; /* */
+    right: 65.78%; /* 너비 계산: 100% - 65.78% = 34.22% */
+    top: 0%; /* */
+    bottom: 0%; /* */
+    background: blue ;/* url('https://i.imgur.com/8Q9P2Yd.jpeg') center/cover no-repeat;  예시 이미지, 실제 강아지 이미지 URL로 교체 */
+    z-index: 1;
+}
+
+.foot-step-row {
+    position: absolute;
+    left: 550px;
+    top: 220px;
+    width: 81px;
+    height: 600px;
+    background: palevioletred;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between
+}
+
+.foot {
+    width: 81px;
+    height: 81px;
+    background: #EDA9DD;
+    border-radius: 50px;
+    opacity: 0.4; /* 기본은 반투명 */
+}
+
+.foot.active {
+    opacity: 1; /* 현재 단계는 진하게 */
+}
+
+.line {
+    height: 91px;
+    border-left: 2px dotted #171616;
+}
+
+
+/*----------------------------------*/
+
+/*오른쪽*/
+
+.right-side{
+    position: absolute;
+    left: 657px;
+    width: 1263px;
+    height: 1080px;
+    background: #F5F6F8;
+}
+
+/* 제목 */
+
+.Title-Box{
+    position: relative;
+    left: 170px;
+    top: 175px;
+
+    width: 940px;
+}
+
+.Title{
+    font-size: 45px;
+    font-weight: 700;
+}
+
+.Title-semi {
+    font-weight: 400;
+    font-size: 25px;
+}
+
+.PITaPAT {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 93px;
+    height: 91px;
+    background: #EDA9DD;
+}
+
+/* 폼 박스 */
+
+.Big-form {
+    position: absolute;
+    top: 301px;
+    left: 170px;
+
+    width: 940px;
+    height: 606px;
+
+    border-radius: 20px;
+
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+
+    background: deeppink;
+}
+
+
+
+/* 홈, 다음, 이전 박스 */
+
+.HOME{
+    position: absolute;
+    top: 520px;
+    left: 70px;
+
+    width: 158px;
+    height: 34px;
+
+    border: 1px solid #3A7FEB;
+    color: #3A7FEB;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    border-radius: 20px;
+}
+
+.btn {
+    position: absolute;
+    top: 520px;
+
+    width: 149px;
+    height: 32px;
+
+    border: 1px solid #3A7FEB;
+
+    font-size: 15px;
+    font-weight: 400;
+
+    border-radius: 20px;
+}
+
+.PREV{
+    left: 530px;
+    color: #3A7FEB;
+}
+.NEXT{
+    left: 700px;
+    color: white;
+    background: #3A7FEB;
+}
