@@ -3,8 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <title>Group_board</title>
+
+  <link rel="stylesheet" href="/static/css/Content.css">
+  <link rel="stylesheet" href="/static/css/Group_board.css">
+
+
+  <!-- 구글 캘린더 API -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
 </head>
 <body>
+<!-- 그룹 개시판 전체 박스 -->
+<div class="group_board_wrap">
+  <!-- 왼쪽 게시판 -->
+  <div class="group_board_left">
+    <!-- 모임 타이틀 -->
+    <div class="group_board_title_box">
+      <div class="group_board_title_right">
+        <div class="group_board_title_name">강아지 친구들 모임</div>
+        <div class="group_board_member_count">멤버 7명</div>
+      </div>
+      <div class="group_board_setting">
+        <svg xmlns="http://www.w3.org/2000/svg" width="5" height="23" viewBox="0 0 5 23">
+          <g id="그룹_162501" data-name="그룹 162501" transform="translate(-9196 -5930)">
+            <circle id="타원_9374" data-name="타원 9374" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5930)" fill="#387feb"/>
+            <circle id="타원_9375" data-name="타원 9375" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5939)" fill="#387feb"/>
+            <circle id="타원_9376" data-name="타원 9376" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5948)" fill="#387feb"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 멤버 프로필 스크롤 -->
+    <div class="board_member_row">
+      <div class="board_member_list">
+        <div class="board_my_profile"></div>
+        <div class="board_add_post">
+          <div class="add_post_btn">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21" height="21" viewBox="0 0 21 21">
+              <defs>
+                <clipPath id="clip">
+                  <use xlink:href="#fill"/>
+                </clipPath>
+                <clipPath id="clip-2">
+                  <use xlink:href="#fill-2"/>
+                </clipPath>
+              </defs>
+              <g id="그룹_162393" data-name="그룹 162393" transform="translate(0 0)">
+                <circle id="타원_9369" data-name="타원 9369" cx="10.5" cy="10.5" r="10.5" transform="translate(0 0)" fill="#387feb"/>
+                <g id="그룹_162314" data-name="그룹 162314" transform="translate(5.907 5.905)">
+                  <g id="사각형_147863" data-name="사각형 147863" transform="translate(0 4.084)" fill="none" stroke="#fff" stroke-width="2">
+                    <rect id="fill" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                    <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314" fill="none" clip-path="url(#clip)"/>
+                  </g>
+                  <g id="사각형_147864" data-name="사각형 147864" transform="translate(5.105 0) rotate(90)" fill="none" stroke="#fff" stroke-width="2">
+                    <rect id="fill-2" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                    <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314" fill="none" clip-path="url(#clip-2)"/>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <span class="add_post_name">게시물 추가</span>
+        </div>
+        <div class="board_member_img"></div>
+        <div class="board_member_img"></div>
+        <div class="board_member_img"></div>
+        <div class="board_member_img"></div>
+      </div>
+    </div>
+
+    <!-- 게시물들이 JavaScript에서 동적으로 생성됩니다 -->
+  </div>
+
+  <!-- 오른쪽 사이드바 -->
+  <div class="group_board_right">
+    <!-- 캘린더 -->
+    <div class="group_board_calendar">
+      <div class="calendar_header">
+        <span>일정</span>
+        <div class="calendar_actions">
+          <div class="add_schedule_btn_icon" id="addEventBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+              <g id="그룹_162397" data-name="그룹 162397" transform="translate(0 1)">
+                <g id="그룹_162317" data-name="그룹 162317" transform="translate(0 -1)">
+                  <g id="타원_9369" data-name="타원 9369" fill="none" stroke="#b7b7b7" stroke-width="1">
+                    <circle cx="10.5" cy="10.5" r="10.5" stroke="none"/>
+                    <circle cx="10.5" cy="10.5" r="10" fill="none"/>
+                  </g>
+                  <g id="그룹_162314" data-name="그룹 162314" transform="translate(6.002 6.002)">
+                    <g id="합치기_8" data-name="합치기 8" transform="translate(17710 3329)" fill="none">
+                      <path d="M-17706-3320.5v-3.5h-3.5a.5.5,0,0,1-.5-.5.5.5,0,0,1,.5-.5h3.5v-3.5a.5.5,0,0,1,.5-.5.5.5,0,0,1,.5.5v3.5h3.5a.5.5,0,0,1,.5.5.5.5,0,0,1-.5.5h-3.5v3.5a.5.5,0,0,1-.5.5A.5.5,0,0,1-17706-3320.5Z" stroke="none"/>
+                      <path d="M -17705.5 -3320.0009765625 C -17705.775390625 -3320.0009765625 -17706.001953125 -3320.223388671875 -17706.001953125 -3320.498779296875 L -17706.001953125 -3324.001220703125 L -17709.5 -3324.001220703125 C -17709.775390625 -3324.001220703125 -17710.001953125 -3324.223388671875 -17710.001953125 -3324.4990234375 C -17710.001953125 -3324.774658203125 -17709.775390625 -3325.001220703125 -17709.5 -3325.001220703125 L -17706.001953125 -3325.001220703125 L -17706.001953125 -3328.499267578125 C -17706.001953125 -3328.774658203125 -17705.775390625 -3329.00146484375 -17705.5 -3329.00146484375 C -17705.22265625 -3329.00146484375 -17705.001953125 -3328.774658203125 -17705.001953125 -3328.499267578125 L -17705.001953125 -3325.001220703125 L -17701.498046875 -3325.001220703125 C -17701.22265625 -3325.001220703125 -17701.001953125 -3324.774658203125 -17701.001953125 -3324.4990234375 C -17701.001953125 -3324.223388671875 -17701.22265625 -3324.001220703125 -17701.498046875 -3324.001220703125 L -17705.001953125 -3324.001220703125 L -17705.001953125 -3320.498779296875 C -17705.001953125 -3320.223388671875 -17705.22265625 -3320.0009765625 -17705.5 -3320.0009765625 Z" stroke="none" fill="#b7b7b7"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 로딩 상태 -->
+      <div class="calendar_loading" id="calendarLoading" style="display: none;">
+        <div class="loading_spinner"></div>
+        <span>캘린더 로딩 중...</span>
+      </div>
+
+      <!-- 캘린더 네비게이션 -->
+      <div class="calendar_navigation">
+        <button class="calendar_nav_btn" id="prevMonth">◀</button>
+        <span class="calendar_current_month" id="currentMonth">2025년 6월</span>
+        <button class="calendar_nav_btn" id="nextMonth">▶</button>
+      </div>
+
+      <!-- 캘린더 그리드 -->
+      <div class="board_calendar">
+        <div class="calendar_grid">
+          <div class="calendar_days">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div class="calendar_dates" id="calendarDates">
+            <!-- 구글 캘린더 API에서 동적으로 생성 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 구글 캘린더 인증 버튼 -->
+      <div class="google_auth_section" id="googleAuthSection">
+        <button class="google_signin_btn" id="googleSignInBtn">
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20">
+          구글 캘린더 연동
+        </button>
+      </div>
+    </div>
+
+    <!-- 캘린더 일정 리스트 -->
+    <div class="group_board_schedule">
+      <div class="group_board_schedule_title">
+        <span>모임일정</span>
+        <span class="more_btn" id="viewAllEvents">더 보기 ></span>
+      </div>
+
+      <!-- 로딩 상태 -->
+      <div class="events_loading" id="eventsLoading" style="display: none;">
+        <div class="loading_spinner"></div>
+        <span>일정 불러오는 중...</span>
+      </div>
+
+      <!-- 일정 리스트 -->
+      <div class="board_schedule" id="eventsList">
+        <!-- 구글 캘린더 API에서 동적으로 생성 -->
+        <div class="no_events" id="noEvents">
+          <span>등록된 일정이 없습니다</span>
+          <button class="create_event_btn" id="createFirstEvent">첫 일정 만들기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 채팅리스트 박스 -->
+    <div class="group_chat_list_box">
+      <div class="group_chat_title_row">
+        <span class="group_chat_title">그룹 채팅</span>
+        <div class="group_chat_add_btn_icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+            <g id="그룹_162397" data-name="그룹 162397" transform="translate(0 1)">
+              <g id="그룹_162317" data-name="그룹 162317" transform="translate(0 -1)">
+                <g id="타원_9369" data-name="타원 9369" fill="none" stroke="#b7b7b7" stroke-width="1">
+                  <circle cx="10.5" cy="10.5" r="10.5" stroke="none"/>
+                  <circle cx="10.5" cy="10.5" r="10" fill="none"/>
+                </g>
+                <g id="그룹_162314" data-name="그룹 162314" transform="translate(6.002 6.002)">
+                  <g id="합치기_8" data-name="합치기 8" transform="translate(17710 3329)" fill="none">
+                    <path d="M-17706-3320.5v-3.5h-3.5a.5.5,0,0,1-.5-.5.5.5,0,0,1,.5-.5h3.5v-3.5a.5.5,0,0,1,.5-.5.5.5,0,0,1,.5.5v3.5h3.5a.5.5,0,0,1,.5.5.5.5,0,0,1-.5.5h-3.5v3.5a.5.5,0,0,1-.5.5A.5.5,0,0,1-17706-3320.5Z" stroke="none"/>
+                    <path d="M -17705.5 -3320.0009765625 C -17705.775390625 -3320.0009765625 -17706.001953125 -3320.223388671875 -17706.001953125 -3320.498779296875 L -17706.001953125 -3324.001220703125 L -17709.5 -3324.001220703125 C -17709.775390625 -3324.001220703125 -17710.001953125 -3324.223388671875 -17710.001953125 -3324.4990234375 C -17710.001953125 -3324.774658203125 -17709.775390625 -3325.001220703125 -17709.5 -3325.001220703125 L -17706.001953125 -3325.001220703125 L -17706.001953125 -3328.499267578125 C -17706.001953125 -3328.774658203125 -17705.775390625 -3329.00146484375 -17705.5 -3329.00146484375 C -17705.22265625 -3329.00146484375 -17705.001953125 -3328.774658203125 -17705.001953125 -3328.499267578125 L -17705.001953125 -3325.001220703125 L -17701.498046875 -3325.001220703125 C -17701.22265625 -3325.001220703125 -17701.001953125 -3324.774658203125 -17701.001953125 -3324.4990234375 C -17701.001953125 -3324.223388671875 -17701.22265625 -3324.001220703125 -17701.498046875 -3324.001220703125 L -17705.001953125 -3324.001220703125 L -17705.001953125 -3320.498779296875 C -17705.001953125 -3320.223388671875 -17705.22265625 -3320.0009765625 -17705.5 -3320.0009765625 Z" stroke="none" fill="#b7b7b7"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="group_chatting_room">
+        <div class="group_chatting_room_img"></div>
+        <div class="group_chatting_info">
+          <span class="group_chatting_title">일일 수다방</span>
+          <span class="group_chatting_member_count">12마리 참여중</span>
+        </div>
+      </div>
+      <div class="group_chatting_room">
+        <div class="group_chatting_room_img"></div>
+        <div class="group_chatting_info">
+          <span class="group_chatting_title">산책 메이트</span>
+          <span class="group_chatting_member_count">8마리 참여중</span>
+        </div>
+      </div>
+      <div class="group_chatting_room">
+        <div class="group_chatting_room_img"></div>
+        <div class="group_chatting_info">
+          <span class="group_chatting_title">훈련 팁 공유</span>
+          <span class="group_chatting_member_count">15마리 참여중</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 게시글 작성 모달 -->
+<div class="create_post_modal" id="createPostModal" style="display: none;">
+  <div class="modal_overlay">
+    <div class="create_post_modal_content">
+      <div class="create_post_modal_header">
+        <h3>새 게시글 작성</h3>
+        <button class="create_post_modal_close" id="closeCreatePostModal">&times;</button>
+      </div>
+      <div class="create_post_modal_body">
+        <form id="createPostForm">
+          <!-- 이미지 업로드 영역 -->
+          <div class="image_upload_section">
+            <div class="image_preview_container" id="imagePreviewContainer">
+              <div class="image_upload_placeholder" id="imageUploadPlaceholder">
+                <div class="upload_icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30.997" height="30.981" viewBox="0 0 30.997 30.981">
+                    <path d="M27.086,18.705a1.476,1.476,0,0,0-1.476,1.476v.561l-2.184-2.184a4.117,4.117,0,0,0-5.8,0l-1.033,1.033-3.66-3.66a4.206,4.206,0,0,0-5.8,0L4.951,18.115V9.851A1.476,1.476,0,0,1,6.427,8.376H16.756a1.476,1.476,0,1,0,0-2.951H6.427A4.427,4.427,0,0,0,2,9.851V27.559a4.427,4.427,0,0,0,4.427,4.427H24.134a4.427,4.427,0,0,0,4.427-4.427V20.181A1.476,1.476,0,0,0,27.086,18.705ZM6.427,29.035a1.476,1.476,0,0,1-1.476-1.476V22.291l4.279-4.279a1.166,1.166,0,0,1,1.608,0l4.678,4.678h0l6.345,6.345ZM25.61,27.559a1.313,1.313,0,0,1-.266.782l-6.655-6.685,1.033-1.033a1.136,1.136,0,0,1,1.623,0l4.265,4.294ZM32.56,5.852,28.133,1.426a1.526,1.526,0,0,0-2.1,0L21.611,5.852a1.482,1.482,0,0,0,2.1,2.1l1.9-1.918v8.249a1.476,1.476,0,1,0,2.951,0V6.03l1.9,1.918a1.482,1.482,0,1,0,2.1-2.1Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>
+                  </svg>
+                </div>
+                <span>사진을 선택해주세요</span>
+                <p>JPG, PNG 파일을 드래그하거나 클릭하여 업로드</p>
+              </div>
+              <img id="imagePreview" class="image_preview" style="display: none;">
+              <div class="image_actions" id="imageActions" style="display: none;">
+                <button type="button" class="btn_change_image" id="changeImageBtn">이미지 변경</button>
+                <button type="button" class="btn_remove_image" id="removeImageBtn">이미지 제거</button>
+              </div>
+            </div>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+          </div>
+
+          <!-- 게시글 내용 작성 -->
+          <div class="create_post_form_group">
+            <label for="postContent">게시글 내용</label>
+            <textarea
+                    id="postContent"
+                    placeholder="오늘은 어떤 하루를 보내셨나요? 반려견과의 특별한 순간을 공유해주세요! 🐾"
+                    rows="4"
+                    maxlength="500"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="create_post_modal_footer">
+        <button class="create_post_btn_cancel" id="cancelCreatePost">취소</button>
+        <button class="create_post_btn_save" id="saveCreatePost" disabled>게시하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 이벤트 생성/수정 모달 -->
+<div class="event_modal" id="eventModal" style="display: none;">
+  <div class="modal_overlay">
+    <div class="event_modal_content">
+      <div class="event_modal_header">
+        <h3 id="modalTitle">새 일정 만들기</h3>
+        <button class="event_modal_close" id="closeEventModal">&times;</button>
+      </div>
+      <div class="event_modal_body">
+        <form id="eventForm">
+          <div class="event_form_group">
+            <label for="eventTitle">일정 제목</label>
+            <input type="text" id="eventTitle" required>
+          </div>
+          <div class="event_form_group">
+            <label for="eventDate">날짜</label>
+            <input type="date" id="eventDate" required>
+          </div>
+          <div class="event_form_group">
+            <label for="eventTime">시간</label>
+            <input type="time" id="eventTime">
+          </div>
+          <div class="event_form_group">
+            <label for="eventDescription">설명</label>
+            <textarea id="eventDescription" rows="3"></textarea>
+          </div>
+          <div class="event_form_group">
+            <label for="eventLocation">장소</label>
+            <input type="text" id="eventLocation" placeholder="예: 한강공원 뚝섬지구">
+          </div>
+        </form>
+      </div>
+      <div class="event_modal_footer">
+        <button class="event_btn_cancel" id="cancelEvent">취소</button>
+        <button class="event_btn_save" id="saveEvent">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script defer src="../../static/js/Group_board.js"></script>
+
+</body>
+
 
 </body>
 </html>
