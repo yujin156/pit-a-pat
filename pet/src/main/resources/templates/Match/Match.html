@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATCH - 우리집 강아지 친구 만들어주기</title>
+  <link rel="stylesheet" th:href="@{/css/Content.css}">
+  <link rel="stylesheet" th:href="@{/css/Match.css}">
+  <link rel="stylesheet" th:href="@{/css/Match_profile.css}">
+  <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
+  <link rel="stylesheet" th:href="@{/css/Login_center.css}">
+</head>
+<body>
+
+<div class="layout-container">
+  <!-- Sidebar -->
+  <div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
+
+  <!-- Main Content -->
+  <div class="main_content">
+    <!-- Page Header -->
+    <div class="match-header">
+      <h1>MATCH</h1>
+      <p>우리집 강아지 친구 만들어주기</p>
+    </div>
+
+    <!-- 1. 프로필 선택 (로그인 + 강아지 2마리 이상일 때만) -->
+    <div class="profile-selector"
+         th:if="${isLoggedIn != null and isLoggedIn and showProfileSelector != null and showProfileSelector}"
+         sec:authorize="isAuthenticated()">
+      <label for="myDogSelect">내 프로필 선택:</label>
+      <select id="myDogSelect" class="profile-select">
+        <option value="">어떤 강아지로 매칭할까요?</option>
+        <option th:each="dog : ${userDogs}"
+                th:if="${dog != null and dog.dno != null and dog.dname != null}"
+                th:value="${dog.dno}"
+                th:text="${dog.dname + (dog.speciesName != null ? ' (' + dog.speciesName + ')' : '')}"></option>
+      </select>
+    </div>
+
+    <!-- 2. 상세검색과 키워드 선택 -->
+    <div class="filter-and-keyword-section">
+      <!-- 검색 필터 영역 (왼쪽) -->
+      <div class="search-filter-section">
+        <h2>상세 검색</h2>
+        <div class="filter-row">
+          <select id="genderFilter" class="filter-select">
+            <option value="">성별</option>
+            <option value="수컷">수컷</option>
+            <option value="암컷">암컷</option>
+          </select>
+
+          <input type="text" id="breedFilter" class="filter-input" placeholder="견종 검색">
+          <input type="text" id="locationFilter" class="filter-input" placeholder="지역 검색">
+        </div>
+        <div class="filter-actions">
+          <button id="searchBtn" class="filter-btn primary">검색</button>
+          <button id="resetBtn" class="filter-btn secondary">초기화</button>
+        </div>
+      </div>
+
+      <!-- 키워드 선택 영역 (오른쪽) -->
+      <div class="keyword-section">
+        <h2>관심 키워드 선택</h2>
+        <p class="keyword-info">
+          선택된 키워드: <span id="selectedCount">0</span>개
+          <span th:if="${isLoggedIn == null or !isLoggedIn}"> (비회원은 최대 2개)</span>
+          <span th:if="${isLoggedIn != null and isLoggedIn}"> (회원은 무제한)</span>
+        </p>
+
+        <!-- 키워드 그리드 -->
+        <div class="keyword-grid">
+          <button class="keyword-btn"
+                  th:each="keyword : ${keywords}"
+                  th:if="${keyword != null and keyword.dktag != null}"
+                  th:data-keyword="${keyword.dktag}"
+                  th:text="${keyword.dktag}">키워드</button>
+        </div>
+
+        <!-- 키워드 액션 버튼 -->
+        <div class="keyword-actions">
+          <button id="showAllBtn" class="action-btn secondary">전체 보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 매칭 영역 (카드 스택만) -->
+    <div class="matching-section">
+      <div class="card-stack-container">
+        <div class="card-stack" id="cardStack">
+          <!-- 강아지 카드들이 여기에 동적으로 생성됩니다 -->
+        </div>
+      </div>
+
+      <!-- 스와이프 안내 텍스트 -->
+      <div class="swipe-instructions">
+        <p>💡 카드를 좌우로 드래그하거나 키보드 화살표키로 다음 프로필을 볼 수 있어요!</p>
+      </div>
+    </div>
+
+    <!-- 매칭 성사 모달 -->
+    <div class="match-modal" id="matchModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">매칭 성사! 🎉</h3>
+        </div>
+        <div class="matched-dogs">
+          <div class="my-dog">
+            <img id="myDogImage" src="" alt="내 강아지">
+            <p id="myDogName">내 강아지</p>
+          </div>
+          <div class="heart-animation">💖</div>
+          <div class="friend-dog">
+            <img id="friendDogImage" src="" alt="친구 강아지">
+            <p id="friendDogName">친구 강아지</p>
+          </div>
+        </div>
+        <p id="modalMessage">새로운 친구가 되었어요!</p>
+        <div class="modal-actions">
+          <button id="continueBtn" class="modal-btn secondary">계속 매칭하기</button>
+          <button id="chatBtn" class="modal-btn primary">친구 목록으로</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 로딩 스피너 -->
+    <div class="loading-spinner hidden" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p>매칭 중...</p>
+    </div>
+  </div>
+
+  <!-- Login Panel -->
+  <div class="login-panel" th:insert="~{Login_center :: login}"></div>
+</div>
+
+<!-- JavaScript Data -->
+<script th:inline="javascript">
+  console.log('=== Match.html 데이터 로드 시작 ===');
+
+  // ✅ matchingDogs로 변수명 변경하여 받기
+  const rawMatchingDogs = /*[[${matchingDogs}]]*/ [];
+  const rawUserDogs = /*[[${userDogs}]]*/ [];
+  const rawKeywords = /*[[${keywords}]]*/ [];
+  const rawIsLoggedIn = /*[[${isLoggedIn}]]*/ false;
+  const rawShowProfileSelector = /*[[${showProfileSelector}]]*/ false;
+
+  console.log('Raw 데이터 확인:');
+  console.log('- matchingDogs:', rawMatchingDogs);
+  console.log('- userDogs:', rawUserDogs);
+  console.log('- keywords:', rawKeywords);
+  console.log('- isLoggedIn:', rawIsLoggedIn);
+  console.log('- showProfileSelector:', rawShowProfileSelector);
+
+  // ✅ matchingDogs를 dogs로 매핑하여 기존 JavaScript 코드와 호환
+  window.matchData = {
+    dogs: Array.isArray(rawMatchingDogs) ? rawMatchingDogs : [], // matchingDogs를 dogs로 매핑
+    userDogs: Array.isArray(rawUserDogs) ? rawUserDogs : [],
+    keywords: Array.isArray(rawKeywords) ? rawKeywords : [],
+    isLoggedIn: Boolean(rawIsLoggedIn),
+    showProfileSelector: Boolean(rawShowProfileSelector)
+  };
+
+  console.log('최종 matchData:', window.matchData);
+  console.log('매칭용 강아지 수:', window.matchData.dogs.length);
+  console.log('내 강아지 수:', window.matchData.userDogs.length);
+  console.log('키워드 수:', window.matchData.keywords.length);
+  console.log('=== Match.html 데이터 로드 완료 ===');
+</script>
+
+<script th:src="@{/js/MatchJS/Match.js}"></script>
+<script th:src="@{/js/MatchJS/Match_profile.js}"></script>
+<script th:src="@{/js/Side_menu.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
+</body>
+</html>

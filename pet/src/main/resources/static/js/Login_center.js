@@ -1,28 +1,103 @@
-// Login_center.js - 수정된 버전
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Login_center.js 로드 완료');
 
-    // 가족(강아지) 데이터 배열
-    let pets = [
-        {
-            name: '쪼꼬',
-            image: '/img/Choco.jpg',
-            status: '산책 중',
-            gender: 'male',
-            type: '푸들',
-            birthday: '2021-05-15',
-            intro: '사람을 좋아하는 활발한 성격입니다.'
-        },
-        {
-            name: '강군',
-            image: '/img/kangKun.JPG',
-            status: '으르렁',
-            gender: 'male',
-            type: '푸들',
-            birthday: '2020-05-30',
-            intro: '사람 좋아, 강아지 좋아'
+    // 실제 친구 데이터를 저장할 변수
+    let favoriteFriends = [];
+
+    // 강아지 상태 변경 이벤트 설정
+    function setupStatusChangeEvents() {
+        const statusDropdowns = document.querySelectorAll('.status_dropdown');
+
+        statusDropdowns.forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                const dogId = parseInt(this.dataset.dogId);
+                const newStatus = this.value;
+
+                updateDogStatus(dogId, newStatus);
+            });
+        });
+    }
+
+    // 강아지 상태 업데이트 API 호출
+    function updateDogStatus(dogId, status) {
+        fetch('/dog/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `dogId=${dogId}&status=${encodeURIComponent(status)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('상태 업데이트 성공:', data);
+                    showStatusNotification(`상태가 "${status}"로 변경되었습니다.`, 'success');
+                } else {
+                    console.error('상태 업데이트 실패:', data.message);
+                    showStatusNotification(data.message || '상태 변경에 실패했습니다.', 'error');
+
+                    // 실패 시 이전 상태로 되돌리기
+                    const dropdown = document.querySelector(`[data-dog-id="${dogId}"]`);
+                    if (dropdown) {
+                        // 서버에서 현재 상태를 다시 가져와서 설정해야 하지만,
+                        // 일단 기본값으로 되돌림
+                        dropdown.value = '온라인';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('상태 업데이트 요청 실패:', error);
+                showStatusNotification('네트워크 오류가 발생했습니다.', 'error');
+            });
+    }
+
+    // 상태 변경 알림 표시
+    function showStatusNotification(message, type = 'info') {
+        // 기존 알림 제거
+        const existingNotification = document.querySelector('.status-notification');
+        if (existingNotification) {
+            existingNotification.remove();
         }
-    ];
+
+        // 알림 색상 설정
+        let bgColor = '#387FEB';
+        if (type === 'success') bgColor = '#4CAF50';
+        if (type === 'error') bgColor = '#f44336';
+
+        // 알림 엘리먼트 생성
+        const notification = document.createElement('div');
+        notification.className = 'status-notification';
+        notification.innerHTML = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 25px;
+            background: ${bgColor};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideInRight 0.3s ease-out;
+            max-width: 250px;
+        `;
+
+        document.body.appendChild(notification);
+
+        // 3초 후 제거
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 3000);
+    }
 
     // 월/일 선택 옵션 채우기
     function fillDateOptions() {
@@ -46,73 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 daySelect.appendChild(option);
             }
         }
-    }
-
-    // 프로필 그리드 렌더링 함수
-    function renderProfilesGrid() {
-        const profilesGrid = document.querySelector('.profiles_grid');
-        if (!profilesGrid) return;
-
-        profilesGrid.innerHTML = '';
-
-        pets.forEach(pet => {
-            const profileItem = document.createElement('div');
-            profileItem.className = 'profile_item';
-
-            const img = document.createElement('img');
-            img.src = pet.image;
-            img.alt = `${pet.name} 프로필 이미지`;
-
-            profileItem.appendChild(img);
-            profilesGrid.appendChild(profileItem);
-        });
-    }
-
-    // 펫 상태 목록 렌더링 함수
-    function renderPetStatuses() {
-        const petStatusesContainer = document.querySelector('.pet_statuses');
-        if (!petStatusesContainer) return;
-
-        petStatusesContainer.innerHTML = '';
-
-        pets.forEach((pet, index) => {
-            const petStatusDiv = document.createElement('div');
-            petStatusDiv.className = 'pet_status';
-
-            const statusLabel = document.createElement('span');
-            statusLabel.className = 'status_label';
-            statusLabel.textContent = pet.name;
-
-            const statusSelectDiv = document.createElement('div');
-            statusSelectDiv.className = 'status_select';
-
-            const select = document.createElement('select');
-            select.dataset.petIndex = index;
-
-            const options = ['밥 먹는 중', '산책 중', '잠자는 중', '으르렁'];
-            options.forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.textContent = option;
-                optionElement.value = option;
-                if (option === pet.status) {
-                    optionElement.selected = true;
-                }
-                select.appendChild(optionElement);
-            });
-
-            select.addEventListener('change', function() {
-                const petIndex = parseInt(this.dataset.petIndex);
-                if (pets[petIndex]) {
-                    pets[petIndex].status = this.value;
-                }
-            });
-
-            statusSelectDiv.appendChild(select);
-            petStatusDiv.appendChild(statusLabel);
-            petStatusDiv.appendChild(statusSelectDiv);
-
-            petStatusesContainer.appendChild(petStatusDiv);
-        });
     }
 
     // 모달 관련 요소들 - 안전하게 가져오기
@@ -143,13 +151,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 새로운 가족 추가 버튼 클릭 이벤트 - 안전하게 처리
+    // 새로운 가족 추가 버튼 클릭 이벤트
     if (addFamilyBtn && modal && imageUploadArea) {
         addFamilyBtn.addEventListener('click', function() {
             modal.style.display = 'block';
             fillDateOptions();
 
-            // 폼 초기화 - 안전하게 처리
+            // 폼 초기화
             const dogName = document.getElementById('dogName');
             const dogGender = document.getElementById('dogGender');
             const dogType = document.getElementById('dogType');
@@ -172,12 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </svg>
                 <p class="upload-text">강아지 사진 올리기</p>
             `;
-        });
-    } else {
-        console.warn('필요한 요소들이 없습니다:', {
-            addFamilyBtn: !!addFamilyBtn,
-            modal: !!modal,
-            imageUploadArea: !!imageUploadArea
         });
     }
 
@@ -250,9 +252,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log('선택된 키워드:', selectedKeywords);
 
-            // 새 펫 추가
-            addNewPetFromForm();
-
             // 모든 모달 닫기
             keywordModal.style.display = 'none';
 
@@ -268,112 +267,87 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 새 반려동물 추가 함수
-    function addNewPetFromForm() {
-        const dogName = document.getElementById('dogName');
-        const dogGender = document.getElementById('dogGender');
-        const dogType = document.getElementById('dogType');
-        const birthYear = document.getElementById('birthYear');
-        const birthMonth = document.getElementById('birthMonth');
-        const birthDay = document.getElementById('birthDay');
-        const dogIntro = document.getElementById('dogIntro');
-
-        const name = dogName ? dogName.value.trim() : '';
-        const gender = dogGender ? dogGender.value : '';
-        const type = dogType ? dogType.value.trim() : '';
-        const year = birthYear ? birthYear.value : '';
-        const month = birthMonth ? birthMonth.value : '';
-        const day = birthDay ? birthDay.value : '';
-        const intro = dogIntro ? dogIntro.value.trim() : '';
-
-        if (name === '') {
-            alert('강아지 이름을 입력해주세요.');
-            return;
-        }
-
-        let dogImage = 'https://via.placeholder.com/120?text=' + encodeURIComponent(name);
-
-        if (fileInput && fileInput.files && fileInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                dogImage = e.target.result;
-                addNewPet(name, gender, type, year, month, day, intro, dogImage);
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        } else {
-            addNewPet(name, gender, type, year, month, day, intro, dogImage);
-        }
+    // 즐겨찾기 친구 목록 로드
+    function loadFavoriteFriends() {
+        fetch('/api/friends/favorites')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    favoriteFriends = data.friends;
+                    renderFavoriteFriends();
+                }
+            })
+            .catch(error => {
+                console.error('즐겨찾기 친구 목록 로드 실패:', error);
+            });
     }
 
-    // 새 반려동물 추가 함수
-    function addNewPet(name, gender, type, year, month, day, intro, image) {
-        const birthday = year && month && day ? `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}` : '';
-
-        const newPet = {
-            name: name,
-            image: image,
-            status: '산책 중',
-            gender: gender || '',
-            type: type || '',
-            birthday: birthday,
-            intro: intro || ''
-        };
-
-        pets.push(newPet);
-
-        renderProfilesGrid();
-        renderPetStatuses();
-
-        console.log('새 펫이 추가되었습니다:', newPet);
-    }
-
-    // 초기 친구 데이터
-    let friends = [
-        { id: 1, name: '구름', image: '/img/구름.png', status: '밥 먹는 중' },
-        { id: 2, name: '월이', image: '/img/월이.png', status: '밥 먹는 중' },
-        { id: 3, name: '콩이', image: '/img/콩이.png', status: '밥 먹는 중' },
-        { id: 4, name: '먹보', image: '/img/구름이.png', status: '밥 먹는 중' },
-        { id: 5, name: '또또', image: '/img/또또.png', status: '밥 먹는 중' }
-    ];
-
-    // DOM 요소
-    const friendsContainer = document.getElementById('friendsContainer');
-    const friendList = document.getElementById('friendList');
-    const btnEdit = document.getElementById('btnEdit');
-    const btnDone = document.getElementById('btnDone');
-    const btnAddFriend = document.getElementById('btnAddFriend');
-
-    // 친구 목록 렌더링 함수
-    function renderFriends() {
+    // 즐겨찾기 친구 목록 렌더링
+    function renderFavoriteFriends() {
+        const friendList = document.getElementById('friendList');
         if (!friendList) return;
 
         friendList.innerHTML = '';
 
-        friends.forEach(friend => {
+        if (favoriteFriends.length === 0) {
+            friendList.innerHTML = `
+            <div class="empty-friends">
+                <div class="empty-friends-icon">🐕</div>
+                <div>아직 친구가 없어요!</div>
+                <div>매칭에서 새로운 친구를 찾아보세요</div>
+            </div>
+        `;
+            return;
+        }
+
+        favoriteFriends.forEach(friend => {
             const friendItem = document.createElement('div');
             friendItem.className = 'friend-item';
-            friendItem.dataset.id = friend.id;
+            friendItem.dataset.friendRequestId = friend.friendRequestId;
+
+            // 이미지 처리: 없으면 이름 첫 글자 표시
+            let avatarHtml;
+            if (friend.image && friend.image.diurl) {
+                avatarHtml = `<img src="${friend.image.diurl}" alt="${friend.name}" class="friend-avatar">`;
+            } else {
+                const firstLetter = friend.name.charAt(0);
+                avatarHtml = `
+                <div class="friend-avatar" style="background-color: #387FEB; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                    ${firstLetter}
+                </div>
+            `;
+            }
 
             friendItem.innerHTML = `
-                <div class="friend-info">
-                  <img src="${friend.image}" alt="${friend.name}" class="friend-avatar">
-                  <span class="friend-name">${friend.name}</span>
-                </div>
-                <div>
-                  <span class="friend-status">${friend.status}</span>
-                  <button class="btn-remove" data-id="${friend.id}">
+            <div class="friend-info">
+                ${avatarHtml}
+                <span class="friend-name">${friend.name}</span>
+            </div>
+            <div class="friend-actions">
+                <span class="friend-status">${friend.status || '온라인'}</span>
+                <button class="btn-remove hidden" data-id="${friend.id}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
-                  </button>
-                </div>
-              `;
+                </button>
+            </div>
+        `;
 
             friendList.appendChild(friendItem);
         });
 
-        // 삭제 버튼에 이벤트 리스너 추가
+        // 친구 프로필 클릭 이벤트 (바로 채팅)
+        document.querySelectorAll('.friend-avatar').forEach(avatar => {
+            avatar.addEventListener('click', function() {
+                const friendRequestId = this.closest('.friend-item').dataset.friendRequestId;
+                if (friendRequestId) {
+                    openChatWindow(friendRequestId);
+                }
+            });
+        });
+
+        // 삭제 버튼 이벤트 리스너 추가
         document.querySelectorAll('.btn-remove').forEach(btn => {
             btn.addEventListener('click', function() {
                 const friendId = parseInt(this.dataset.id);
@@ -381,6 +355,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    // 채팅창 열기 함수
+    function openChatWindow(friendRequestId) {
+        const chatWindow = window.open(
+            `/chat/${friendRequestId}`,
+            `chat_${friendRequestId}`,
+            'width=600,height=800,scrollbars=yes,resizable=yes'
+        );
+
+        if (chatWindow) {
+            chatWindow.focus();
+        } else {
+            alert('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
+        }
+    }
+
+    // DOM 요소들
+    const friendsContainer = document.getElementById('friendsContainer');
+    const btnEdit = document.getElementById('btnEdit');
+    const btnDone = document.getElementById('btnDone');
+    const btnAddFriend = document.getElementById('btnAddFriend');
 
     // 편집 모드 토글 함수
     function toggleEditMode() {
@@ -393,31 +387,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 친구 삭제 함수
     function removeFriend(id) {
-        friends = friends.filter(friend => friend.id !== id);
-        renderFriends();
+        favoriteFriends = favoriteFriends.filter(friend => friend.id !== id);
+        renderFavoriteFriends();
     }
 
-    // 친구 추가 함수
+    // 친구 추가 함수 (친구 목록 페이지로 이동)
     function addFriend() {
-        const newId = Math.max(...friends.map(f => f.id), 0) + 1;
-        const newFriend = {
-            id: newId,
-            name: `친구 ${newId}`,
-            image: 'https://via.placeholder.com/48',
-            status: '밥 먹는 중'
-        };
-
-        friends.push(newFriend);
-        renderFriends();
+        window.location.href = '/dog-friends/list';
     }
 
-    // 이벤트 리스너 설정 - 안전하게 처리
+    // 이벤트 리스너 설정
     if (btnEdit) btnEdit.addEventListener('click', toggleEditMode);
     if (btnDone) btnDone.addEventListener('click', toggleEditMode);
     if (btnAddFriend) btnAddFriend.addEventListener('click', addFriend);
 
-    // 초기 렌더링
-    renderFriends();
+    // 초기 렌더링 및 이벤트 설정
+    setupStatusChangeEvents();
+    loadFavoriteFriends();
 
     console.log('Login_center.js 초기화 완료');
 });
+
+// 애니메이션 CSS 추가
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

@@ -1,10 +1,10 @@
 package pit.pet.Account.User;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +19,9 @@ public class Dogimg {
     @Column(name="di_title",nullable = false)
     private String dititle;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dno", nullable = false, unique = true)
+    @JsonBackReference("dog-image")
     private Dog dog;
 
     @Column(name = "di_url", nullable = false)

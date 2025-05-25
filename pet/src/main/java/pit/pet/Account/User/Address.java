@@ -3,6 +3,7 @@ package pit.pet.Account.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Getter
 @Setter
@@ -21,7 +22,8 @@ public class Address {
     @Column(name = "town", nullable = false)
     private String town;
 
-    @OneToOne
-    @JoinColumn(name = "uno") // 주소 테이블의 uno → 유저 테이블의 uno를 참조
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uno")
+    @JsonBackReference("user-address")
     private User user;
 }

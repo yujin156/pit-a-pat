@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import pit.pet.Spec.Species;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Dog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,35 +35,32 @@ public class Dog {
     @Column(name = "d_intro", nullable = false)
     private String dintro;
 
-    @ManyToOne
+    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT '온라인'")
+    private String status = "온라인";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference("user-dogs")
     private User owner;
 
-    // ✅ 종 연결 (1개만 선택 가능)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "species_id")
+    @JsonIgnoreProperties({"dogs"})
     private Species species;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "d_size", nullable = false)
     private DogSize size;
 
-    // ✅ 키워드 연결 (다대다)
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "dog_keyword1_mapping",
             joinColumns = @JoinColumn(name = "dog_id"),
             inverseJoinColumns = @JoinColumn(name = "keyword1_id")
     )
+    @JsonIgnoreProperties({"dogs"})
     private List<DogKeyword1> keywords1 = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "dog_keyword2_mapping",
-            joinColumns = @JoinColumn(name = "dog_id"),
-            inverseJoinColumns = @JoinColumn(name = "keyword2_id")
-    )
-    private List<DogKeyword2> keywords2 = new ArrayList<>();
-
     @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("dog-image")
     private Dogimg image;
 }
