@@ -1,0 +1,236 @@
+/* 기본 스타일 초기화 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Gmarket Sans', sans-serif;
+    overflow: hidden; /* 스크롤바 방지 */
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 전체 회원가입 컨테이너 */
+.signup-container {
+    position: relative;
+    width: 1920px; /* */
+    height: 1080px; /* */
+    background: #FFFFFF; /* */
+    overflow: hidden; /* 내용이 넘치지 않도록 */
+}
+
+/* 왼쪽 배경 이미지 (강아지 사진) */
+.left-side {
+    position: absolute;
+    left: 0%; /* */
+    right: 65.78%; /* 너비 계산: 100% - 65.78% = 34.22% */
+    top: 0%; /* */
+    bottom: 0%; /* */
+    background: blue ;/* url('https://i.imgur.com/8Q9P2Yd.jpeg') center/cover no-repeat;  예시 이미지, 실제 강아지 이미지 URL로 교체 */
+    z-index: 1;
+}
+
+.foot-step-row {
+    position: absolute;
+    left: 550px;
+    top: 220px;
+    width: 81px;
+    height: 600px;
+    background: palevioletred;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between
+}
+
+.foot {
+    width: 81px;
+    height: 81px;
+    background: #EDA9DD;
+    border-radius: 50px;
+    opacity: 0.4; /* 기본은 반투명 */
+}
+
+.foot.active {
+    opacity: 1; /* 현재 단계는 진하게 */
+}
+
+
+.line {
+    height: 91px;
+    border-left: 2px dotted #171616;
+}
+
+
+/*----------------------------------*/
+
+/*오른쪽*/
+
+.right-side{
+    position: absolute;
+    left: 657px;
+    width: 1263px;
+    height: 1080px;
+    background: #F5F6F8;
+}
+
+/* 제목 */
+
+.Title-Box{
+    position: relative;
+    left: 170px;
+    top: 175px;
+
+    width: 940px;
+}
+
+.Title{
+    font-size: 45px;
+    font-weight: 700;
+}
+
+.Title-semi {
+    font-weight: 400;
+    font-size: 25px;
+}
+
+.PITaPAT {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 93px;
+    height: 91px;
+    background: #EDA9DD;
+}
+
+/* 폼 박스 */
+
+.Big-form {
+    position: absolute;
+    top: 301px;
+    left: 170px;
+
+    width: 940px;
+    height: 606px;
+
+    border-radius: 20px;
+
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+
+    background: deeppink;
+}
+
+.form-content{
+    margin-top: 50px;
+}
+
+.dog-size-title {
+    font-size: 15px;
+    font-weight: 400;
+    color: #212121;
+    margin-left: 70px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    text-align: left;
+}
+
+.dog-size-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 70px;
+}
+
+.dog-size-options label {
+    position: relative;
+    cursor: pointer;
+}
+
+.dog-size-options input[type="radio"] {
+    display: none;
+}
+
+.dog-size-options .option-box {
+    width: 250px;
+    height: 370px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    transition: border 0.3s, transform 0.3s;
+    padding: 10px 10px 20px 10px; /* 내부 여백 */
+}
+
+.size-title {
+    font-size: 30px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.size-subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.size-example {
+    font-size: 10px;
+    font-weight: 400;
+    color: #777;
+    text-align: center;
+}
+
+.dog-size-options input[type="radio"]:checked + .option-box {
+    outline: 3px solid #3A7FEB;
+    transform: scale(1.05);
+}
+
+/* 홈, 다음, 이전 박스 */
+
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    margin-top: auto;
+}
+
+.form-buttons button {
+    width: 149px;
+    height: 32px; /* 예전 그대로 */
+    border: 1px solid #3A7FEB;
+    border-radius: 20px;
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-buttons .NEXT {
+    background: #3A7FEB;
+    color: #fff;
+}
+
+.form-buttons .NEXT:hover {
+    background: #2c5ec4;
+}
+
+.form-buttons .PREV,
+.form-buttons .HOME {
+    background: transparent;
+    color: #3A7FEB;
+}
+
+.form-buttons .PREV:hover,
+.form-buttons .HOME:hover {
+    background: rgba(58, 127, 235, 0.1);
+}

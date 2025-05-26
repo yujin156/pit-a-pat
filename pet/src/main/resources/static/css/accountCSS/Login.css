@@ -1,0 +1,295 @@
+/** ✏️ [공통: 전체 레이아웃] **/
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Gmarket Sans', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.login-container {
+    display: flex;
+    width: 1920px;
+    height: 1080px;
+}
+
+/** ✏️ [좌측 큰 영역] **/
+.left-side {
+    width: 65.78%;
+    background: #F5F6F8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #FFFFFF;
+    height: 714px;
+    width: 500px;
+}
+
+/** ✏️ [상단 전체 구조] **/
+.login-header {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    position: relative; /* 환영문구를 가운데에 고정하기 위함 */
+    margin-bottom: 20px;
+    margin-top: 50px;
+}
+
+/** ✏️ [뒤로가기 버튼: 좌측 고정] **/
+.back-wrapper {
+    position: absolute;
+    left: 0;
+}
+
+.back-arrow {
+    font-size: 18px;
+    color: #3A7FEB;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/** ✏️ [환영 문구: 가운데 정렬] **/
+.welcome-wrapper {
+    width: 100%;
+    color: #DDDDDD;
+    display: flex;
+    justify-content: center;
+}
+
+.welcome-message {
+    font-size: 16px;
+    color: #999;
+    margin: 0;
+}
+
+.form-wrapper {
+    background: #ffffff;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/** ✏️ [로고 자리만 비운 박스] **/
+.logo-placeholder {
+    width: 125px;
+    height: 129px;
+    border: 2px solid #ccc;
+    margin-bottom: 60px;
+}
+
+/** ✏️ [로그인 폼 영역] **/
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    gap: 15px;
+}
+
+.login-form input {
+    height: 40px;
+    border: 2px solid #3A7FEB;
+
+    border-radius: 8px;
+    padding: 0 10px;
+}
+
+/** ✏️ [입력칸 placeholder 색상] **/
+.login-form input::placeholder {
+    color: #3A7FEB; /* 원하는 색상으로 지정: 예를 들어 연한 회색 */
+    opacity: 1; /* 파이어폭스 등에서 투명도 제거 */
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.LOGIN {
+    background: #3A7FEB;
+    color: white;
+    height: 50px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 21px;
+    font-weight: 500;
+}
+
+.LOGIN:hover {
+    background: #2c5ec4;
+}
+
+/** ✏️ [로그인 상태 유지 / 찾기 링크 - 버튼 간격 및 스타일] **/
+.options {
+    display: flex;
+    justify-content: space-around; /* 1:1:1 간격 */
+    align-items: center;
+    width: 400px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+}
+
+.options label span {
+    margin-left: 5px;
+}
+
+.find-links a {
+    text-decoration: none;
+    color: #3A7FEB;
+    margin: 0 5px;
+}
+
+/** ✏️ [체크박스 모양을 동그라미로 커스텀] **/
+.options input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #ccc;
+    border-radius: 50%; /* 동그란 모양 */
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+/** ✏️ [체크됐을 때 동그라미 색 채우기] **/
+.options input[type="checkbox"]:checked {
+    background-color: #3A7FEB;
+    border-color: #3A7FEB;
+}
+
+/** ✏️ [체크 표시 대신 내부 흰 동그라미로 표시] **/
+.options input[type="checkbox"]:checked::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+/** ✏️ [아이디 찾기 & 비밀번호 찾기 링크 색상, 밑줄 제거] **/
+.circle-link {
+    text-decoration: none !important; /* 밑줄 제거 */
+    color: #666 !important;           /* 기본 회색으로 강제 */
+    margin: 0 5px;
+}
+
+.circle-link:hover {
+    color: #3A7FEB !important;        /* hover 시 파란색으로 */
+}
+
+
+/** ✏️ [“또는 간편로그인” 문구 스타일] **/
+
+.divider {
+    display: flex;
+    align-items: center;
+    width: 400px;
+    font-size: 12px;
+    color: #999;
+    margin: 20px 0;
+}
+
+.divider .line {
+    flex: 1;
+    height: 1px;
+    background: #ccc;
+}
+
+.divider span:nth-child(2) {
+    margin: 0 10px;
+    white-space: nowrap;
+}
+
+/** ✏️ [Google 간편로그인 버튼] **/
+.simple-login {
+    margin-top: 10px;
+}
+
+.google-login {
+    background: #ffffff;
+    border: 1px solid #3A7FEB;
+    border-radius: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+
+    width: 400px;
+    height: 50px;
+
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.google-login:hover {
+    background: rgba(58, 127, 235, 0.1);
+}
+
+.options .line {
+    display: inline-block;
+    width: 1px;
+    height: 20px; /* 라인의 높이 */
+    background: #ccc; /* 라인 색상 */
+    margin: 0 8px; /* 좌우 여백 */
+}
+
+/** ✏️ [우측 큰 영역] **/
+.right-side {
+    width: 34.22%;
+    /*background: url('/images/login-dog.jpg') center/cover no-repeat; !* 실제 이미지 경로 *!*/
+    background: pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-inner {
+    text-align: center;
+    color: white;
+}
+
+.right-inner h2 {
+    margin: 0;
+    font-size: 35px;
+    font-weight: 900;
+}
+
+.right-inner p {
+    margin: 40px 0;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.SIGNUP {
+    width: 233px;
+    height: 50px;
+
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+
+    font-weight: 700;
+    font-size: 25px;
+}
+
+.SIGNUP:hover {
+    background: rgba(255,255,255,0.2);
+}
+
