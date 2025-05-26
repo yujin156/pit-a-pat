@@ -1,0 +1,1074 @@
+
+/* Main Container */
+.myPage_wrap {
+    max-width: 1460px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    min-height: 100vh;
+}
+
+/* Header */
+.myPage_title {
+    grid-column: 1 / -1;
+    margin-bottom: 10px;
+}
+
+.myPage_title h1 {
+    font-size: 2rem;
+    color: #212121;
+}
+
+.myPage_sub_title {
+    color: #B7B7B7;
+    font-size: 0.9rem;
+}
+
+/* 사이드 메뉴 네비바 */
+.myPage_sidebar {
+    height: fit-content;
+}
+
+.myPage_nav-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.myPage_nav-btn {
+    background: none;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 1rem;
+    border: 1px solid #387FEB;
+    color: #387FEB;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 25px;
+    margin: 4px;
+}
+
+.myPage_nav-btn:first-child {
+    margin-top: 8px;
+}
+
+.myPage_nav-btn:last-child {
+    margin-bottom: 8px;
+}
+
+.myPage_nav-btn:hover {
+    background-color: #f0f7ff;
+    color: #387FEB;
+}
+
+.myPage_nav-btn.active {
+    background-color: #387FEB;
+    color: white;
+}
+
+/* Main Content */
+.myPage_mainContent {
+    background: #F5F6F8;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.myPage_tab_content {
+    display: none;
+    padding: 30px;
+}
+
+.myPage_tab_content.active {
+    display: block;
+}
+
+/* Tab Header */
+.myPage_tab_header {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 30px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.myPage_tab_header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #333;
+}
+
+.myPage_tab_toggle {
+    background: none;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.myPage_tab_toggle.active {
+    color: #333;
+    border-bottom-color: #4285f4;
+}
+
+.myPage_tab_toggle:hover {
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+/* Toggle Content */
+.myPage_toggle_content {
+    display: none;
+}
+
+.myPage_toggle_content.active {
+    display: block;
+}
+
+/* Profile Section */
+.myPage_profile_section {
+    padding-top: 20px;
+    border-top: 1px solid #BFBFBF;
+    margin-bottom: 40px;
+}
+
+.myPage_profile_section h3 {
+    font-weight: normal;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.myPage_dog_profiles {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.myPage_dog_card {
+    position: relative;
+    background: none;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    min-width: 210px;
+    height: 250px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.myPage_dog_card:hover {
+    transform: scale(1.02);
+}
+
+.myPage_dog_card .dog-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.myPage_dog_card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.7) 100%);
+    mix-blend-mode: multiply;
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.myPage_dog_info {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    z-index: 2;
+    color: white;
+}
+
+.myPage_dog_info h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.myPage_dog_info p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: 500;
+}
+
+.myPage_dog_more_btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    font-size: 1.2rem;
+    color: #333;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.myPage_dog_more_btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+.myPage_add_profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myPage_add_btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 100px 70px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+}
+
+._add_btn:hover {
+    border-color: #4285f4;
+    background-color: #f0f7ff;
+}
+
+.myPage_plus_icon {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.myPage_add_btn span:last-child {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* User Info Section */
+.myPage_user_info_section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.myPage_info_row {
+    padding-top: 20px;
+    border-top: 1px solid #BFBFBF;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.myPage_label {
+    font-weight: normal;
+    color: #333;
+    padding-top: 12px;
+}
+
+.myPage_info_group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.myPage_info_item {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 15px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.myPage_field {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.myPage_value {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.myPage_edit_btn, .myPage_unlink_btn {
+    background: #F4E7F1;
+    border: none;
+    color: #387FEB;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 10px 35px;
+    border-radius: 20px;
+}
+
+.myPage_password_input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    width: 100%;
+    max-width: 250px;
+}
+
+.myPage_password_input::placeholder {
+    color: #999;
+}
+
+.myPage_google_icon {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+}
+
+/* Posts Section */
+.myPage_posts_list {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.myPage_post_card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    position: relative;
+}
+
+.myPage_post_image {
+    width: 120px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.myPage_post_content {
+    flex: 1;
+}
+
+.myPage_post_content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.myPage_post_description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.myPage_post_participants {
+    display: flex;
+    gap: 8px;
+}
+
+.myPage_participant_avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.myPage_post_menu {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Comment Cards */
+.myPage_comment_card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+}
+
+.myPage_comment_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.myPage_username {
+    font-weight: 600;
+    color: #333;
+}
+
+.myPage_comment_label {
+    background: #e8f4fd;
+    color: #4285f4;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.myPage_comment_content {
+    margin-left: 0;
+}
+
+.myPage_comment_text {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.myPage_comment_description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.myPage_comment_date {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.myPage_linked_post {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+}
+
+.myPage_linked_post_image {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.myPage_linked_post_title {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.myPage_comment_menu {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Social Post */
+.myPage_social_post {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.myPage_post_writer {
+    width: 100%;
+}
+
+.myPage_writer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.myPage_post_user_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.myPage_post_profile_img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.myPage_post_profile_img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post_user_details {
+    display: flex;
+    flex-direction: column;
+}
+
+.board_write_user {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.board_write_time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.post_menu_btn {
+    cursor: pointer;
+}
+
+.board_post_img {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.board_post_img img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.board_svg_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.post_right_nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.post_heart_icon, .post_comment_icon, .post_bookmark_icon {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.post_heart_icon:hover, .post_comment_icon:hover, .post_bookmark_icon:hover {
+    transform: scale(1.1);
+}
+
+.post_bookmark_icon.active svg path:last-child {
+    fill: #4285f4;
+}
+
+.post_content_section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.post_who_like {
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.post_content {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.post_username {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.post_text {
+    color: #333;
+}
+
+.post_comment_count {
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.post_comment_count:hover {
+    color: #4285f4;
+}
+
+/* 프로필 추가 모달 */
+.profile_modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.profile_modal_content {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+
+    background-color: white;
+    padding: 40px;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal_step {
+    display: none;
+}
+
+.modal_step.active {
+    display: block;
+}
+
+.modal_step h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #333;
+}
+
+.highlight {
+    color: #4285f4;
+}
+
+.step_subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+/* 1단계: 크기 선택 카드 */
+.dog_size_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.size_card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 300px;
+    border: 3px solid transparent;
+}
+
+.size_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.size_card.selected {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+}
+
+.size_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.size_card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.size_info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 2;
+    color: white;
+}
+
+.size_info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.size_info p {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.size_breeds {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 2단계: 정보 입력 폼 */
+.dog_form_container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.dog_image_upload {
+    display: flex;
+    flex-direction: column;
+}
+
+.upload_area {
+    width: 100%;
+    flex: 1;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #f8f9fa;
+}
+
+.upload_area:hover {
+    border-color: #387FEB;
+    background: #f0f7ff;
+}
+
+.upload_area.has_image {
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.upload_icon {
+    width: 48px;
+    height: 48px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.upload_area p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.uploaded_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.dog_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form_group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form_group.full {
+    grid-column: 1 / -1;
+}
+
+.form_group label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form_group input,
+.form_group select,
+.form_group textarea {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    background: white;
+}
+
+.form_group input:focus,
+.form_group select:focus,
+.form_group textarea:focus {
+    outline: none;
+    border-color: #4285f4;
+}
+
+.form_group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.breed_search {
+    display: flex;
+    gap: 10px;
+}
+
+.breed_search input {
+    flex: 1;
+}
+
+.search_btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.search_btn:hover {
+    background: #3367d6;
+}
+
+.birthday_group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+/* 3단계: 키워드 선택 */
+.keyword_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.keyword_category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.keyword_btn {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.keyword_btn:hover {
+    border-color: #4285f4;
+    background: #f0f7ff;
+}
+
+.keyword_btn.selected {
+    background: #4285f4;
+    color: white;
+    border-color: #4285f4;
+}
+
+/* 모달 버튼 */
+.modal_buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.modal_btn {
+    padding: 10px 60px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.modal_btn.secondary {
+    background: #f8f9fa;
+    color: #666;
+    border-color: #e0e0e0;
+}
+
+.modal_btn.secondary:hover {
+    background: #e8f4fd;
+    color: #4285f4;
+    border-color: #4285f4;
+}
+
+.modal_btn.primary {
+    background: #4285f4;
+    color: white;
+}
+
+.modal_btn.primary:hover {
+    background: #3367d6;
+}
+
+.modal_btn:disabled {
+    background: #f0f0f0;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.modal_btn:disabled:hover {
+    background: #f0f0f0;
+    color: #ccc;
+    border-color: transparent;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .profile_modal_content {
+        margin: 5% auto;
+        padding: 20px;
+        width: 95%;
+    }
+
+    .dog_form_container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .form_row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal_buttons {
+        flex-direction: column;
+    }
+
+    .keyword_category {
+        justify-content: flex-start;
+    }
+
+    .dog_size_cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .myPage_wrap {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .myPage_sidebar {
+        order: 2;
+    }
+
+    .myPage_nav-menu {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .myPage_nav-btn {
+        white-space: nowrap;
+        margin: 4px 8px 4px 0;
+        padding: 12px 16px;
+    }
+
+    .myPage_dog_profiles {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .myPage_info_row {
+        border-top: 1px solid #BFBFBF;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .myPage_info_item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: left;
+    }
+
+    .myPage_post_card {
+        flex-direction: column;
+    }
+
+    .myPage_post_image {
+        width: 100%;
+        height: 200px;
+    }
+}

@@ -26,3 +26,7 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
     display: none;
 }
+
+button{
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
+}
