@@ -9,78 +9,55 @@
     <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 </head>
-<body><div th:insert="~{Side_menu :: sidebar}" ></div>
-<div th:insert="~{Login_center :: login }" ></div>
-<!-- 1. 내 강아지 선택 폼 (dog-friends/list) -->
-<form th:action="@{/dog-friends/list}" method="get" class="select-dog-form">
-    <select name="dogId" onchange="this.form.submit()">
-        <!-- ① 전체 보기: plain HTML의 value 속성으로 대체 -->
-        <option value=""
-                th:selected="${selectedDogId == null}">
-            전체 보기
-        </option>
-        <!-- ② 내 강아지 옵션들 -->
-        <option th:each="dog : ${myDogs}"
-                th:value="${dog.dno}"
-                th:text="${dog.dname}"
-                th:selected="${dog.dno == selectedDogId}">
-        </option>
-    </select>
-</form>
-
-<!-- 2. 기존 friend_wrap 영역 -->
-<div class="friend_wrap">
-    <h2 class="friend_title">Friend</h2>
-    <p class="friend_sub_title">좋아하는 강아지 친구들</p>
-    <!--    강아지 검색  -->
-    <div class="friend_input">
-        <input type="search" class="search_type" placeholder="견종 검색하기">
-        <input type="search" class="search_friend" placeholder="강아지 친구 검색하기">
-    </div>
-    <div class="friend_content">
-        <div th:if="${#lists.isEmpty(friends)}">
-            친구가 없습니다.
+<body>
+<div class="layout-container">
+    <div class="side-menu" th:insert="~{Side_menu :: sidebar}" ></div>
+    <div class="friend_wrap">
+        <h2 class="friend_title">Friend</h2>
+        <p class="friend_sub_title">좋아하는 강아지 친구들</p>
+        <!--    강아지 검색  -->
+        <div class="friend_input">
+            <input type="search" class="search_type" placeholder="견종 검색하기">
+            <input type="search" class="search_friend" placeholder="강아지 친구 검색하기">
         </div>
-        <div class="dog-grid-container">
-            <div th:each="friend : ${friends}" class="friend_dog_card">
-                <div class="f_dog_hbtn">
-                    <!-- 햄버거 버튼 SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="5" height="25" viewBox="0 0 5 25">
-                        <g transform="translate(-7432 -1784)">
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1784)" fill="#b7b7b7"/>
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1794)" fill="#b7b7b7"/>
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1804)" fill="#b7b7b7"/>
-                        </g>
-                    </svg>
-                </div>
-                <div class="f_dog_card_cont">
-                    <!-- 친구 정보 표시 -->
-                    <img class="f_dog_img"
-                         th:if="${friend.image != null}"
-                         th:src="@{${friend.image.diurl}}"
-                         th:alt="|${friend.dname} 사진|" />
-                    <span th:if="${friend.image == null}">이미지 없음</span>
-
-                    <p class="f_dog_name" th:text="${friend.dname}">이름</p>
-                    <div class="dog_keyword_row">
-                        <label class="dog_keyword"
-                               th:text="${friendAddressMap[friend.dno]}">주소</label>
-                        <label class="dog_keyword"
-                               th:text="${friend.ugender.Doglabel()}">성별</label>
-                        <label class="dog_keyword"
-                               th:text="${friend.species.name}">종류</label>
+        <div class="friend_content">
+            <div th:if="${#lists.isEmpty(friends)}">
+                친구가 없습니다.
+            </div>
+            <div class="dog-grid-container">
+                <div th:each="friend : ${friends}" class="friend_dog_card">
+                    <div class="f_dog_hbtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="5" height="25" viewBox="0 0 5 25">
+                            <g id="그룹_162482" data-name="그룹 162482" transform="translate(-7432 -1784)">
+                                <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1784)" fill="#b7b7b7"/>
+                                <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1794)" fill="#b7b7b7"/>
+                                <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1804)" fill="#b7b7b7"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="f_dog_card_cont">
+                        <!-- 친구 정보 표시 -->
+                        <img class="f_dog_img"
+                             th:if="${friend.image != null}"
+                             th:src="@{${friend.image.diurl}}"
+                             th:alt="|${friend.dname} 사진|" />
+                        <span th:if="${friend.image == null}">이미지 없음</span>
+                        <p class="f_dog_name" th:text="${friend.dname}">이름</p>
+                        <div class="dog_keyword_row">
+                            <label class="dog_keyword"
+                                   th:text="${friendAddressMap[friend.dno]}">주소</label>
+                            <label class="dog_keyword" th:text="${friend.ugender.Doglabel()}">성별</label>
+                            <label class="dog_keyword" th:text="${friend.species.name}">종류</label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="login-panel" th:insert="~{Login_center :: login }" ></div>
 </div>
-
-
-    </div>
-    <script defer th:src="@{/js/Friend.js}"></script>
+<script defer th:src="@{/js/Friend.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
-
 </body>
 </html>

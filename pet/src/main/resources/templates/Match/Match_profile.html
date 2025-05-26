@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>매칭 프로필</title>
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/Match_profile.css}">
+</head>
+<body>
+
+<!-- 매칭 프로필 카드 (Friend_profile의 f_profile 부분과 동일) -->
+<div class="match_profile_card" th:fragment="matchCard">
+    <div class="m_profile_card">
+        <div class="profile_txt">
+            <div class="profile_name_icon">
+                <h3 class="profile_name" th:text="${dog.dname}">강아지 이름</h3>
+                <div class="profile_hart_icon"
+                     sec:authorize="isAuthenticated()">
+                    <button class="heart_btn" th:data-dog-id="${dog.dno}">
+                        <svg id="Animated_Heart" xmlns="http://www.w3.org/2000/svg" width="39.46" height="34.444" viewBox="0 0 39.46 34.444">
+                            <defs>
+                                <clipPath id="clip-path">
+                                    <path id="Heart_Mask" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
+                                </clipPath>
+                            </defs>
+                            <g clip-path="url(#clip-path)">
+                                <path d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
+                                <path d="M-5.756-8.178c3.752-7.616,8.77-9.917,26.474,0s22.426-10.5,28.105,0,2.336,40.287,2.336,40.287H-8.026S-9.508-.562-5.756-8.178Z" transform="translate(-0.875 2.396)" fill="#eda9dd"/>
+                            </g>
+                        </svg>
+                    </button>
+                </div>
+                <!-- 비회원용 비활성화된 하트 -->
+                <div class="profile_hart_icon disabled"
+                     sec:authorize="!isAuthenticated()"
+                     title="로그인 후 이용가능">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="39.46" height="34.444" viewBox="0 0 39.46 34.444">
+                        <path d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#B7B7B7"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 기본 정보 키워드 -->
+            <div class="profile_keyword_row">
+                <label class="profile_pink" th:text="${dog.owner.address.city + ' ' + dog.owner.address.county}">지역</label>
+                <label class="profile_blue" th:text="${dog.ugender.Doglabel()}">성별</label>
+                <label class="profile_blue" th:text="${dog.species.name}">견종</label>
+            </div>
+
+            <!-- 성격 키워드 -->
+            <div class="profile_keyword_row">
+                <label th:each="keyword : ${dog.keywords1}"
+                       class="profile_blue"
+                       th:text="${keyword.dktag}">키워드</label>
+            </div>
+        </div>
+
+        <!-- 배경 그라데이션 -->
+        <div class="profile_card_gradient"></div>
+
+        <!-- 강아지 이미지 -->
+        <div class="profile_card_img"
+             th:if="${dog.image != null}"
+             th:style="'background-image: url(' + @{${dog.image.diurl}} + ')'"></div>
+        <div class="profile_card_img default_bg"
+             th:if="${dog.image == null}">🐕</div>
+    </div>
+</div>
+
+</body>
+</html>

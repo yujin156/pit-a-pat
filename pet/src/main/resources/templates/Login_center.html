@@ -6,10 +6,8 @@
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
-    <script src="../static/js/Login_center.js"></script>
 </head>
 <body>
-
 <div class="wrap" th:fragment="login">
     <!--///////// 로그인 전 ///////// -->
     <div class="BWrap" sec:authorize="!isAuthenticated()">
@@ -23,7 +21,6 @@
             <a href="/user/signup">이메일로 회원가입</a>
         </div>
 
-        <!--        -->
         <div class="find_userInfo">
             <input type="checkbox">
             <span>로그인 상태유지</span>
@@ -32,17 +29,17 @@
             <div class="hr"></div>
             <a href="#">비밀번호 찾기</a>
         </div>
-        <!--    간편 로그인  -->
+
         <div class="simple_login">
             <div class="vl"></div>
             <span> 또는 간편 로그인</span>
             <div class="vl"></div>
         </div>
-        <!--    구글 로그인   -->
+
         <div class="google">
             <div class="G_icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="19.827" height="19.827" viewBox="0 0 19.827 19.827">
-                    <g id="icons8-구글-로고" transform="translate(-4 -4)">
+                    <g id="icons8-구글-로고" transform="translate(-4 -4)">
                         <path id="패스_83353" data-name="패스 83353" d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z" fill="#ffc107"/>
                         <path id="패스_83354" data-name="패스 83354" d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z" transform="translate(-1.163)" fill="#ff3d00"/>
                         <path id="패스_83355" data-name="패스 83355" d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z" transform="translate(-1.107 -12.131)" fill="#4caf50"/>
@@ -54,16 +51,16 @@
         </div>
     </div>
     <div class="find_friend" sec:authorize="!isAuthenticated()">
-        <span>친구 찾으러 가기</span>
-        <div class="move_icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
-                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
-                <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
+        <a href="/matching" class="find_friend_a">
+            <span>친구 찾으러 가기</span>
+            <div class="move_icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
+                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
+                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </a>
     </div>
-    <!--  친구 찾으러가기  -->
-
 
     <!--/////////////////////////////-->
     <!--/////////  로그인 후 ///////// -->
@@ -104,21 +101,42 @@
                     </svg>
                 </a>
             </div>
-
         </div>
 
+        <!-- 프로필 그리드 - 강아지별로 표시 -->
         <div class="profiles_grid">
-            <!-- 프로필 이미지들은 여기에 동적으로 추가됩니다 -->
+            <div th:each="dog : ${dogs}" class="profile_item">
+                <!-- 강아지 이미지 또는 이름 첫 글자 -->
+                <div class="profile_image" th:if="${dog.image != null and dog.image.diurl != null}">
+                    <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
+                </div>
+                <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
+                    <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
+                </div>
+
+                <!-- 강아지 이름 -->
+                <div class="profile_name" th:text="${dog.dname}">강아지 이름</div>
+            </div>
         </div>
 
-        <div class="u_name" th:text="${uname}">UserName님</div>
+        <div class="u_name" th:text="${uname} + '님'">UserName님</div>
 
         <div class="divider"></div>
-        <p th:text="'강아지 수: ' + ${dogs.size()}">강아지 수: 0</p>
-        <div class="pet_statuses" th:each="dog : ${dogs}">
 
-            <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
-            <div class="pet_status"></div>
+        <!-- 강아지별 상태 관리 -->
+        <div class="pet_statuses">
+            <div th:each="dog : ${dogs}" class="pet_status">
+                <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
+                <div class="status_select">
+                    <select class="status_dropdown" th:data-dog-id="${dog.dno}">
+                        <option value="온라인" th:selected="${dog.status == '온라인'}">온라인</option>
+                        <option value="밥 먹는 중" th:selected="${dog.status == '밥 먹는 중'}">밥 먹는 중</option>
+                        <option value="산책 중" th:selected="${dog.status == '산책 중'}">산책 중</option>
+                        <option value="잠자는 중" th:selected="${dog.status == '잠자는 중'}">잠자는 중</option>
+                        <option value="으르렁" th:selected="${dog.status == '으르렁'}">으르렁</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="divider"></div>
@@ -139,156 +157,17 @@
             <span><a th:href="@{/dog/register}">새로운 가족 추가하기</a></span>
         </div>
     </div>
-    <!--    <div class="modal" id="addFamilyModal">-->
-    <!--        <div class="modal-content">-->
-    <!--            <div class="modal-txt">-->
-    <!--                <h2 class="modal-title">가족 추가하기</h2>-->
-    <!--                <p class="modal-subtitle">키워드 추가 및 자세한 설정은 My page에서 가능합니다</p>-->
-    <!--            </div>-->
-    <!--            <div class="modal_all">-->
-    <!--                <div class="modal-left">-->
-    <!--                    <div class="image-upload-area" id="imageUploadArea">-->
-    <!--                        <svg xmlns="http://www.w3.org/2000/svg" width="29.015" height="29" viewBox="0 0 29.015 29">-->
-    <!--                            <path id="upload-image" d="M25.482,17.573A1.381,1.381,0,0,0,24.1,18.955v.525l-2.044-2.044a3.854,3.854,0,0,0-5.428,0l-.967.967-3.426-3.426a3.937,3.937,0,0,0-5.428,0L4.763,17.021V9.286A1.381,1.381,0,0,1,6.144,7.9h9.669a1.381,1.381,0,0,0,0-2.763H6.144A4.144,4.144,0,0,0,2,9.286V25.861A4.144,4.144,0,0,0,6.144,30H22.719a4.144,4.144,0,0,0,4.144-4.144V18.955A1.381,1.381,0,0,0,25.482,17.573ZM6.144,27.242a1.381,1.381,0,0,1-1.381-1.381V20.93l4.006-4.006a1.091,1.091,0,0,1,1.506,0L14.652,21.3h0l5.939,5.939ZM24.1,25.861a1.229,1.229,0,0,1-.249.732l-6.23-6.257.967-.967a1.064,1.064,0,0,1,1.519,0l3.992,4.02ZM30.606,5.542,26.462,1.4a1.428,1.428,0,0,0-1.961,0L20.357,5.542A1.387,1.387,0,0,0,22.319,7.5l1.782-1.8V13.43a1.381,1.381,0,1,0,2.763,0V5.708l1.782,1.8a1.387,1.387,0,1,0,1.961-1.961Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>-->
-    <!--                        </svg>-->
-    <!--                        <p class="upload-text">강아지 사진 올리기</p>-->
-    <!--                    </div>-->
-    <!--                    <input type="file" id="fileInput" accept="image/*">-->
-    <!--                </div>-->
-    <!--                <div class="modal-right">-->
-    <!--                    <div class="form-row">-->
-    <!--                        <div class="form-group-half">-->
-    <!--                            <label for="dogName">Dog Name</label>-->
-    <!--                            <input type="text" id="dogName" class="form-control" placeholder="강아지 이름">-->
-    <!--                        </div>-->
-    <!--                        <div class="form-group-half">-->
-    <!--                            <label for="dogGender">Gender</label>-->
-    <!--                            <select id="dogGender" class="form-control">-->
-    <!--                                <option value="" disabled selected>성별 ▼</option>-->
-    <!--                                <option value="male">수컷</option>-->
-    <!--                                <option value="female">암컷</option>-->
-    <!--                            </select>-->
-    <!--                        </div>-->
-    <!--                        <div class="form-group-half">-->
-    <!--                            <label for="dogSurgery">Surgery</label>-->
-    <!--                            <select id="dogSurgery" class="form-control">-->
-    <!--                                <option value="" disabled selected>중성화 ▼</option>-->
-    <!--                                <option value="male">중성화 O</option>-->
-    <!--                                <option value="female">중성화 X</option>-->
-    <!--                            </select>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-
-    <!--                    <div class="form-group">-->
-    <!--                        <label for="dogType">Dog Type</label>-->
-    <!--                        <div class="dog-type-row">-->
-    <!--                            <input type="text" id="dogType" class="form-control dog-type-input" placeholder="견종 검색 하기">-->
-    <!--                            <button class="search-button">검색</button>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-
-    <!--                    <div class="form-group">-->
-    <!--                        <label>Dog Birthday</label>-->
-    <!--                        <div class="select-group">-->
-    <!--                            <select id="birthYear" class="form-control">-->
-    <!--                                <option value="" disabled selected>생년 ▼</option>-->
-    <!--                                <option value="2024">2024</option>-->
-    <!--                                <option value="2023">2023</option>-->
-    <!--                                <option value="2022">2022</option>-->
-    <!--                                <option value="2021">2021</option>-->
-    <!--                                <option value="2020">2020</option>-->
-    <!--                                <option value="2019">2019</option>-->
-    <!--                                <option value="2018">2018</option>-->
-    <!--                                <option value="2017">2017</option>-->
-    <!--                                <option value="2016">2016</option>-->
-    <!--                                <option value="2015">2015</option>-->
-    <!--                                <option value="2014">2014</option>-->
-    <!--                                <option value="2013">2013</option>-->
-    <!--                                <option value="2012">2012</option>-->
-    <!--                            </select>-->
-    <!--                            <select id="birthMonth" class="form-control">-->
-    <!--                                <option value="" disabled selected>월 ▼</option>-->
-    <!--                            </select>-->
-    <!--                            <select id="birthDay" class="form-control">-->
-    <!--                                <option value="" disabled selected>일 ▼</option>-->
-    <!--                            </select>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-
-    <!--                    <div class="form-group">-->
-    <!--                        <label for="dogIntro">Dog Introduction</label>-->
-    <!--                        <textarea id="dogIntro" class="form-control" rows="4" placeholder="강아지 간단 소개 및 주의사항"></textarea>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="button-group">-->
-    <!--                <button class="form-button btn-cancel" id="cancelButton">닫기</button>-->
-    <!--                <button class="form-button btn-submit" id="addPetButton">다음</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </div>-->
-
-    <!-- 키워드 추가 모달 -->
-    <div class="modal" id="keywordModal">
-        <div class="modal-content keyword-modal-content">
-            <div class="modal-txt">
-                <h2 class="modal-title">가족 추가하기</h2>
-                <p class="modal-subtitle">키워드를 선택 해주세요. 중복선택 가능</p>
-            </div>
-            <div class="keyword-container">
-                <div class="keyword-row">
-                    <button class="keyword-btn">외향</button>
-                    <button class="keyword-btn">내향</button>
-                    <button class="keyword-btn">활발함</button>
-                    <button class="keyword-btn">친화력</button>
-                    <button class="keyword-btn">순둥이</button>
-                    <button class="keyword-btn">짖어요</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">입질 있어요</button>
-                    <button class="keyword-btn">엄마 껌딱지 걍이</button>
-                    <button class="keyword-btn">조심스러운 관찰형</button>
-                    <button class="keyword-btn">선긋는 외톨이 야생견</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">초면엔 신중, 구면엔 신중</button>
-                    <button class="keyword-btn">까칠한 지킬 앤 하이드형</button>
-                    <button class="keyword-btn">신이 내린바닥특화형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">패닉에 빠진 극소심형</button>
-                    <button class="keyword-btn">곱게 자란 막둥이형</button>
-                    <button class="keyword-btn">놀줄 아는 모범생형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">동네 대장 일진형</button>
-                    <button class="keyword-btn">모범견계의 엄친아형</button>
-                    <button class="keyword-btn">쾌활한 만능엔터테이너형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">주위에 관심없는 나홀자 산다형</button>
-                    <button class="keyword-btn">치고 빠지고 밀당 천재형</button>
-                    <button class="keyword-btn">똥꼬발랄 핵인싸형</button>
-                </div>
-            </div>
-            <div class="button-group">
-                <button class="form-button btn-cancel" id="keywordCancelButton">닫기</button>
-                <button class="form-button btn-previous" id="keywordPreviousButton">이전</button>
-                <button class="form-button btn-submit" id="keywordCompleteButton">완료</button>
-            </div>
-        </div>
-    </div>
-
-    <!--    친구 목록   -->
-    <div class="favorites-container" id="friendsContainer">
+    <!-- 친한 친구 즐겨찾기 -->
+    <div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
         <div class="favorites-header">
             <div class="favorites-title">친한 친구 즐겨찾기</div>
             <div class="favorites-actions">
                 <button class="btn-icon btn-edit" id="btnEdit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="3" height="15" viewBox="0 0 3 15">
-                        <circle id="타원_9370" data-name="타원 9370" cx="1.5" cy="1.5" r="1.5" fill="#b7b7b7"/>
-                        <circle id="타원_9371" data-name="타원 9371" cx="1.5" cy="1.5" r="1.5" transform="translate(0 6)" fill="#b7b7b7"/>
-                        <circle id="타원_9372" data-name="타원 9372" cx="1.5" cy="1.5" r="1.5" transform="translate(0 12)" fill="#b7b7b7"/></svg>
+                        <circle cx="1.5" cy="1.5" r="1.5" fill="#b7b7b7"/>
+                        <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 6)" fill="#b7b7b7"/>
+                        <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 12)" fill="#b7b7b7"/>
+                    </svg>
                 </button>
                 <button class="btn-icon btn-done hidden" id="btnDone">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -299,8 +178,19 @@
         </div>
 
         <div class="friend-list" id="friendList">
-            <!-- 친구 목록은 JavaScript로 동적 생성됩니다 -->
+            <!-- 친구 목록이 동적으로 로드됩니다 -->
         </div>
+
+        <!-- 친구 찾기 버튼 -->
+        <button class="btn-find-friends" onclick="window.location.href='/matching'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+                <circle cx="8" cy="8" r="2"/>
+                <path d="M10.5 10.5L15 15"/>
+            </svg>
+            친구 찾기
+        </button>
 
         <button class="btn-add" id="btnAddFriend">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -312,8 +202,15 @@
     </div>
 </div>
 
-<script defer th:src="@{js/Login_center.js}"></script>
+<script th:inline="javascript">
+    // DB에서 가져온 강아지 데이터
+    window.dogsData = /*[[${dogs}]]*/ [];
+    window.userName = /*[[${uname}]]*/ '';
+    console.log('로그인 유저 정보:', window.userName);
+    console.log('강아지 데이터:', window.dogsData);
+</script>
 
+<script defer th:src="@{/js/Login_center.js}"></script>
 
 </body>
 </html>
