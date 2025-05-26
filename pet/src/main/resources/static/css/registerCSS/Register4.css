@@ -118,48 +118,91 @@ body, html {
     background: deeppink;
 }
 
+.title-box{
+    position: absolute;
+    left: 50px;
+    top: 50px;
 
+    font-weight: 400;
+    font-size: 20px;
+    color: #B7B7B7;
+}
+
+.keyword-container {
+    display: flex;
+    flex-wrap: wrap; /* 줄바꿈 허용 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: 10px; /* 태그 사이 여백 */
+    margin-top: 150px;
+    max-width: 800px; /* 태그 영역의 최대 너비 (필요하면 조절) */
+    margin-left: auto; /* 가운데 정렬 */
+    margin-right: auto;
+    margin-bottom: 100px;
+}
+
+.keyword {
+    height: 32px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    font-size: 15px;
+    user-select: none;
+    font-weight: 400;
+
+    display: flex;            /* 🔥 가운데 정렬 핵심! */
+    align-items: center;      /* 수직 가운데 */
+    justify-content: center;  /* 수평 가운데 */
+}
+
+.keyword:hover {
+    background: rgba(58, 127, 235, 0.1);
+}
+
+.keyword.active {
+    background: #3A7FEB;
+    color: white;
+}
 
 /* 홈, 다음, 이전 박스 */
 
-.HOME{
-    position: absolute;
-    top: 520px;
-    left: 70px;
 
-    width: 158px;
-    height: 34px;
-
-    border: 1px solid #3A7FEB;
-    color: #3A7FEB;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    border-radius: 20px;
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    margin-top: auto;
 }
 
-.btn {
-    position: absolute;
-    top: 520px;
-
+.form-buttons button {
     width: 149px;
-    height: 32px;
-
+    height: 32px; /* 예전 그대로 */
     border: 1px solid #3A7FEB;
-
-    font-size: 15px;
-    font-weight: 400;
-
     border-radius: 20px;
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
-.PREV{
-    left: 530px;
+.form-buttons .NEXT {
+    background: #3A7FEB;
+    color: #fff;
+}
+
+.form-buttons .NEXT:hover {
+    background: #2c5ec4;
+}
+
+.form-buttons .PREV,
+.form-buttons .HOME {
+    background: transparent;
     color: #3A7FEB;
 }
-.NEXT{
-    left: 700px;
-    color: white;
-    background: #3A7FEB;
+
+.form-buttons .PREV:hover,
+.form-buttons .HOME:hover {
+    background: rgba(58, 127, 235, 0.1);
 }

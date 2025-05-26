@@ -119,48 +119,118 @@ body, html {
     background: deeppink;
 }
 
+.form-content{
+    margin-top: 50px;
+}
 
+.dog-size-title {
+    font-size: 15px;
+    font-weight: 400;
+    color: #212121;
+    margin-left: 70px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    text-align: left;
+}
+
+.dog-size-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 70px;
+}
+
+.dog-size-options label {
+    position: relative;
+    cursor: pointer;
+}
+
+.dog-size-options input[type="radio"] {
+    display: none;
+}
+
+.dog-size-options .option-box {
+    width: 250px;
+    height: 370px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    transition: border 0.3s, transform 0.3s;
+    padding: 10px 10px 20px 10px; /* 내부 여백 */
+}
+
+.size-title {
+    font-size: 30px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.size-subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.size-example {
+    font-size: 10px;
+    font-weight: 400;
+    color: #777;
+    text-align: center;
+}
+
+.dog-size-options input[type="radio"]:checked + .option-box {
+    outline: 3px solid #3A7FEB;
+    transform: scale(1.05);
+}
 
 /* 홈, 다음, 이전 박스 */
 
-.HOME{
-    position: absolute;
-    top: 520px;
-    left: 70px;
 
-    width: 158px;
-    height: 34px;
-
-    border: 1px solid #3A7FEB;
-    color: #3A7FEB;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    border-radius: 20px;
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    margin-top: auto;
 }
 
-.btn {
-    position: absolute;
-    top: 520px;
-
+.form-buttons button {
     width: 149px;
-    height: 32px;
-
+    height: 32px; /* 예전 그대로 */
     border: 1px solid #3A7FEB;
-
-    font-size: 15px;
-    font-weight: 400;
-
     border-radius: 20px;
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
-.PREV{
-    left: 530px;
+.form-buttons .NEXT {
+    background: #3A7FEB;
+    color: #fff;
+}
+
+.form-buttons .NEXT:hover {
+    background: #2c5ec4;
+}
+
+.form-buttons .PREV,
+.form-buttons .HOME {
+    background: transparent;
     color: #3A7FEB;
 }
-.NEXT{
-    left: 700px;
-    color: white;
-    background: #3A7FEB;
+
+.form-buttons .PREV:hover,
+.form-buttons .HOME:hover {
+    background: rgba(58, 127, 235, 0.1);
 }
