@@ -1,0 +1,227 @@
+/* 기존 스타일 유지 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Gmarket Sans', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+.signup-container {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: #FFFFFF;
+    overflow: hidden;
+}
+
+.left-side {
+    position: absolute;
+    left: 0%;
+    right: 65.78%;
+    top: 0%;
+    bottom: 0%;
+    background: blue;
+    z-index: 1;
+}
+
+.foot-step-row {
+    position: absolute;
+    left: 550px;
+    top: 220px;
+    width: 81px;
+    height: 600px;
+    background: palevioletred;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between
+}
+
+.foot {
+    width: 81px;
+    height: 81px;
+    background: #EDA9DD;
+    border-radius: 50px;
+    opacity: 0.4;
+}
+
+.foot.active {
+    opacity: 1;
+}
+
+.line {
+    height: 91px;
+    border-left: 2px dotted #171616;
+}
+
+.right-side {
+    position: absolute;
+    left: 657px;
+    width: 1263px;
+    height: 1080px;
+    background: #F5F6F8;
+}
+
+.Title-Box {
+    position: relative;
+    left: 170px;
+    top: 175px;
+    width: 940px;
+    margin-bottom: 30px;
+}
+
+.Title {
+    font-size: 45px; /* 예전 그대로 유지 */
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.Title-semi {
+    font-weight: 400;
+    font-size: 25px; /* 예전 그대로 유지 */
+    color: #666;
+}
+
+.PITaPAT {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 93px;
+    height: 91px;
+    background: #EDA9DD;
+}
+/* 오른쪽 정보 입력 칸 */
+.Big-form {
+    position: absolute;
+    top: 301px;
+    left: 170px;
+    width: 940px;
+    height: 606px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.form-content {
+    display: flex;
+    gap: 40px;
+    padding: 50px 70px 40px 70px;
+}
+
+.box-1, .box-2 {
+    flex: 1;
+}
+
+.image-preview {
+    width: 359px;
+    height: 356px;
+    background: #eee;
+    border: 2px dashed #ccc;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.box-2 .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px; /* 이전 그대로 */
+}
+
+.box-2 label {
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.box-2 input,
+.box-2 select,
+.box-2 textarea {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 15px; /* 예전 그대로 */
+    outline: none;
+}
+
+.box-2 input:focus,
+.box-2 select:focus,
+.box-2 textarea:focus {
+    border-color: #3A7FEB;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group.half1,
+.form-group.half2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half1{
+    flex: 4;
+}
+
+.form-group.half2 {
+    flex: 1;
+}
+
+/*다음 이전 홈 버튼*/
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    margin-top: auto;
+}
+
+.form-buttons button {
+    width: 149px;
+    height: 32px; /* 예전 그대로 */
+    border: 1px solid #3A7FEB;
+    border-radius: 20px;
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-buttons .NEXT {
+    background: #3A7FEB;
+    color: #fff;
+}
+
+.form-buttons .NEXT:hover {
+    background: #2c5ec4;
+}
+
+.form-buttons .PREV,
+.form-buttons .HOME {
+    background: transparent;
+    color: #3A7FEB;
+}
+
+.form-buttons .PREV:hover,
+.form-buttons .HOME:hover {
+    background: rgba(58, 127, 235, 0.1);
+}

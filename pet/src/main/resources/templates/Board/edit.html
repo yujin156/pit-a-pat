@@ -20,13 +20,11 @@
   <div id="image-area">
     <label>이미지 수정</label>
     <input type="file" id="newImages" name="newImages" multiple />
-    <div id="preview-area">
-      <!-- 기존 이미지들 -->
-      <div th:each="img : ${board.images}" class="image-box" th:data-id="${img.bino}">
-        <img th:src="@{${img.biurl}}" alt="기존 이미지" class="preview-img" />
-        <input type="hidden" name="oldImgIds" th:value="${img.bino}" />
-        <button type="button" class="remove-btn" onclick="removeExisting(this)">X</button>
-      </div>
+    <div th:each="img : ${board.images}" class="image-box" th:data-id="${img.bino}">
+      <img th:src="@{${img.biurl}}" alt="기존 이미지" class="preview-img" />
+      <input type="hidden" name="deleteImgIds" th:value="${img.bino}" disabled />
+      <button type="button" class="remove-btn" onclick="removeExisting(this)">X</button>
+    </div>
     </div>
   </div>
 

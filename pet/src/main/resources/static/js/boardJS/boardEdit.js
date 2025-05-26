@@ -10,11 +10,13 @@ function removeExistingImage(button, bino) {
     document.getElementById("deleteImgContainer").appendChild(hiddenInput);
 }
 
-function removeExisting(button) {
-    const imageBox = button.closest('.image-box');
-    const hiddenInput = imageBox.querySelector('input[type="hidden"]');
-    hiddenInput.name = "deleteImgIds";  // 폼 제출 시 서버로 전달될 이름으로 변경
-    imageBox.remove();
+function removeExisting(btn) {
+    const box = btn.closest(".image-box");
+    const deleteInput = box.querySelector("input[name='deleteImgIds']");
+    if (deleteInput) {
+        deleteInput.disabled = false; // 활성화해서 서버로 전송되도록
+    }
+    box.style.display = "none"; // 실제 삭제는 submit 시에 hidden input name="deleteImgIds"가 포함되어 전송됨
 }
 
 // 새 이미지 미리보기 + 삭제

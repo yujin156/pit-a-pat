@@ -46,6 +46,7 @@ public class BoardManageService {
                     BoardLikeTable newLike = new BoardLikeTable();
                     newLike.setBoard(board);
                     newLike.setDog(dog);
+                    newLike.setBlike(true); // ERD에 있으므로 유지하되, 이 필드는 현재 로직에서 사용되지 않습니다.
                     likeRepository.save(newLike);
                     board.setBlikecount(board.getBlikecount() + 1);
                     return true; // 좋아요 등록됨
@@ -69,20 +70,40 @@ public class BoardManageService {
                     BoardBookmarkTable newBookmark = new BoardBookmarkTable();
                     newBookmark.setBoard(board);
                     newBookmark.setDog(dog);
+                    newBookmark.setBbmmark(true); // ERD에 있으므로 유지하되, 이 필드는 현재 로직에서 사용되지 않습니다.
                     bookmarkRepository.save(newBookmark);
                     return true; // 북마크 등록됨
                 });
     }
+
     public List<BoardTable> getBoardListByGroup(GroupTable group) {
         BoardListTable boardList = boardListRepository.findByGroupTableGno(group.getGno())
                 .orElseThrow(() -> new IllegalArgumentException("게시판 카테고리 없음"));
 
         return boardRepository.findByBoardListTable(boardList);
     }
+
     @Transactional
     public BoardTable findByIdWithAllRelations(Long bno) {
         return boardRepository.findById(bno)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
     }
 
+    // ✅ 좋아요 여부 확인 (게시글 상세 페이지 로드 시 사용)
+    public boolean isBoardLiked(Long bno, Long dno) {
+        BoardTable board = boardRepository.findById(bno)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        Dog dog = dogRepository.findById(dno)
+                .orElseThrow(() -> new IllegalArgumentException("강아지 없음"));
+        return likeRepository.findByDogAndBoard(dog, board).isPresent();
+    }
+
+    // ✅ 북마크 여부 확인 (게시글 상세 페이지 로드 시 사용)
+    public boolean isBoardBookmarked(Long bno, Long dno) {
+        BoardTable board = boardRepository.findById(bno)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        Dog dog = dogRepository.findById(dno)
+                .orElseThrow(() -> new IllegalArgumentException("강아지 없음"));
+        return bookmarkRepository.findByDogAndBoard(dog, board).isPresent();
+    }
 }

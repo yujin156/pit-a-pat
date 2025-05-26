@@ -25,9 +25,7 @@
                 친구가 없습니다.
             </div>
             <div class="dog-grid-container">
-                <div th:each="friend : ${friends}" class="friend_dog_card"
-                     onclick="goToProfile(this)"
-                     th:data-dog-id="${friend.dno}">
+                <div th:each="friend : ${friends}" class="friend_dog_card">
                     <div class="f_dog_hbtn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="5" height="25" viewBox="0 0 5 25">
                             <g id="그룹_162482" data-name="그룹 162482" transform="translate(-7432 -1784)">
@@ -43,7 +41,7 @@
                              th:if="${friend.image != null}"
                              th:src="@{${friend.image.diurl}}"
                              th:alt="|${friend.dname} 사진|" />
-                        <div th:if="${friend.image == null}" class="f_dog_img"></div>
+                        <span th:if="${friend.image == null}">이미지 없음</span>
                         <p class="f_dog_name" th:text="${friend.dname}">이름</p>
                         <div class="dog_keyword_row">
                             <label class="dog_keyword"
@@ -58,13 +56,6 @@
     </div>
     <div class="login-panel" th:insert="~{Login_center :: login }" ></div>
 </div>
-
-<script>
-    function goToProfile(element) {
-        const dogId = element.dataset.dogId;
-        window.location.href = `/friend/profile/${dogId}`;
-    }
-</script>
 <script defer th:src="@{/js/Friend.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
