@@ -1,5 +1,6 @@
 package pit.pet.Match;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/matching")
+@Slf4j
 public class MatchingController {
 
     @Autowired
@@ -315,7 +317,6 @@ public class MatchingController {
             return ResponseEntity.ok(Collections.emptyList());
         }
     }
-
     /**
      * 좋아요/패스 API
      */
@@ -365,12 +366,16 @@ public class MatchingController {
             }
 
             if ("like".equals(action)) {
-                // ⚠️ 수정된 부분: myDogId를 전달
+                // ✅ MatchingService의 toggleLike 메서드 사용
                 boolean isMatched = matchingService.toggleLike(user, dogId, myDog.getDno());
+
                 response.put("success", true);
                 response.put("action", "like");
                 response.put("isMatched", isMatched);
                 response.put("message", isMatched ? "매칭 성사! 친구가 되었습니다!" : "좋아요를 보냈습니다.");
+                response.put("dogId", dogId);
+                response.put("myDogId", myDog.getDno());
+
             } else if ("pass".equals(action)) {
                 response.put("success", true);
                 response.put("action", "pass");
@@ -383,7 +388,7 @@ public class MatchingController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            System.err.println("스와이프 처리 중 오류: " + e.getMessage());
+            log.error("스와이프 처리 중 오류: {}", e.getMessage());
             response.put("success", false);
             response.put("message", "오류가 발생했습니다: " + e.getMessage());
             return ResponseEntity.ok(response);

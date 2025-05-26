@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import pit.pet.Account.User.Dog;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "dog_like",
         uniqueConstraints = @UniqueConstraint(columnNames = {"sender_dog_id", "receiver_dog_id"}))
 @Getter @Setter @NoArgsConstructor
+@ToString(exclude = {"senderDog", "receiverDog"}) // 순환 참조 방지
 public class DogLike {
 
     @Id
@@ -32,6 +34,8 @@ public class DogLike {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 }

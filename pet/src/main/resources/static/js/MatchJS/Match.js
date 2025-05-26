@@ -123,12 +123,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedDog) {
                 localStorage.setItem('selectedMainDogId', selectedDogId);
                 window.selectedMainDogId = selectedDogId;
+
+                // 로그인 패널의 프로필 순서도 즉시 업데이트
+                if (window.parent && window.parent.updateProfileOrderFromMatch) {
+                    window.parent.updateProfileOrderFromMatch(selectedDogId);
+                }
+
                 showNotification(`${selectedDog.dname} 프로필로 매칭을 시작합니다!`, 'success');
                 console.log('프로필 변경됨:', selectedDog.dname, selectedDogId);
+
+                // 페이지 새로고침 없이 즉시 업데이트를 위한 이벤트 발생
+                window.dispatchEvent(new CustomEvent('profileChanged', {
+                    detail: { dogId: selectedDogId, dogName: selectedDog.dname }
+                }));
             }
         }
     }
-
     function setupEventListeners() {
         if (showAllBtn) {
             showAllBtn.addEventListener('click', showAllDogs);
@@ -578,20 +588,54 @@ document.addEventListener('DOMContentLoaded', function() {
         const location = document.getElementById('locationFilter')?.value || '';
         const keyword1 = selectedKeywords.length > 0 ? selectedKeywords[0] : '';
 
-        console.log('검색 조건:', { gender, breed, location, keyword1 });
+        console.log('=== 검색 시작 ===');
+        console.log('검색 조건:', {
+            gender: gender,
+            breed: breed,
+            location: location,
+            keyword1: keyword1
+        });
+
         showLoading();
 
         const params = new URLSearchParams();
-        if (gender) params.append('gender', gender);
-        if (breed) params.append('breed', breed);
-        if (location) params.append('location', location);
-        if (keyword1) params.append('keyword1', keyword1);
+        if (gender && gender.trim() !== '') {
+            params.append('gender', gender.trim());
+            console.log('성별 파라미터 추가:', gender.trim());
+        }
+        if (breed && breed.trim() !== '') {
+            params.append('breed', breed.trim());
+            console.log('견종 파라미터 추가:', breed.trim());
+        }
+        if (location && location.trim() !== '') {
+            params.append('location', location.trim());
+            console.log('지역 파라미터 추가:', location.trim());
+        }
+        if (keyword1 && keyword1.trim() !== '') {
+            params.append('keyword1', keyword1.trim());
+            console.log('키워드 파라미터 추가:', keyword1.trim());
+        }
         params.append('limit', '20');
 
-        fetch(`/matching/search?${params.toString()}`)
-            .then(response => response.json())
+        const searchUrl = `/matching/search?${params.toString()}`;
+        console.log('검색 URL:', searchUrl);
+
+        fetch(searchUrl)
+            .then(response => {
+                console.log('서버 응답 상태:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(dogs => {
-                console.log('복합 검색 결과:', dogs.length);
+                console.log('복합 검색 결과:', dogs.length, '마리');
+                console.log('검색된 강아지들:', dogs.map(dog => ({
+                    name: dog.dname,
+                    gender: dog.ugender?.doglabel,
+                    breed: dog.species?.name
+                })));
+
                 currentDogs = Array.isArray(dogs) ? dogs : [];
                 currentCardIndex = 0;
                 renderCards();

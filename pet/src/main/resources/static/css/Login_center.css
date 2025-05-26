@@ -1,5 +1,5 @@
 .wrap {
-    position: fixed;    /* ← absolute → fixed */
+    position: fixed;
     top: 15px;
     right: 25px;
     z-index: 999;
@@ -674,9 +674,14 @@ textarea {
 }
 
 .favorites-title {
-    font-size: 18px;
+    font-size: 16px;
     color: #212121;
     font-weight: 600;
+}
+
+.favorites-title .selected-dog-name {
+    color: #387FEB;
+    font-weight: bold;
 }
 
 .favorites-actions {
@@ -857,4 +862,448 @@ textarea {
 .empty-friends-icon {
     font-size: 32px;
     margin-bottom: 8px;
+}
+
+/* 프로필 그리드 스타일 수정 */
+.profiles_grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.profile_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.profile_item:hover {
+    transform: scale(1.05);
+}
+
+.profile_item:hover .profile_image {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 선택된 프로필 스타일 */
+.profile_item.selected {
+    transform: scale(1.1);
+    background-color: rgba(56, 127, 235, 0.1);
+}
+
+.profile_item.selected .profile_image {
+    border: 3px solid #387FEB !important;
+    box-shadow: 0 0 15px rgba(56, 127, 235, 0.4);
+    animation: pulseBlue 2s infinite;
+}
+
+/* 선택된 프로필 이름 스타일 */
+.profile_item.selected .profile_name {
+    color: #387FEB;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(56, 127, 235, 0.3);
+}
+
+/* 펄스 애니메이션 */
+@keyframes pulseBlue {
+    0% {
+        box-shadow: 0 0 15px rgba(56, 127, 235, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(56, 127, 235, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(56, 127, 235, 0.4);
+    }
+}
+
+.profile_image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.profile_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 이미지 없을 때 이름 첫 글자 표시 */
+.profile_initial {
+    background-color: #387FEB;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile_name {
+    font-size: 12px;
+    color: #212121;
+    text-align: center;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ffffff;
+    margin: 20px 0;
+}
+
+/* 강아지별 상태 관리 스타일 수정 */
+.pet_statuses {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.pet_status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.status_label {
+    font-size: 16px;
+    color: #212121;
+    min-width: 80px;
+}
+
+.status_select {
+    width: 60%;
+    background-color: #ffffff;
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+}
+
+.status_select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #387feb;
+    pointer-events: none;
+}
+
+.status_dropdown {
+    width: 100%;
+    padding: 8px 15px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 13px;
+    appearance: none;
+    cursor: pointer;
+    color: #212121;
+}
+
+.status_dropdown:focus {
+    background-color: #f8f9fa;
+}
+
+.add_family {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    color: #387feb;
+    cursor: pointer;
+}
+
+.plus_btn {
+    margin-right: 8px;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 1000px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.modal-left {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-right {
+    width: 60%;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+
+.modal-txt{
+    display: block;
+}
+
+.modal-title {
+    font-weight: normal;
+    font-size: 25px;
+    margin-bottom: 5px;
+    color: #212121;
+}
+
+.modal-subtitle {
+    font-size: 15px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.modal_all{
+    display: flex;
+    gap: 20px;
+}
+
+.image-upload-area {
+    flex: 1;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.upload-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
+    fill: #ccc;
+}
+
+.upload-text {
+    color: #999;
+    font-size: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #B7B7B7;
+    font-size: 10px;
+}
+
+.form-control {
+    padding: 12px;
+    border: 1px solid #387FEB;
+    border-radius: 5px;
+    font-size: 15px;
+    color: #387FEB;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group-half {
+    flex: 1;
+}
+
+.form-group-half > label {
+    font-size: 10px;
+    color: #B7B7B7;
+}
+
+.dog-type-row {
+    display: flex;
+    gap: 10px;
+}
+
+.dog-type-input {
+    flex: 1;
+}
+
+.search-button {
+    width: 80px;
+    background-color: #4a77fb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.select-group {
+    display: flex;
+    gap: 10px;
+}
+
+.select-group select {
+    flex: 1;
+    padding: 12px;
+    /*border: 1px solid #e1e1e1;*/
+    border-radius: 8px;
+    font-size: 15px;
+    /*color: #333;*/
+    appearance: auto;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.form-button {
+    padding: 10px 0;
+    border: 1px solid #387FEB;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    font-size: 15px;
+    width: 20%;
+}
+
+.btn-cancel {
+    background-color: #ffffff;
+    border: 1px solid #4a77fb;
+    color: #4a77fb;
+}
+
+.btn-submit {
+    background-color: #4a77fb;
+    color: white;
+}
+
+/* 파일 업로드 input 숨기기 */
+#fileInput {
+    display: none;
+}
+/*textarea 크기고정*/
+textarea {
+    width: 100%;
+    /*height: 6.25em;*/
+    border: none;
+    resize: none;
+    box-sizing: border-box;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 700px) {
+    .modal-content {
+        flex-direction: column;
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    .modal-left, .modal-right {
+        width: 100%;
+    }
+
+    .modal-left {
+        height: 250px;
+    }
+}
+
+/* 키워드 모달 스타일 */
+.keyword-modal-content {
+    max-width: 800px;
+    padding: 30px;
+}
+
+.keyword-container {
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.keyword-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.keyword-btn {
+    background-color: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.keyword-btn.selected {
+    background-color: #387FEB;
+    color: white;
+    border-color: #387FEB;
+}
+
+.btn-previous {
+    background-color: #ffffff;
+    border: 1px solid #387FEB;
+    color: #387FEB;
+}
+
+/* 기존 버튼 그룹 수정 */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.btn-previous{
+    position: relative;
+    top: 0;
+    left: 15%;
 }
