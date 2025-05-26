@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-<!--    <link rel="stylesheet" th:href="@{/css/Content.css}">-->
-<!--    <link rel="stylesheet" th:href="@{/css/Login_center.css}">-->
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 
-    <link rel="stylesheet" href="./../static/css/Login_center.css">
+<!--    <link rel="stylesheet" href="./../static/css/Login_center.css">-->
 
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
@@ -305,8 +305,6 @@
         </div>
     </div>
 
-    <!--    친구 목록   -->
-    <div class="favorites-container" id="friendsContainer">
     <!-- 친한 친구 즐겨찾기 -->
     <div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
 
@@ -353,8 +351,8 @@
     </div>
 </div>
 
-<script src="../static/js/Login_center.js"></script>
-<!--<script defer th:src="@{js/Login_center.js}"></script>-->
+<!--<script src="../static/js/Login_center.js"></script>-->
+<script defer th:src="@{js/Login_center.js}"></script>
 
 
 <script th:inline="javascript">
