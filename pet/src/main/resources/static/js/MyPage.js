@@ -6,13 +6,8 @@ const tabContents = document.querySelectorAll('.myPage_tab_content');
 const tabToggleButtons = document.querySelectorAll('.myPage_tab_toggle');
 const toggleContents = document.querySelectorAll('.myPage_toggle_content');
 
-// 모달 관련 변수들
-let currentStep = 1;
-let selectedSize = '';
-let selectedKeywords = [];
-let dogProfileData = {};
+// 강아지 프로필 데이터 (모달과 공유)
 let dogProfiles = []; // 저장된 프로필들
-let uploadedImageData = null;
 
 // 데이터 템플릿들
 const postsData = [
@@ -98,31 +93,20 @@ const bookmarksData = [
         content: '우리 강아지가 너무 귀여워요! 🐕',
         comments: 4
     },
-    {
-        type: 'post',
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
-        title: '한강공원 산책 모임',
-        description: '한강공원에서 강아지들과 함께 즐거운 산책을 해요!',
-        participants: [
-            'https://images.unsplash.com/photo-1552053831-71594a27632d?w=30&h=30&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=30&h=30&fit=crop&crop=face'
-        ]
-    }
 ];
 
 // SVG 아이콘들
 const SVG_ICONS = {
-    heart: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 20 18">
-        <path d="M5.5,1a4.5,4.5,0,0,0-3.2,1.3c-1.8,1.8-1.8,4.6,0,6.4L10,16.4,17.7,8.7c1.8-1.8,1.8-4.6,0-6.4s-4.6-1.8-6.4,0L10,3.6,8.7,2.3A4.5,4.5,0,0,0,5.5,1Z" fill="none" stroke="#666" stroke-width="1.5"/>
+    heart: `<svg xmlns="http://www.w3.org/2000/svg" width="23.002" height="20.713" viewBox="0 0 23.002 20.713">
+      <path id="heart" d="M6.773,2.007A5.325,5.325,0,0,0,2.694,3.524a5.862,5.862,0,0,0,.384,8.254l.751.751,6.828,6.833a.732.732,0,0,0,1.034,0l6.825-6.833.751-.751a5.859,5.859,0,0,0,.381-8.253,5.839,5.839,0,0,0-8.238.387l-.237.237-.237-.237A6.386,6.386,0,0,0,6.773,2.007Z" transform="translate(0.33 -0.497)" fill="none" stroke="#b7b7b7" stroke-width="3"/>
     </svg>`,
-    comment: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-        <path d="M2,2H18a2,2,0,0,1,2,2V12a2,2,0,0,1-2,2H6l-4,4V4A2,2,0,0,1,2,2Z" fill="none" stroke="#666" stroke-width="1.5"/>
+    comment: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="19.973" viewBox="0 0 20 19.973">
+      <path id="chat" d="M7.992,10.987a1,1,0,1,0,1,1A1,1,0,0,0,7.992,10.987Zm3.994,0a1,1,0,1,0,1,1A1,1,0,0,0,11.986,10.987Zm3.994,0a1,1,0,1,0,1,1A1,1,0,0,0,15.98,10.987ZM11.986,2A9.986,9.986,0,0,0,2,11.986a9.876,9.876,0,0,0,2.257,6.321l-2,2A.974.974,0,0,0,3,21.972h8.987A9.986,9.986,0,1,0,11.986,2Zm0,17.974H5.405l.929-.929a.977.977,0,0,0,0-1.408,7.989,7.989,0,1,1,5.652,2.337Z" transform="translate(-1.972 -2)" fill="#b7b7b7"/>
     </svg>`,
-    bookmark: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" viewBox="0 0 16 20">
-        <path d="M2,2V18l6-4,6,4V2A2,2,0,0,0,12,0H4A2,2,0,0,0,2,2Z" fill="none" stroke="#666" stroke-width="1.5"/>
+    bookmark: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="21.333" viewBox="0 0 16 21.333">
+      <path id="bookmark" d="M14.667,0H1.333A1.333,1.333,0,0,0,0,1.333V20a1.333,1.333,0,0,0,2.166,1.041L8,16.374l5.834,4.667A1.333,1.333,0,0,0,16,20V1.333A1.333,1.333,0,0,0,14.667,0Z" fill="#387feb"/>
     </svg>`
-};
+    };
 
 // 템플릿 생성 함수들
 function createPostCard(post) {
@@ -253,12 +237,6 @@ function getSizeLabel(size) {
         'large': '대형견'
     };
     return sizeLabels[size] || size;
-}
-
-function calculateAge(birthYear) {
-    if (!birthYear) return '알 수 없음';
-    const currentYear = new Date().getFullYear();
-    return currentYear - parseInt(birthYear);
 }
 
 // 콘텐츠 렌더링 함수들
@@ -491,361 +469,6 @@ function switchToggle(targetToggle) {
     }
 }
 
-// 프로필 추가 모달 관련 함수들
-function openProfileModal() {
-    console.log('모달 열기 시도');
-    const modal = document.getElementById('profileModal');
-
-    if (!modal) {
-        console.error('모달 요소를 찾을 수 없습니다');
-        return;
-    }
-
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-
-    currentStep = 1;
-    showStep(1);
-    initializeBirthdaySelects();
-    initializeImageUpload();
-
-    console.log('모달 열림 완료');
-}
-
-function closeModal() {
-    console.log('모달 닫기 시도');
-    const modal = document.getElementById('profileModal');
-
-    if (!modal) {
-        console.error('모달 요소를 찾을 수 없습니다');
-        return;
-    }
-
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-    resetModalData();
-
-    console.log('모달 닫힘 완료');
-}
-
-function resetModalData() {
-    currentStep = 1;
-    selectedSize = '';
-    selectedKeywords = [];
-    dogProfileData = {};
-    uploadedImageData = null;
-
-    // 폼 초기화
-    const dogNameInput = document.getElementById('dogName');
-    const dogGenderSelect = document.getElementById('dogGender');
-    const dogBreedInput = document.getElementById('dogBreed');
-    const dogIntroInput = document.getElementById('dogIntroduction');
-    const birthYearSelect = document.getElementById('birthYear');
-    const birthMonthSelect = document.getElementById('birthMonth');
-    const birthDaySelect = document.getElementById('birthDay');
-
-    if (dogNameInput) dogNameInput.value = '';
-    if (dogGenderSelect) dogGenderSelect.value = '';
-    if (dogBreedInput) dogBreedInput.value = '';
-    if (dogIntroInput) dogIntroInput.value = '';
-    if (birthYearSelect) birthYearSelect.value = '';
-    if (birthMonthSelect) birthMonthSelect.value = '';
-    if (birthDaySelect) birthDaySelect.value = '';
-
-    // 크기 선택 초기화
-    document.querySelectorAll('.size_card').forEach(card => {
-        card.classList.remove('selected');
-    });
-
-    // 키워드 선택 초기화
-    document.querySelectorAll('.keyword_btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    // 이미지 업로드 초기화
-    const uploadArea = document.getElementById('imageUploadArea');
-    if (uploadArea) {
-        uploadArea.classList.remove('has_image');
-        uploadArea.innerHTML = `
-            <svg class="upload_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            <p>강아지 사진 올리기</p>
-        `;
-    }
-
-    // 버튼 상태 초기화
-    updateNextButtonState();
-}
-
-function showStep(step) {
-    document.querySelectorAll('.modal_step').forEach(stepEl => {
-        stepEl.classList.remove('active');
-    });
-
-    const targetStep = document.getElementById(`step${step}`);
-    if (targetStep) {
-        targetStep.classList.add('active');
-        currentStep = step;
-    }
-}
-
-function nextStep() {
-    if (currentStep === 1) {
-        if (!validateStep1()) return;
-        saveStep1Data();
-        showStep(2);
-        updateNextButtonState();
-    } else if (currentStep === 2) {
-        if (!validateStep2()) return;
-        saveStep2Data();
-        showStep(3);
-    }
-}
-
-function prevStep() {
-    if (currentStep === 2) {
-        showStep(1);
-    } else if (currentStep === 3) {
-        showStep(2);
-        updateNextButtonState();
-    }
-}
-
-function validateStep1() {
-    if (!selectedSize) {
-        alert('강아지 크기를 선택해주세요.');
-        return false;
-    }
-    return true;
-}
-
-function validateStep2() {
-    const dogName = document.getElementById('dogName').value.trim();
-    const dogGender = document.getElementById('dogGender').value;
-    const dogBreed = document.getElementById('dogBreed').value.trim();
-    const birthYear = document.getElementById('birthYear').value;
-
-    if (!dogName) {
-        alert('반려견 이름을 입력해주세요.');
-        return false;
-    }
-
-    if (!dogGender) {
-        alert('성별을 선택해주세요.');
-        return false;
-    }
-
-    if (!dogBreed) {
-        alert('견종을 입력해주세요.');
-        return false;
-    }
-
-    if (!birthYear) {
-        alert('생년월일을 선택해주세요.');
-        return false;
-    }
-
-    return true;
-}
-
-function saveStep1Data() {
-    dogProfileData.size = selectedSize;
-}
-
-function saveStep2Data() {
-    dogProfileData.name = document.getElementById('dogName').value.trim();
-    dogProfileData.gender = document.getElementById('dogGender').value;
-    dogProfileData.breed = document.getElementById('dogBreed').value.trim();
-    dogProfileData.introduction = document.getElementById('dogIntroduction').value.trim();
-    dogProfileData.birthYear = document.getElementById('birthYear').value;
-    dogProfileData.birthMonth = document.getElementById('birthMonth').value;
-    dogProfileData.birthDay = document.getElementById('birthDay').value;
-    dogProfileData.image = uploadedImageData;
-}
-
-function updateNextButtonState() {
-    const nextBtn1 = document.getElementById('nextStep1');
-    const nextBtn2 = document.getElementById('nextStep2');
-
-    if (nextBtn1) {
-        nextBtn1.disabled = !selectedSize;
-    }
-
-    if (nextBtn2) {
-        const dogName = document.getElementById('dogName')?.value.trim();
-        const dogGender = document.getElementById('dogGender')?.value;
-        const dogBreed = document.getElementById('dogBreed')?.value.trim();
-        const birthYear = document.getElementById('birthYear')?.value;
-
-        nextBtn2.disabled = !dogName || !dogGender || !dogBreed || !birthYear;
-    }
-}
-
-function initializeBirthdaySelects() {
-    const yearSelect = document.getElementById('birthYear');
-    const monthSelect = document.getElementById('birthMonth');
-    const daySelect = document.getElementById('birthDay');
-
-    if (!yearSelect || !monthSelect || !daySelect) return;
-
-    // 연도 옵션 추가 (현재 연도부터 20년 전까지)
-    const currentYear = new Date().getFullYear();
-    yearSelect.innerHTML = '<option value="">생년</option>';
-    for (let year = currentYear; year >= currentYear - 20; year--) {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year + '년';
-        yearSelect.appendChild(option);
-    }
-
-    // 월 옵션 추가
-    monthSelect.innerHTML = '<option value="">월</option>';
-    for (let month = 1; month <= 12; month++) {
-        const option = document.createElement('option');
-        option.value = month;
-        option.textContent = month + '월';
-        monthSelect.appendChild(option);
-    }
-
-    // 일 옵션 추가
-    const updateDays = () => {
-        const selectedYear = parseInt(yearSelect.value);
-        const selectedMonth = parseInt(monthSelect.value);
-
-        daySelect.innerHTML = '<option value="">일</option>';
-
-        if (selectedYear && selectedMonth) {
-            const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-            for (let day = 1; day <= daysInMonth; day++) {
-                const option = document.createElement('option');
-                option.value = day;
-                option.textContent = day + '일';
-                daySelect.appendChild(option);
-            }
-        }
-    };
-
-    yearSelect.addEventListener('change', () => {
-        updateDays();
-        updateNextButtonState();
-    });
-    monthSelect.addEventListener('change', () => {
-        updateDays();
-        updateNextButtonState();
-    });
-    daySelect.addEventListener('change', updateNextButtonState);
-
-    // 다른 입력 필드들도 변화 감지
-    document.getElementById('dogName')?.addEventListener('input', updateNextButtonState);
-    document.getElementById('dogGender')?.addEventListener('change', updateNextButtonState);
-    document.getElementById('dogBreed')?.addEventListener('input', updateNextButtonState);
-}
-
-function initializeImageUpload() {
-    const uploadArea = document.getElementById('imageUploadArea');
-    const fileInput = document.getElementById('dogImageInput');
-
-    if (!uploadArea || !fileInput) return;
-
-    uploadArea.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                uploadedImageData = e.target.result;
-                uploadArea.classList.add('has_image');
-                uploadArea.innerHTML = `<img src="${e.target.result}" alt="업로드된 이미지" class="uploaded_image">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // 드래그 앤 드롭 기능
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.style.background = '#f0f7ff';
-        uploadArea.style.borderColor = '#4285f4';
-    });
-
-    uploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        uploadArea.style.background = '#f8f9fa';
-        uploadArea.style.borderColor = '#ddd';
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.style.background = '#f8f9fa';
-        uploadArea.style.borderColor = '#ddd';
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            const file = files[0];
-            if (file.type.startsWith('image/')) {
-                fileInput.files = files;
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
-            }
-        }
-    });
-}
-
-function initializeSizeSelection() {
-    document.querySelectorAll('.size_card').forEach(card => {
-        card.addEventListener('click', () => {
-            document.querySelectorAll('.size_card').forEach(c => {
-                c.classList.remove('selected');
-            });
-            card.classList.add('selected');
-            selectedSize = card.dataset.size;
-            updateNextButtonState();
-        });
-    });
-}
-
-function initializeKeywordSelection() {
-    document.querySelectorAll('.keyword_btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const keyword = btn.dataset.keyword;
-
-            if (btn.classList.contains('selected')) {
-                // 선택 해제
-                btn.classList.remove('selected');
-                selectedKeywords = selectedKeywords.filter(k => k !== keyword);
-            } else {
-                // 선택 추가
-                btn.classList.add('selected');
-                selectedKeywords.push(keyword);
-            }
-        });
-    });
-}
-
-function completeProfile() {
-    dogProfileData.keywords = selectedKeywords;
-    dogProfileData.id = Date.now(); // 임시 ID
-
-    // 프로필 배열에 추가
-    dogProfiles.push({...dogProfileData});
-
-    // UI 업데이트
-    renderDogProfiles();
-
-    // 모달 닫기
-    closeModal();
-
-    alert(`${dogProfileData.name}의 프로필이 성공적으로 저장되었습니다!`);
-
-    console.log('저장된 프로필:', dogProfileData);
-}
-
 // 컨텍스트 메뉴 관련 함수들
 function showContextMenu(event, type = 'general', id = null) {
     event.preventDefault();
@@ -935,6 +558,13 @@ function shareItem(type, id) {
     document.getElementById('contextMenu')?.remove();
 }
 
+// 모달에서 프로필이 추가될 때 호출되는 함수
+function addDogProfile(profileData) {
+    dogProfiles.push({...profileData});
+    renderDogProfiles();
+    console.log('새 프로필 추가됨:', profileData);
+}
+
 // 네비게이션 버튼들에 이벤트 리스너 추가
 navButtons.forEach(button => {
     button.addEventListener('click', (e) => {
@@ -962,51 +592,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 기본 탭 활성화
     switchTab('profile');
 
-    // 프로필 추가 버튼 이벤트
+    // 프로필 추가 버튼 이벤트 (openProfileModal은 modal.js에서 제공)
     const addProfileBtn = document.getElementById('addProfileBtn');
     if (addProfileBtn) {
-        addProfileBtn.addEventListener('click', openProfileModal);
-    }
-
-    // 모달 관련 이벤트들
-    const modal = document.getElementById('profileModal');
-    if (modal) {
-        // 모달 외부 클릭 시 닫기
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
+        addProfileBtn.addEventListener('click', () => {
+            if (typeof openProfileModal === 'function') {
+                openProfileModal();
+            } else {
+                console.error('openProfileModal 함수를 찾을 수 없습니다. modal.js가 로드되었는지 확인하세요.');
             }
         });
-
-        // 단계별 버튼 이벤트들
-        const nextStep1 = document.getElementById('nextStep1');
-        const nextStep2 = document.getElementById('nextStep2');
-        const prevStep2 = document.getElementById('prevStep2');
-        const prevStep3 = document.getElementById('prevStep3');
-        const completeBtn = document.getElementById('completeProfile');
-
-        if (nextStep1) nextStep1.addEventListener('click', nextStep);
-        if (nextStep2) nextStep2.addEventListener('click', nextStep);
-        if (prevStep2) prevStep2.addEventListener('click', prevStep);
-        if (prevStep3) prevStep3.addEventListener('click', prevStep);
-        if (completeBtn) completeBtn.addEventListener('click', completeProfile);
-
-        // 크기 선택 초기화
-        initializeSizeSelection();
-
-        // 키워드 선택 초기화
-        initializeKeywordSelection();
     }
-
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('profileModal');
-            if (modal && modal.style.display === 'block') {
-                closeModal();
-            }
-        }
-    });
 
     // 사용자 정보 변경 버튼들
     document.querySelectorAll('.myPage_edit_btn').forEach(btn => {
@@ -1024,33 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 견종 검색 버튼
-    const searchBtn = document.querySelector('.search_btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', () => {
-            const breedInput = document.getElementById('dogBreed');
-            const searchTerm = breedInput.value.trim();
-            if (searchTerm) {
-                alert(`"${searchTerm}" 견종을 검색합니다.`);
-                // 여기에 실제 검색 로직 추가
-            } else {
-                alert('견종을 입력해주세요.');
-            }
-        });
-    }
-
     console.log('이벤트 리스너 초기화 완료');
 });
 
-// 전역 함수로 노출 (HTML에서 호출 가능)
-window.openProfileModal = openProfileModal;
-window.closeModal = closeModal;
-window.nextStep = nextStep;
-window.prevStep = prevStep;
-window.completeProfile = completeProfile;
+// 전역 함수로 노출 (HTML 및 모달에서 호출 가능)
 window.editItem = editItem;
 window.deleteItem = deleteItem;
 window.shareItem = shareItem;
 window.showDogProfileMenu = showDogProfileMenu;
+window.addDogProfile = addDogProfile;
+window.renderDogProfiles = renderDogProfiles;
 
-console.log('JavaScript 파일 로드 완료');
+console.log('MyPage JavaScript 파일 로드 완료');

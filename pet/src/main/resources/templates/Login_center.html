@@ -8,11 +8,6 @@
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 
-<!--    <link rel="stylesheet" href="./../static/css/Login_center.css">-->
-
-    <link rel="stylesheet" th:href="@{/css/Content.css}">
-    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
-
 </head>
 <body>
 <div class="wrap" th:fragment="login">
@@ -20,8 +15,8 @@
     <div class="BWrap" sec:authorize="!isAuthenticated()">
         <h3>LOGIN</h3>
         <form th:action="@{/login}" method="post" class="login_box">
-            <input class="id" type="email" name="email" required placeholder="이메일" />
-            <input class="pw" type="password" name="password" required placeholder="비밀번호" />
+            <input class="id" type="email" name="email" required placeholder="이메일"/>
+            <input class="pw" type="password" name="password" required placeholder="비밀번호"/>
             <button type="submit" class="login_btn">로그인</button>
         </form>
         <div class="singUp_btn">
@@ -47,10 +42,18 @@
             <div class="G_icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="19.827" height="19.827" viewBox="0 0 19.827 19.827">
                     <g id="icons8-구글-로고" transform="translate(-4 -4)">
-                        <path id="패스_83353" data-name="패스 83353" d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z" fill="#ffc107"/>
-                        <path id="패스_83354" data-name="패스 83354" d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z" transform="translate(-1.163)" fill="#ff3d00"/>
-                        <path id="패스_83355" data-name="패스 83355" d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z" transform="translate(-1.107 -12.131)" fill="#4caf50"/>
-                        <path id="패스_83356" data-name="패스 83356" d="M33.721,20.041h-.8V20H24v3.965h5.6a5.968,5.968,0,0,1-2.026,2.761h0l3.068,2.6a9.59,9.59,0,0,0,3.267-7.34A9.981,9.981,0,0,0,33.721,20.041Z" transform="translate(-10.086 -8.069)" fill="#1976d2"/>
+                        <path id="패스_83353" data-name="패스 83353"
+                              d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z"
+                              fill="#ffc107"/>
+                        <path id="패스_83354" data-name="패스 83354"
+                              d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z"
+                              transform="translate(-1.163)" fill="#ff3d00"/>
+                        <path id="패스_83355" data-name="패스 83355"
+                              d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z"
+                              transform="translate(-1.107 -12.131)" fill="#4caf50"/>
+                        <path id="패스_83356" data-name="패스 83356"
+                              d="M33.721,20.041h-.8V20H24v3.965h5.6a5.968,5.968,0,0,1-2.026,2.761h0l3.068,2.6a9.59,9.59,0,0,0,3.267-7.34A9.981,9.981,0,0,0,33.721,20.041Z"
+                              transform="translate(-10.086 -8.069)" fill="#1976d2"/>
                     </g>
                 </svg>
             </div>
@@ -63,7 +66,8 @@
             <div class="move_icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="20" viewBox="0 0 13 20" fill="none">
                     <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" fill="#387FEB"/>
-                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1.5 17.7941L10.929 10.0001L1.5 2.20605" stroke="white" stroke-width="3"
+                          stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
         </a>
@@ -78,9 +82,16 @@
             <div class="alarmIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="21.42" height="26.191" viewBox="0 0 21.42 26.191">
                     <g id="alarm-bell" transform="translate(1 1)">
-                        <path id="패스_39" data-name="패스 39" d="M10,21.75a2.254,2.254,0,0,0,4.321,0" transform="translate(-2.448 0.829)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                        <path id="패스_40" data-name="패스 40" d="M12,3.169V.75" transform="translate(-2.29 -0.75)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                        <path id="패스_41" data-name="패스 41" d="M12.71,3A8.078,8.078,0,0,1,20.8,11.064c0,7.576,1.618,8.87,1.618,8.87H3s1.618-2.06,1.618-8.87A8.078,8.078,0,0,1,12.71,3Z" transform="translate(-3 -0.581)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        <path id="패스_39" data-name="패스 39" d="M10,21.75a2.254,2.254,0,0,0,4.321,0"
+                              transform="translate(-2.448 0.829)" fill="none" stroke="#387feb" stroke-linecap="round"
+                              stroke-linejoin="round" stroke-width="2"/>
+                        <path id="패스_40" data-name="패스 40" d="M12,3.169V.75" transform="translate(-2.29 -0.75)"
+                              fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2"/>
+                        <path id="패스_41" data-name="패스 41"
+                              d="M12.71,3A8.078,8.078,0,0,1,20.8,11.064c0,7.576,1.618,8.87,1.618,8.87H3s1.618-2.06,1.618-8.87A8.078,8.078,0,0,1,12.71,3Z"
+                              transform="translate(-3 -0.581)" fill="none" stroke="#387feb" stroke-linecap="round"
+                              stroke-linejoin="round" stroke-width="2"/>
                     </g>
                 </svg>
             </div>
@@ -148,212 +159,81 @@
 
         <div class="divider"></div>
 
+        <!-- 가족 추가 버튼 수정 -->
         <div class="add_family">
             <div class="plus_btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                     <g id="그룹_161716" data-name="그룹 161716" transform="translate(-1828 -308)">
-                        <g id="타원_18" data-name="타원 18" transform="translate(1828 308)" fill="none" stroke="#387feb" stroke-width="1">
+                        <g id="타원_18" data-name="타원 18" transform="translate(1828 308)" fill="none" stroke="#387feb"
+                           stroke-width="1">
                             <circle cx="8" cy="8" r="8" stroke="none"/>
                             <circle cx="8" cy="8" r="7.5" fill="none"/>
                         </g>
-                        <path id="패스_63" data-name="패스 63" d="M3660.535,315.479h6.9" transform="translate(-1828.109 0.59)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-width="1"/>
-                        <path id="패스_64" data-name="패스 64" d="M0,0H6.9" transform="translate(1835.876 312.618) rotate(90)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-width="1"/>
+                        <path id="패스_63" data-name="패스 63" d="M3660.535,315.479h6.9"
+                              transform="translate(-1828.109 0.59)" fill="none" stroke="#387feb" stroke-linecap="round"
+                              stroke-width="1"/>
+                        <path id="패스_64" data-name="패스 64" d="M0,0H6.9"
+                              transform="translate(1835.876 312.618) rotate(90)" fill="none" stroke="#387feb"
+                              stroke-linecap="round" stroke-width="1"/>
                     </g>
                 </svg>
             </div>
-            <span><a th:href="@{/dog/register}" id="addFamilyBtn">새로운 가족 추가하기</a></span>
+            <span><a href="#" id="addFamilyBtn">새로운 가족 추가하기</a></span>
         </div>
-    </div>
-
-        <div class="modal" id="modal">
-            <div class="modal-content">
-                <div class="modal-txt">
-                    <h2 class="modal-title">가족 추가하기</h2>
-                    <p class="modal-subtitle">키워드 추가 및 자세한 설정은 My page에서 가능합니다</p>
-                </div>
-                <div class="modal_all">
-                    <div class="modal-left">
-                        <div class="image-upload-area" id="imageUploadArea">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="29.015" height="29" viewBox="0 0 29.015 29">
-                                <path id="upload-image" d="M25.482,17.573A1.381,1.381,0,0,0,24.1,18.955v.525l-2.044-2.044a3.854,3.854,0,0,0-5.428,0l-.967.967-3.426-3.426a3.937,3.937,0,0,0-5.428,0L4.763,17.021V9.286A1.381,1.381,0,0,1,6.144,7.9h9.669a1.381,1.381,0,0,0,0-2.763H6.144A4.144,4.144,0,0,0,2,9.286V25.861A4.144,4.144,0,0,0,6.144,30H22.719a4.144,4.144,0,0,0,4.144-4.144V18.955A1.381,1.381,0,0,0,25.482,17.573ZM6.144,27.242a1.381,1.381,0,0,1-1.381-1.381V20.93l4.006-4.006a1.091,1.091,0,0,1,1.506,0L14.652,21.3h0l5.939,5.939ZM24.1,25.861a1.229,1.229,0,0,1-.249.732l-6.23-6.257.967-.967a1.064,1.064,0,0,1,1.519,0l3.992,4.02ZM30.606,5.542,26.462,1.4a1.428,1.428,0,0,0-1.961,0L20.357,5.542A1.387,1.387,0,0,0,22.319,7.5l1.782-1.8V13.43a1.381,1.381,0,1,0,2.763,0V5.708l1.782,1.8a1.387,1.387,0,1,0,1.961-1.961Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>
-                            </svg>
-                            <p class="upload-text">강아지 사진 올리기</p>
-                        </div>
-                        <input type="file" id="fileInput" accept="image/*">
-                    </div>
-                    <div class="modal-right">
-                        <div class="form-row">
-                            <div class="form-group-half">
-                                <label for="dogName">Dog Name</label>
-                                <input type="text" id="dogName" class="form-control" placeholder="강아지 이름">
-                            </div>
-                            <div class="form-group-half">
-                                <label for="dogGender">Gender</label>
-                                <select id="dogGender" class="form-control">
-                                    <option value="" disabled selected>성별 ▼</option>
-                                    <option value="male">수컷</option>
-                                    <option value="female">암컷</option>
-                                </select>
-                            </div>
-                            <div class="form-group-half">
-                                <label for="dogSurgery">Surgery</label>
-                                <select id="dogSurgery" class="form-control">
-                                    <option value="" disabled selected>중성화 ▼</option>
-                                    <option value="male">중성화 O</option>
-                                    <option value="female">중성화 X</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dogType">Dog Type</label>
-                            <div class="dog-type-row">
-                                <input type="text" id="dogType" class="form-control dog-type-input" placeholder="견종 검색 하기">
-                                <button class="search-button">검색</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Dog Birthday</label>
-                            <div class="select-group">
-                                <select id="birthYear" class="form-control">
-                                    <option value="" disabled selected>생년 ▼</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2023">2023</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2021">2021</option>
-                                    <option value="2020">2020</option>
-                                    <option value="2019">2019</option>
-                                    <option value="2018">2018</option>
-                                    <option value="2017">2017</option>
-                                    <option value="2016">2016</option>
-                                    <option value="2015">2015</option>
-                                    <option value="2014">2014</option>
-                                    <option value="2013">2013</option>
-                                    <option value="2012">2012</option>
-                                </select>
-                                <select id="birthMonth" class="form-control">
-                                    <option value="" disabled selected>월 ▼</option>
-                                </select>
-                                <select id="birthDay" class="form-control">
-                                    <option value="" disabled selected>일 ▼</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dogIntro">Dog Introduction</label>
-                            <textarea id="dogIntro" class="form-control" rows="4" placeholder="강아지 간단 소개 및 주의사항"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="form-button btn-cancel" id="cancelButton">닫기</button>
-                    <button class="form-button btn-submit" id="addPetButton">다음</button>
-                </div>
-            </div>
-        </div>
-
-    <!-- 키워드 추가 모달 -->
-    <div class="modal" id="keywordModal">
-        <div class="modal-content keyword-modal-content">
-            <div class="modal-txt">
-                <h2 class="modal-title">가족 추가하기</h2>
-                <p class="modal-subtitle">키워드를 선택 해주세요. 중복선택 가능</p>
-            </div>
-            <div class="keyword-container">
-                <div class="keyword-row">
-                    <button class="keyword-btn">외향</button>
-                    <button class="keyword-btn">내향</button>
-                    <button class="keyword-btn">활발함</button>
-                    <button class="keyword-btn">친화력</button>
-                    <button class="keyword-btn">순둥이</button>
-                    <button class="keyword-btn">짖어요</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">입질 있어요</button>
-                    <button class="keyword-btn">엄마 껌딱지 걍이</button>
-                    <button class="keyword-btn">조심스러운 관찰형</button>
-                    <button class="keyword-btn">선긋는 외톨이 야생견</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">초면엔 신중, 구면엔 신중</button>
-                    <button class="keyword-btn">까칠한 지킬 앤 하이드형</button>
-                    <button class="keyword-btn">신이 내린바닥특화형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">패닉에 빠진 극소심형</button>
-                    <button class="keyword-btn">곱게 자란 막둥이형</button>
-                    <button class="keyword-btn">놀줄 아는 모범생형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">동네 대장 일진형</button>
-                    <button class="keyword-btn">모범견계의 엄친아형</button>
-                    <button class="keyword-btn">쾌활한 만능엔터테이너형</button>
-                </div>
-                <div class="keyword-row">
-                    <button class="keyword-btn">주위에 관심없는 나홀자 산다형</button>
-                    <button class="keyword-btn">치고 빠지고 밀당 천재형</button>
-                    <button class="keyword-btn">똥꼬발랄 핵인싸형</button>
-                </div>
-            </div>
-            <div class="button-group">
-                <button class="form-button btn-cancel" id="keywordCancelButton">닫기</button>
-                <button class="form-button btn-previous" id="keywordPreviousButton">이전</button>
-                <button class="form-button btn-submit" id="keywordCompleteButton">완료</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 친한 친구 즐겨찾기 -->
-    <div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
-
-        <div class="favorites-header">
-            <div class="favorites-title">친한 친구 즐겨찾기</div>
-            <div class="favorites-actions">
-                <button class="btn-icon btn-edit" id="btnEdit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="3" height="15" viewBox="0 0 3 15">
-                        <circle cx="1.5" cy="1.5" r="1.5" fill="#b7b7b7"/>
-                        <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 6)" fill="#b7b7b7"/>
-                        <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 12)" fill="#b7b7b7"/>
-                    </svg>
-                </button>
-                <button class="btn-icon btn-done hidden" id="btnDone">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="friend-list" id="friendList">
-            <!-- 친구 목록이 동적으로 로드됩니다 -->
-        </div>
-
-        <!-- 친구 찾기 버튼 -->
-        <button class="btn-find-friends" onclick="window.location.href='/matching'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
-                <circle cx="8" cy="8" r="2"/>
-                <path d="M10.5 10.5L15 15"/>
-            </svg>
-            친구 찾기
-        </button>
-
-        <button class="btn-add" id="btnAddFriend">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            친구 추가하기
-        </button>
     </div>
 </div>
 
-<!--<script src="../static/js/Login_center.js"></script>-->
-<script defer th:src="@{js/Login_center.js}"></script>
+<!-- 친한 친구 즐겨찾기 -->
+<div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
+    <div class="favorites-header">
+        <div class="favorites-title">친한 친구 즐겨찾기</div>
+        <div class="favorites-actions">
+            <button class="btn-icon btn-edit" id="btnEdit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="3" height="15" viewBox="0 0 3 15">
+                    <circle cx="1.5" cy="1.5" r="1.5" fill="#b7b7b7"/>
+                    <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 6)" fill="#b7b7b7"/>
+                    <circle cx="1.5" cy="1.5" r="1.5" transform="translate(0 12)" fill="#b7b7b7"/>
+                </svg>
+            </button>
+            <button class="btn-icon btn-done hidden" id="btnDone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
 
+    <div class="friend-list" id="friendList">
+        <!-- 친구 목록이 동적으로 로드됩니다 -->
+    </div>
+
+    <!-- 친구 찾기 버튼 -->
+    <button class="btn-find-friends" onclick="window.location.href='/matching'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+            <circle cx="8" cy="8" r="2"/>
+            <path d="M10.5 10.5L15 15"/>
+        </svg>
+        친구 찾기
+    </button>
+
+    <button class="btn-add" id="btnAddFriend">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        친구 추가하기
+    </button>
+</div>
+
+<!-- 여기에 외부 모달 HTML이 포함됩니다 (AddFamily_Modal.js에서 생성) -->
+
+<!-- JavaScript 파일들 -->
+<script defer th:src="@{/js/Login_center.js}"></script>
 
 <script th:inline="javascript">
     // DB에서 가져온 강아지 데이터
@@ -361,10 +241,8 @@
     window.userName = /*[[${uname}]]*/ '';
     console.log('로그인 유저 정보:', window.userName);
     console.log('강아지 데이터:', window.dogsData);
+
 </script>
-
-
-<script defer th:src="@{/js/Login_center.js}"></script>
 
 </body>
 </html>

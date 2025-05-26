@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Group_board</title>
+
+    <link rel="stylesheet" href="/static/css/Content.css">
+    <link rel="stylesheet" href="/static/css/AddFamily_Modal.css">
+</head>
+<!--테스트 버튼 스타일-->
+<style>
+    /* 테스트 페이지용 스타일 */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .test-container {
+        text-align: center;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .test-container h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 2rem;
+    }
+
+    .test-container p {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .test-btn {
+        background: #4285f4;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+    }
+
+    .test-btn:hover {
+        background: #3367d6;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+
+    .emoji {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<body>
+
+<!-- 테스트 버튼 -->
+<div class="test-container">
+    <div class="emoji">🐕</div>
+    <h1>반려견 소셜 미팅 플랫폼</h1>
+    <p>"인간만 미팅하냐? 개도 미팅할 수 있다!"</p>
+    <button class="test-btn" onclick="openProfileModal()">
+        🐾 반려견 프로필 추가하기
+    </button>
+</div>
+<!--/////////합칠때 위에 버튼은 지우고 아래껏만 사용 /////////-->
+<!--스크립트에서 동적으로 모달 생성-->
+<!-- 프로필 추가 모달 -->
+<div id="profileModal" class="profile_modal">
+    <div class="profile_modal_content">
+        <!-- 1단계: 강아지 크기 선택 -->
+        <div id="step1" class="modal_step active">
+            <h2>우리 강아지 <span class="highlight">크기</span> 선택하기</h2>
+            <div class="dog_size_cards">
+                <div class="size_card" data-size="large">
+                    <img src="/static/img/대형견.png" alt="대형견" class="size_image">
+                    <div class="size_info">
+                        <h3>대형견</h3>
+                        <p>25kg, 60cm 이상</p>
+                        <span class="size_breeds">리트리버, 셰퍼드, 도베르만 등등</span>
+                    </div>
+                </div>
+                <div class="size_card" data-size="medium">
+                    <img src="/static/img/중형견.png" alt="중형견" class="size_image">
+                    <div class="size_info">
+                        <h3>중형견</h3>
+                        <p>10kg ~ 25kg<br>35cm ~ 60cm</p>
+                        <span class="size_breeds">시바견, 비글, 웰시코기 등</span>
+                    </div>
+                </div>
+                <div class="size_card" data-size="small">
+                    <img src="/static/img/소형견.png" alt="소형견" class="size_image">
+                    <div class="size_info">
+                        <h3>소형견</h3>
+                        <p>10kg, 35cm 이하</p>
+                        <span class="size_breeds">포메, 치와와, 푸들, 말티즈 등</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal_buttons">
+                <button class="modal_btn secondary" onclick="closeModal()">이전</button>
+                <button class="modal_btn primary" id="nextStep1" disabled>다음</button>
+            </div>
+        </div>
+
+        <!-- 2단계: 강아지 정보 입력 -->
+        <div id="step2" class="modal_step">
+            <div class="dog_form_container">
+                <div class="dog_image_upload">
+                    <div class="upload_area" id="imageUploadArea">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="29.015" height="29" viewBox="0 0 29.015 29">
+                            <path id="upload-image" d="M25.482,17.573A1.381,1.381,0,0,0,24.1,18.955v.525l-2.044-2.044a3.854,3.854,0,0,0-5.428,0l-.967.967-3.426-3.426a3.937,3.937,0,0,0-5.428,0L4.763,17.021V9.286A1.381,1.381,0,0,1,6.144,7.9h9.669a1.381,1.381,0,0,0,0-2.763H6.144A4.144,4.144,0,0,0,2,9.286V25.861A4.144,4.144,0,0,0,6.144,30H22.719a4.144,4.144,0,0,0,4.144-4.144V18.955A1.381,1.381,0,0,0,25.482,17.573ZM6.144,27.242a1.381,1.381,0,0,1-1.381-1.381V20.93l4.006-4.006a1.091,1.091,0,0,1,1.506,0L14.652,21.3h0l5.939,5.939ZM24.1,25.861a1.229,1.229,0,0,1-.249.732l-6.23-6.257.967-.967a1.064,1.064,0,0,1,1.519,0l3.992,4.02ZM30.606,5.542,26.462,1.4a1.428,1.428,0,0,0-1.961,0L20.357,5.542A1.387,1.387,0,0,0,22.319,7.5l1.782-1.8V13.43a1.381,1.381,0,1,0,2.763,0V5.708l1.782,1.8a1.387,1.387,0,1,0,1.961-1.961Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>
+                        </svg>
+                        <p>강아지 사진 올리기</p>
+                    </div>
+                    <input type="file" id="dogImageInput" accept="image/*" style="display: none;">
+                </div>
+                <div class="dog_form">
+                    <div class="form_row">
+                        <div class="form_group">
+                            <label>Dog Name</label>
+                            <input type="text" id="dogName" placeholder="강아지 이름">
+                        </div>
+                        <div class="form_group">
+                            <label>Gender</label>
+                            <select id="dogGender">
+                                <option value="">성별</option>
+                                <option value="male">수컷</option>
+                                <option value="female">암컷</option>
+                            </select>
+                        </div>
+                        <div class="form_group">
+                            <label for="dogSurgery">Surgery</label>
+                            <select id="dogSurgery" class="form-control">
+                                <option value="" disabled selected>중성화</option>
+                                <option value="yes">중성화 O</option>
+                                <option value="no">중성화 X</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form_row">
+                        <div class="form_group full">
+                            <label>Dog Type</label>
+                            <div class="breed_search">
+                                <input type="text" id="dogBreed" placeholder="견종 검색 하기">
+                                <button type="button" class="search_btn">검색</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form_row_birt">
+                        <label>Dog Birthday</label>
+                        <div class="birthday_group">
+                            <select id="birthYear">
+                                <option value="">생년</option>
+                            </select>
+                            <select id="birthMonth">
+                                <option value="">월</option>
+                            </select>
+                            <select id="birthDay">
+                                <option value="">일</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form_group full">
+                        <label>Dog Introduction</label>
+                        <textarea id="dogIntroduction" placeholder="강아지 간단 소개 및 추가사항"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal_buttons">
+                <button class="modal_btn secondary" id="prevStep2">이전</button>
+                <button class="modal_btn primary" id="nextStep2" disabled>다음</button>
+            </div>
+        </div>
+
+        <!-- 3단계: 강아지 키워드 선택 -->
+        <div id="step3" class="modal_step">
+            <h2>강아지 키워드를 선택해주세요!</h2>
+            <p class="step_subtitle">중복 선택 가능</p>
+
+            <div class="keyword_grid">
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="외향">외향</button>
+                    <button class="keyword_btn" data-keyword="내향">내향</button>
+                    <button class="keyword_btn" data-keyword="활발한">활발한</button>
+                    <button class="keyword_btn" data-keyword="친화력">친화력</button>
+                    <button class="keyword_btn" data-keyword="순둥이">순둥이</button>
+                    <button class="keyword_btn" data-keyword="짖어요">짖어요</button>
+                </div>
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="입질 있어요">입질 있어요</button>
+                    <button class="keyword_btn" data-keyword="엄마 껌딱지 겁쟁이">엄마 껌딱지 겁쟁이</button>
+                    <button class="keyword_btn" data-keyword="조심스러운 관찰형">조심스러운 관찰형</button>
+                    <button class="keyword_btn" data-keyword="선긋는 외톨이 아생견">선긋는 외톨이 아생견</button>
+                </div>
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="초면에 신중, 구면엔 친근">초면에 신중, 구면엔 친근</button>
+                    <button class="keyword_btn" data-keyword="동네 대장 일진형">동네 대장 일진형</button>
+                    <button class="keyword_btn" data-keyword="까칠한 지킬 앤 하이드형">까칠한 지킬 앤 하이드형</button>
+                    <button class="keyword_btn" data-keyword="신이 내린 반려 특화형">신이 내린 반려 특화형</button>
+                </div>
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="패닉에 빠진 극소심형">패닉에 빠진 극소심형</button>
+                    <button class="keyword_btn" data-keyword="곱게자란 막둥이형">곱게자란 막둥이형</button>
+                    <button class="keyword_btn" data-keyword="놀줄 아는 모범생형">놀줄 아는 모범생형</button>
+                </div>
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="모범견계의 엄친아형">모범견계의 엄친아형</button>
+                    <button class="keyword_btn" data-keyword="쾌활한 만능엔터테이너형">쾌활한 만능엔터테이너형</button>
+                </div>
+                <div class="keyword_category">
+                    <button class="keyword_btn" data-keyword="주인에 관심없는 나홀로 산다형">주인에 관심없는 나홀로 산다형</button>
+                    <button class="keyword_btn" data-keyword="치고 빠지는 밀당 전재형">치고 빠지는 밀당 전재형</button>
+                    <button class="keyword_btn" data-keyword="똥꼬발랄 핵인싸형">똥꼬발랄 핵인싸형</button>
+                </div>
+            </div>
+
+            <div class="modal_buttons">
+                <button class="modal_btn secondary" id="prevStep3">이전</button>
+                <button class="modal_btn primary" id="completeProfile">완료</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script  defer src="/static/js/AddFamily_Modal.js"></script>
+</body>
+</html>
