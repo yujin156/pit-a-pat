@@ -17,10 +17,13 @@ import pit.pet.Account.User.DogSize;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+// DogController.java
+// DogController.java
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/dog")
@@ -39,6 +42,7 @@ public class DogController {
         model.addAttribute("keyword1List", keyword1Repository.findAll());
         return "Dog/DogRegister";
     }
+
 
     @PostMapping("/register")
     public String registerDog(@ModelAttribute DogRegisterRequest request, Principal principal) {

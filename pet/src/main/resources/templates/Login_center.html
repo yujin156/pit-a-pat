@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 
@@ -161,10 +160,10 @@
                     </g>
                 </svg>
             </div>
-            <span><a th:href="@{/dog/register}" id="addFamilyBtn">새로운 가족 추가하기</a></span>
+            <span id="addFamilyBtn"> <a href="dog/register">새로운 가족 추가하기</a></span>
         </div>
     </div>
-
+<!--
         <div class="modal" id="modal">
             <div class="modal-content">
                 <div class="modal-txt">
@@ -191,25 +190,30 @@
                                 <label for="dogGender">Gender</label>
                                 <select id="dogGender" class="form-control">
                                     <option value="" disabled selected>성별 ▼</option>
-                                    <option value="male">수컷</option>
-                                    <option value="female">암컷</option>
+                                    <option value="남성">수컷</option>
+                                    <option value="여성">암컷</option>
                                 </select>
                             </div>
                             <div class="form-group-half">
                                 <label for="dogSurgery">Surgery</label>
                                 <select id="dogSurgery" class="form-control">
                                     <option value="" disabled selected>중성화 ▼</option>
-                                    <option value="male">중성화 O</option>
-                                    <option value="female">중성화 X</option>
+                                    <option value="NEUTERED">중성화 O</option>
+                                    <option value="NOT_NEUTERED">중성화 X</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="dogType">Dog Type</label>
-                            <div class="dog-type-row">
-                                <input type="text" id="dogType" class="form-control dog-type-input" placeholder="견종 검색 하기">
-                                <button class="search-button">검색</button>
+                            <label for="breedInput">Dog Type</label>
+                            <div class="dog-type-row" style="position: relative;">
+                                <input type="text" id="breedInput" class="form-control dog-type-input" name="breed" placeholder="견종 검색 하기" autocomplete="off">
+                                <div id="autocompleteList" class="autocomplete-list"></div>
+
+
+                                <select id="speciesSelect" name="speciesId" hidden>
+                                    <option th:each="s : ${speciesList}" th:value="${s.id}" th:text="${s.name}"/>
+                                </select>
                             </div>
                         </div>
 
@@ -253,8 +257,9 @@
                 </div>
             </div>
         </div>
-
+-->
     <!-- 키워드 추가 모달 -->
+<!--
     <div class="modal" id="keywordModal">
         <div class="modal-content keyword-modal-content">
             <div class="modal-txt">
@@ -304,7 +309,7 @@
             </div>
         </div>
     </div>
-
+-->
     <!-- 친한 친구 즐겨찾기 -->
     <div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
 
@@ -363,8 +368,6 @@
     console.log('강아지 데이터:', window.dogsData);
 </script>
 
-
-<script defer th:src="@{/js/Login_center.js}"></script>
 
 </body>
 </html>

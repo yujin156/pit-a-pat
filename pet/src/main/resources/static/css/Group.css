@@ -1,8 +1,10 @@
 /* 프로필 페이지 전체 래퍼 */
 .group_wrap {
     width: 1460px;
-    margin: 30px auto;
+    margin-top: 30px;
     padding: 0 20px;
+    margin-left: 120px;
+    margin-right: 325px;
 }
 
 /*///////타이틀///////*/

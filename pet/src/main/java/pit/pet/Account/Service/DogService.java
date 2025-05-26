@@ -44,6 +44,7 @@ public class DogService {
         dog.setSize(DogSize.valueOf(request.getSize()));
         dog.setDBday(request.getBirthday());
         dog.setDintro(request.getIntro());
+        dog.setNeuterStatus(request.getNeuterStatus());
         dog.setOwner(user);
 
         Species species = speciesRepository.findById(request.getSpeciesId())

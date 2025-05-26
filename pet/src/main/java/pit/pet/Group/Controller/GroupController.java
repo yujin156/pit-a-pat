@@ -1,6 +1,9 @@
 package pit.pet.Group.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -20,10 +23,10 @@ import pit.pet.Group.Service.GroupMemberService;
 import pit.pet.Group.Service.GroupService;
 import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
+import pit.pet.Group.entity.MemberStatus;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,39 +53,99 @@ public class GroupController {
 
     // 그룹 생성 처리
     @PostMapping("/create")
-    public String createGroup(@ModelAttribute CreateGroupRequest request) {
-        Dog dog = dogRepository.findById(request.getDogId())
+    @ResponseBody
+    public ResponseEntity<Void> createGroupAjax(
+            @RequestParam String interest,
+            @RequestParam String gname,
+            @RequestParam(required = false) String groupInfo,
+            @RequestParam Long dogId) {
+        Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new RuntimeException("해당 강아지를 찾을 수 없습니다."));
-        groupService.createGroup(request.getGname(), dog);
-        return "redirect:/groups/list";
+        groupService.createGroup(gname, groupInfo, interest, dog);
+        return ResponseEntity.ok().build();
     }
 
     // 전체 그룹, 가입한 그룹 보여주기
     @GetMapping("/list")
-    public String groupList(Model model,
-                            @AuthenticationPrincipal UserDetails principal) {
-        // 전체 그룹 목록
-        List<GroupTable> groups = groupService.getAllGroups();
-        model.addAttribute("groupList", groups);
+    public String groupList(
+            Model model,
+            @AuthenticationPrincipal UserDetails principal
+    ) throws JsonProcessingException {
 
-        // 🔥 리더 이름 맵 만들기: <gno, dname>
-        Map<Long, String> leaderNames = new HashMap<>();
-        for (GroupTable group : groups) {
-            Long leaderGmno = group.getGleader(); // GroupMemberTable의 PK
-            groupMemberRepository.findById(leaderGmno).ifPresent(member -> {
-                leaderNames.put(group.getGno(), member.getDog().getDname());
-            });
-        }
-        model.addAttribute("leaderNames", leaderNames); // Thymeleaf에서 group.gno로 조회
+        // 1) 전체 그룹
+        List<GroupTable> all = groupService.getAllGroups();
 
-        // 현재 로그인한 유저의 강아지 → 그룹 가입 목록
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow();
+        // 2) 내 강아지들
+        User me = userRepository.findByUemail(principal.getUsername()).orElseThrow();
         List<Dog> myDogs = dogRepository.findByOwner(me);
-        List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
-        model.addAttribute("myMemberships", myMemberships);
 
-        return "Group/List";
+        // 3) 내가 만든 그룹  (GroupTable.dog 이 내 강아지인 것)
+        List<GroupTable> created = all.stream()
+                .filter(g -> myDogs.contains(g.getDog()))
+                .collect(Collectors.toList());
+
+        // 4) 내가 가입한(=MemberStatus.ACCEPTED) 그룹
+        List<GroupMemberTable> memberships = groupMemberService.findByDogs(myDogs);
+        List<GroupTable> joined = memberships.stream()
+                .filter(m -> m.getState() == MemberStatus.ACCEPTED)
+                .map(GroupMemberTable::getGroupTable)
+                .collect(Collectors.toList());
+
+        // 5) 내 그룹 = 만든 그룹 ∪ 가입 그룹 (중복 제거)
+        LinkedHashSet<GroupTable> set = new LinkedHashSet<>();
+        set.addAll(created);
+        set.addAll(joined);
+        List<GroupTable> myGroups = new ArrayList<>(set);
+
+        // 6) 가입 현황 리스트 (pending/approved/rejected 모두 보여줄 탭용)
+        //    ※ 가입 현황 탭에만 쓸 JSON
+        //    (status: pending|approved|rejected)
+        //    title, imageUrl, avatarUrl, id
+        //    ← 이건 myMemberships 전체를 사용
+        List<Map<String,Object>> applicationDto = memberships.stream()
+                .map(m -> Map.<String,Object>of(
+                        "id",       m.getGroupTable().getGno(),
+                        "title",    m.getGroupTable().getGname(),
+                        "imageUrl", "/groups/" + m.getGroupTable().getGno() + "/image",
+                        "avatarUrl","/dogs/"   + m.getDog().getDno()       + "/avatar",
+                        "status",   m.getState().name().toLowerCase()
+                ))
+                .collect(Collectors.toList());
+
+        // 7) DTO 를 JSON 으로 직렬화
+        ObjectMapper om = new ObjectMapper();
+
+        // 전체 그룹 JSON
+        List<Map<String,Object>> allDto = all.stream()
+                .map(g -> Map.<String,Object>of(
+                        "id",        g.getGno(),
+                        "title",     g.getGname(),
+                        "imageUrl",  "/groups/" + g.getGno() + "/image",
+                        "avatarUrl", "/dogs/"   + g.getDog().getDno() + "/avatar"
+                ))
+                .collect(Collectors.toList());
+
+        // 내 그룹 JSON
+        List<Map<String,Object>> myDto = myGroups.stream()
+                .map(g -> Map.<String,Object>of(
+                        "id",        g.getGno(),
+                        "title",     g.getGname(),
+                        "imageUrl",  "/groups/" + g.getGno() + "/image",
+                        "avatarUrl", "/dogs/"   + g.getDog().getDno() + "/avatar"
+                ))
+                .collect(Collectors.toList());
+
+        // 모델에 올려주기
+        model.addAttribute("allGroupsJson",         om.writeValueAsString(allDto));
+        model.addAttribute("myGroupsJson",          om.writeValueAsString(myDto));
+        model.addAttribute("applicationGroupsJson", om.writeValueAsString(applicationDto));
+
+        // (기존 Thymeleaf 바인딩용)
+        model.addAttribute("groupList", all);
+        model.addAttribute("myDogs",    myDogs);
+        model.addAttribute("myMemberships", memberships);
+
+        return "Group/Group";
     }
 
     // 그룹 가입 신청 폼 (강아지 선택)

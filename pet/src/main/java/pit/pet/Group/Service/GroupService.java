@@ -27,36 +27,37 @@ public class GroupService {
      * - 생성자도 그룹 멤버로 등록 + 상태는 ACCEPTED
      * - 생성자의 gmno를 그룹의 g_leader로 설정
      */
-    @Transactional
-    public GroupTable createGroup(String gname, Dog dog) {
-        // 1. 그룹 객체 생성
+    public GroupTable createGroup(String gname,
+                                  String groupInfo,
+                                  String interest,
+                                  Dog dog) {
+        // 1. 그룹 객체 생성 및 설정
         GroupTable group = new GroupTable();
         group.setGname(gname);
-        group.setGmembercount(1); // 생성자 포함 1명
-
+        group.setGinfo(groupInfo);
+        group.setInterest(interest);
+        group.setGmembercount(1);
         group.setDog(dog);
 
-        // 2. 일단 그룹 저장 (gno 생성)
         groupRepository.save(group);
 
-        // 3. 그룹 생성자 멤버 등록
+        // 2. 그룹 멤버(생성자) 등록
         GroupMemberTable creator = new GroupMemberTable();
         creator.setGroupTable(group);
         creator.setDog(dog);
-        creator.setState(MemberStatus.ACCEPTED); // 생성자는 승인 상태
-
-        // 4. 멤버 저장
+        creator.setState(MemberStatus.ACCEPTED);
         groupMemberRepository.save(creator);
 
-        // 5. 생성자의 gmno를 그룹 리더로 등록
+        // 3. 그룹 리더 설정
         group.setGleader(creator.getGmno());
 
+        // 4. 기본 게시판 생성
         BoardListTable boardList = new BoardListTable();
         boardList.setGroupTable(group);
         boardList.setBlContent("기본 게시판");
         boardListRepository.save(boardList);
 
-        return groupRepository.save(group); // 최종 저장
+        return groupRepository.save(group);
     }
 
     /**

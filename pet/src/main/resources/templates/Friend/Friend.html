@@ -15,6 +15,19 @@
     <div class="friend_wrap">
         <h2 class="friend_title">Friend</h2>
         <p class="friend_sub_title">좋아하는 강아지 친구들</p>
+        <form th:action="@{/dog-friends/list}" method="get" id="dogForm">
+            <label for="dogSelect">강아지 선택:</label>
+            <select id="dogSelect" name="dogId">
+                <!-- 전체보기: value 비워두면 this.value === '' -->
+                <option value="" th:selected="${selectedDogId == null}">-- 전체보기 --</option>
+                <!-- 내 강아지들 옵션 -->
+                <option th:each="dog : ${myDogs}"
+                        th:value="${dog.dno}"
+                        th:text="${dog.dname}"
+                        th:selected="${dog.dno == selectedDogId}">
+                </option>
+            </select>
+        </form>
         <!--    강아지 검색  -->
         <div class="friend_input">
             <input type="search" class="search_type" placeholder="견종 검색하기">
@@ -59,5 +72,21 @@
 <script defer th:src="@{/js/Friend.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const form = document.getElementById('dogForm');
+    const select = document.getElementById('dogSelect');
+
+    select.addEventListener('change', function() {
+        if (this.value === '') {
+            // 전체보기를 선택하면? dogId 파라미터 없이 /list 로 이동
+            window.location.href = /*[[@{/dog-friends/list}]]*/ '/dog-friends/list';
+        } else {
+            // 특정 강아지 선택시 기존 GET 폼 제출
+            form.submit();
+        }
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

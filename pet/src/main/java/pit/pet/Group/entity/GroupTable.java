@@ -21,6 +21,12 @@ public class GroupTable {
     @Column(name = "g_name")
     private String gname;
 
+    @Column(name = "g_info")
+    private String ginfo;  // 그룹 설명
+
+    @Column(name = "interest")
+    private String interest;  // 관심사
+
     @Column(name = "g_membercount")
     private Integer gmembercount;
 

@@ -38,8 +38,8 @@ public class GlobalModelAttribute {
                 List<Dog> myOnlyDogs = dogRepository.findByOwner(me);
                 List<Map<String, Object>> safeDogs = new ArrayList<>();
 
-                System.out.println("GlobalModelAttribute - 로그인 유저: " + me.getUemail());
-                System.out.println("GlobalModelAttribute - 유저 ID: " + me.getUno());
+//                System.out.println("GlobalModelAttribute - 로그인 유저: " + me.getUemail());
+//                System.out.println("GlobalModelAttribute - 유저 ID: " + me.getUno());
 
                 for (Dog dog : myOnlyDogs) {
                     // ✅ 소유자 검증 추가
@@ -69,14 +69,14 @@ public class GlobalModelAttribute {
                         }
 
                         safeDogs.add(dogData);
-                        System.out.println("GlobalModelAttribute - 내 강아지 추가: " + dog.getDname() + " (소유자: " + dog.getOwner().getUemail() + ")");
+                       /* System.out.println("GlobalModelAttribute - 내 강아지 추가: " + dog.getDname() + " (소유자: " + dog.getOwner().getUemail() + ")");*/
                     }
                 }
 
                 model.addAttribute("dogs", safeDogs);
                 model.addAttribute("uname", me.getUname());
 
-                System.out.println("GlobalModelAttribute - 최종 내 강아지 수: " + safeDogs.size());
+//                System.out.println("GlobalModelAttribute - 최종 내 강아지 수: " + safeDogs.size());
 
             } catch (Exception e) {
                 System.err.println("GlobalModelAttribute 오류: " + e.getMessage());

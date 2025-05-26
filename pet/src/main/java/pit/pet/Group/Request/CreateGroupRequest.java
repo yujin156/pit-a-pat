@@ -7,5 +7,7 @@ import lombok.Setter;
 @Setter
 public class CreateGroupRequest {
     private String gname;
-    private Long dogId; // 생성자 강아지 번호
+    private String groupInfo;  // 모임 소개
+    private String interest;   // 선택한 관심사
+    private Long dogId;        // 생성자 강아지 번호
 }
