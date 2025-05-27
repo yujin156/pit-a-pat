@@ -1,4 +1,4 @@
-// AddFamily_Modal.js - 독립된 외부 모달 파일
+// AddFamily_Modal.js - 수정된 버전
 console.log('AddFamily_Modal.js 로드됨');
 
 // 모달 관련 변수들
@@ -7,12 +7,15 @@ let selectedSize = '';
 let selectedKeywords = [];
 let uploadedImage = null;
 
-
-// 전역 함수로 노출 (HTML에서 호출하기 위해)
-window.handleImageError = handleImageError;
-
 // 모달 HTML 생성 함수
 function createProfileModalHTML() {
+    // 이미지 경로를 변수로 정의
+    const imagePaths = {
+        large: "/img/large.png",
+        medium: "/img/medium.png",
+        small: "/img/small.png"
+    };
+
     return `
         <div id="profileModal" class="profile_modal">
             <div class="profile_modal_content">
@@ -20,24 +23,53 @@ function createProfileModalHTML() {
                 <div id="step1" class="modal_step active">
                     <h2>우리 강아지 <span class="highlight">크기</span> 선택하기</h2>
                     <div class="dog_size_cards">
+                        <!-- 대형견 카드 -->
                         <div class="size_card" data-size="large">
-                            <img src="/static/img/대형견.png" alt="대형견" class="size_image">
+                            <img src="${imagePaths.large}" 
+                                 alt="대형견" 
+                                 class="size_image"
+                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 onload="console.log('대형견 이미지 로딩 성공: ${imagePaths.large}');">
+                            <div class="image_fallback" style="display:none;">
+                                <span class="fallback_emoji">🐕</span>
+                                <span class="fallback_text">대형견</span>
+                            </div>
                             <div class="size_info">
                                 <h3>대형견</h3>
                                 <p>25kg, 60cm 이상</p>
                                 <span class="size_breeds">리트리버, 셰퍼드, 도베르만 등등</span>
                             </div>
                         </div>
+                        
+                        <!-- 중형견 카드 -->
                         <div class="size_card" data-size="medium">
-                            <img src="/static/img/중형견.png" alt="중형견" class="size_image">
+                            <img src="${imagePaths.medium}" 
+                                 alt="중형견" 
+                                 class="size_image"
+                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 onload="console.log('중형견 이미지 로딩 성공: ${imagePaths.medium}');">
+                            <div class="image_fallback" style="display:none;">
+                                <span class="fallback_emoji">🐶</span>
+                                <span class="fallback_text">중형견</span>
+                            </div>
                             <div class="size_info">
                                 <h3>중형견</h3>
                                 <p>10kg ~ 25kg<br>35cm ~ 60cm</p>
                                 <span class="size_breeds">시바견, 비글, 웰시코기 등</span>
                             </div>
                         </div>
+                        
+                        <!-- 소형견 카드 -->
                         <div class="size_card" data-size="small">
-                          <img src="/static/img/소형견.png" alt="소형견" class="size_image">
+                            <img src="${imagePaths.small}" 
+                                 alt="소형견" 
+                                 class="size_image"
+                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 onload="console.log('소형견 이미지 로딩 성공: ${imagePaths.small}');">
+                            <div class="image_fallback" style="display:none;">
+                                <span class="fallback_emoji">🐕‍🦺</span>
+                                <span class="fallback_text">소형견</span>
+                            </div>
                             <div class="size_info">
                                 <h3>소형견</h3>
                                 <p>10kg, 35cm 이하</p>
@@ -45,8 +77,9 @@ function createProfileModalHTML() {
                             </div>
                         </div>
                     </div>
+                    
                     <div class="modal_buttons">
-                        <button class="modal_btn secondary" onclick="closeProfileModal()">이전</button>
+                        <button class="modal_btn secondary" onclick="closeAddFamilyModal()">이전</button>
                         <button class="modal_btn primary" id="nextStep1" disabled>다음</button>
                     </div>
                 </div>
@@ -173,9 +206,9 @@ function createProfileModalHTML() {
     `;
 }
 
-// 모달 열기 함수
-function openProfileModal() {
-    console.log('🚀 외부 모달 열기');
+// ✅ 수정: showAddFamilyModal 함수 (Login_center.js에서 호출하는 함수)
+function showAddFamilyModal() {
+    console.log('🚀 AddFamily 모달 열기');
 
     // 모달이 이미 존재하는지 확인
     let modal = document.getElementById('profileModal');
@@ -198,12 +231,12 @@ function openProfileModal() {
     // 첫 단계로 리셋
     resetToFirstStep();
 
-    console.log('✅ 외부 모달 열림');
+    console.log('✅ AddFamily 모달 열림');
 }
 
-// 모달 닫기 함수
-function closeProfileModal() {
-    console.log('🔒 외부 모달 닫기');
+// ✅ 수정: closeAddFamilyModal 함수 (Login_center.js에서 호출하는 함수)
+function closeAddFamilyModal() {
+    console.log('🔒 AddFamily 모달 닫기');
     const modal = document.getElementById('profileModal');
     if (modal) {
         modal.style.display = 'none';
@@ -336,7 +369,7 @@ function handleProfileImageUpload(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const uploadArea = document.getElementById('imageUploadArea');
-            uploadArea.innerHTML = `<img src="${e.target.result}" class="uploaded_image">`;
+            uploadArea.innerHTML = `<img src="${e.target.result}" class="uploaded_image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">`;
             uploadArea.classList.add('has_image');
             uploadedImage = e.target.result;
         };
@@ -453,18 +486,23 @@ function handleProfileComplete() {
         window.handleNewProfileAdded(newProfile);
     }
 
-    closeProfileModal();
+    closeAddFamilyModal();
 
-    // 성공 알림 (Login_center.js 함수 사용)
-    if (typeof window.showStatusNotification === 'function') {
-        window.showStatusNotification('새로운 가족이 추가되었습니다! 🎉', 'success');
+    // 성공 알림 (전역 함수 확인)
+    if (typeof showStatusNotification === 'function') {
+        showStatusNotification('새로운 가족이 추가되었습니다! 🎉', 'success');
     } else {
         alert('새로운 가족이 추가되었습니다! 🎉');
     }
 }
 
-// 전역 함수로 노출
-window.openProfileModal = openProfileModal;
-window.closeProfileModal = closeProfileModal;
+// ✅ 전역 함수로 노출 (올바른 함수명으로 수정)
+window.showAddFamilyModal = showAddFamilyModal;           // ✅ 이 함수가 Login_center.js에서 호출됨
+window.closeAddFamilyModal = closeAddFamilyModal;         // ✅ 닫기 함수
+window.createProfileModalHTML = createProfileModalHTML;   // ✅ HTML 생성 함수
+window.resetAddFamilyModal = resetProfileModalData;       // ✅ 리셋 함수
 
-console.log('✅ AddFamily_Modal.js 초기화 완료');
+console.log('✅ AddFamily_Modal.js 초기화 완료 - 노출된 함수들:');
+console.log('- window.showAddFamilyModal:', typeof window.showAddFamilyModal);
+console.log('- window.closeAddFamilyModal:', typeof window.closeAddFamilyModal);
+console.log('- window.createProfileModalHTML:', typeof window.createProfileModalHTML);
