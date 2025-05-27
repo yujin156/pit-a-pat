@@ -102,4 +102,39 @@ public class SgisRegionService {
     public List<RegionDto> getDong(String sigunguCode) {
         return fetchStage(sigunguCode);
     }
+
+    public RegionCodeResult getRegionCodesFromAddress(String fullAddress) {
+        ensureToken();
+
+        // 1. 주소 → 위경도 변환
+        URI geocodeUri = UriComponentsBuilder
+                .fromHttpUrl("https://sgisapi.kostat.go.kr/OpenAPI3/addr/geocode.json")
+                .queryParam("accessToken", cachedToken)
+                .queryParam("address", fullAddress)
+                .build().encode().toUri();
+
+        JsonNode geoResp = rt.getForObject(geocodeUri, JsonNode.class);
+        JsonNode geoResult = geoResp.path("result").get(0);
+        double x = geoResult.path("x").asDouble(); // 경도
+        double y = geoResult.path("y").asDouble(); // 위도
+
+        // 2. 위경도 → 지역코드
+        URI rgeoUri = UriComponentsBuilder
+                .fromHttpUrl("https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocode.json")
+                .queryParam("accessToken", cachedToken)
+                .queryParam("x_coor", x)
+                .queryParam("y_coor", y)
+                .queryParam("addr_type", "20")
+                .build().encode().toUri();
+
+        JsonNode rgeoResp = rt.getForObject(rgeoUri, JsonNode.class);
+        String fullCode = rgeoResp.path("result").path("adm_cd").asText();
+
+        return new RegionCodeResult(
+                fullCode.substring(0, 2),
+                fullCode.substring(0, 5),
+                fullCode
+        );
+    }
+
 }

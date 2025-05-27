@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pet.main.iml" filepath="$PROJECT_DIR$/.idea/modules/pet.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pit-a-pat.iml" filepath="$PROJECT_DIR$/.idea/pit-a-pat.iml" />
     </modules>
   </component>

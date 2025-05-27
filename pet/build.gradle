@@ -50,7 +50,9 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation "org.springframework.ai:spring-ai-mcp-server-spring-boot-starter:1.0.0-M6"
+	implementation "org.springframework.ai:spring-ai-mcp-client-spring-boot-starter:1.0.0-M6"
 }
 
 tasks.named('test') {
