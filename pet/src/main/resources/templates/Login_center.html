@@ -160,26 +160,28 @@
         <div class="divider"></div>
 
         <!-- 가족 추가 버튼 수정 -->
-        <div class="add_family">
-            <div class="plus_btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <g id="그룹_161716" data-name="그룹 161716" transform="translate(-1828 -308)">
-                        <g id="타원_18" data-name="타원 18" transform="translate(1828 308)" fill="none" stroke="#387feb"
-                           stroke-width="1">
-                            <circle cx="8" cy="8" r="8" stroke="none"/>
-                            <circle cx="8" cy="8" r="7.5" fill="none"/>
+        <a href="#" id="addFamilyBtn">
+            <div class="add_family">
+                <div class="plus_btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <g id="그룹_161716" data-name="그룹 161716" transform="translate(-1828 -308)">
+                            <g id="타원_18" data-name="타원 18" transform="translate(1828 308)" fill="none" stroke="#387feb"
+                               stroke-width="1">
+                                <circle cx="8" cy="8" r="8" stroke="none"/>
+                                <circle cx="8" cy="8" r="7.5" fill="none"/>
+                            </g>
+                            <path id="패스_63" data-name="패스 63" d="M3660.535,315.479h6.9"
+                                  transform="translate(-1828.109 0.59)" fill="none" stroke="#387feb" stroke-linecap="round"
+                                  stroke-width="1"/>
+                            <path id="패스_64" data-name="패스 64" d="M0,0H6.9"
+                                  transform="translate(1835.876 312.618) rotate(90)" fill="none" stroke="#387feb"
+                                  stroke-linecap="round" stroke-width="1"/>
                         </g>
-                        <path id="패스_63" data-name="패스 63" d="M3660.535,315.479h6.9"
-                              transform="translate(-1828.109 0.59)" fill="none" stroke="#387feb" stroke-linecap="round"
-                              stroke-width="1"/>
-                        <path id="패스_64" data-name="패스 64" d="M0,0H6.9"
-                              transform="translate(1835.876 312.618) rotate(90)" fill="none" stroke="#387feb"
-                              stroke-linecap="round" stroke-width="1"/>
-                    </g>
-                </svg>
+                    </svg>
+                </div>
+                <span>새로운 가족 추가하기</span>
             </div>
-            <span><a href="#" id="addFamilyBtn">새로운 가족 추가하기</a></span>
-        </div>
+        </a>
     </div>
 </div>
 
@@ -233,7 +235,8 @@
 <!-- 여기에 외부 모달 HTML이 포함됩니다 (AddFamily_Modal.js에서 생성) -->
 
 <!-- JavaScript 파일들 -->
-<script defer th:src="@{/js/Login_center.js}"></script>
+<script src="/js/AddFamily_Modal.js"></script>  <!-- 먼저 로드 -->
+<script src="/js/Login_center.js"></script>
 
 <script th:inline="javascript">
     // DB에서 가져온 강아지 데이터
