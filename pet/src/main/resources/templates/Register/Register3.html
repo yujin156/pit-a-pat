@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register3</title>
-    <link rel="stylesheet" href="../../static/css/registerCSS/Register3.css">
+    <link rel="stylesheet" href="/css/registerCSS/Register3.css">
 </head>
 <body>
 <body>
@@ -25,9 +25,12 @@
             <div class="Title-semi">이용약관 > 회원정보 입력 > 강아지 정보 입력 > 회원가입 완료</div>
             <div class="PITaPAT"></div>
         </div>
-        <form class="Big-form" action="/register/step2" method="post" enctype="multipart/form-data">
+        <form class="Big-form" id="registerForm" action="/dog/register/step3" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="size" th:value="${dogSize}" />
+            <input type="hidden" name="speciesId" id="speciesIdHidden" />
+
             <div class="form-content">
-                <!-- 왼쪽 박스 (이미지 업로드) -->
                 <div class="box-1">
                     <input type="file" id="dogImage" name="dogImage" accept="image/*" style="display: none;" />
                     <div class="image-preview" onclick="document.getElementById('dogImage').click();">
@@ -35,13 +38,11 @@
                     </div>
                 </div>
 
-                <!-- 오른쪽 박스 (정보 입력) -->
-<!--                컨트롤러에 사진 넣는거 없는거 같아요 성현씨-->
                 <div class="box-2">
                     <div class="form-group-row">
                         <div class="form-group half1">
                             <label for="dogName">강아지 이름</label>
-                            <input type="text" id="dogName" name="dogName" placeholder="강아지 이름" />
+                            <input type="text" id="dogName" name="name" placeholder="강아지 이름" />
                         </div>
 
                         <div class="form-group half2">
@@ -55,22 +56,27 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="breed">견종</label>
-                        <input type="text" id="breed" name="breed" placeholder="견종 입력" />
+                        <input type="text" id="breedInput" name="breed" placeholder="견종명 입력" autocomplete="off" />
+                        <div id="autocompleteList"></div>
+                        <select id="speciesListSelect" hidden>
+                            <option th:each="s : ${speciesList}" th:value="${s.id}" th:text="${s.name}"></option>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label for="birth">생년월일</label>
-                        <input type="date" id="birth" name="birth" />
+                        <input type="date" id="birth" name="birthday" />
                     </div>
 
                     <div class="form-group">
                         <label for="intro">강아지 간단 소개 및 주의사항</label>
-                        <textarea id="intro" name="intro" placeholder="강아지를 간단히 소개해주세요!"></textarea>
+                        <textarea id="intro" name="intro"></textarea>
                     </div>
                 </div>
             </div>
 
+            <input type="hidden" name="currentDogIndex" th:value="${currentDogIndex}" />
+            <input type="hidden" name="totalDogs" th:value="${totalDogs}" />
 
             <div class="form-buttons">
                 <div class="form-buttons-left">
@@ -84,6 +90,6 @@
         </form>
     </div>
 </div>
-<script src="../../static/js/registerJS/register3.js"></script>
+<script src="/js/registerJS/register3.js"></script>
 </body>
 </html>

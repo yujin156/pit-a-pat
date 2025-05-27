@@ -61,6 +61,12 @@ public class GroupController {
     @GetMapping("/list")
     public String groupList(Model model,
                             @AuthenticationPrincipal UserDetails principal) {
+
+        // 🔥 로그인 안되어 있으면 /login으로 리다이렉트
+        if (principal == null) {
+            return "Account/Login";
+        }
+
         // 전체 그룹 목록
         List<GroupTable> groups = groupService.getAllGroups();
         model.addAttribute("groupList", groups);

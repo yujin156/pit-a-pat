@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
-    <link rel="stylesheet" href="../../static/css/accountCSS/Login.css">
+    <link rel="stylesheet" href="/css/accountCSS/Login.css">
 </head>
 <body>
 <div class="login-container">
@@ -22,8 +22,8 @@
             <div class="form-wrapper">
                 <div class="logo-placeholder"></div>
 
-                <form class="login-form" action="/login" method="post">
-                    <input type="text" name="username" placeholder="이메일 주소를 입력해주세요." required />
+                <form action="/login" class="login-form" method="post">
+                    <input type="text" name="email" placeholder="이메일 주소를 입력해주세요." required />
                     <input type="password" name="password" placeholder="비밀번호를 입력해주세요." required />
                     <button type="submit" class="LOGIN">LOGIN</button>
                 </form>
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="simple-login">
-                    <button class="google-login">Google로 시작하기</button>
+                    <button class="google-login" >Google로 시작하기</button>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="right-inner">
             <h2>Welcome to PITaPAT</h2>
             <p>우리 가족같은 반려견에게<br/>특별한 경험과 소중한 친구를<br/>만들어주세요!</p>
-            <button class="SIGNUP" onclick="location.href='/signup'">SIGN UP</button>
+            <button class="SIGNUP" onclick="location.href='/user/signup'">SIGN UP</button>
         </div>
     </div>
 </div>

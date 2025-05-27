@@ -18,7 +18,7 @@ public class UserService {
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void registerUser(User user, Address address) {
+    public Long registerUser(User user, Address address) {
         user.setUpwd(passwordEncoder.encode(user.getUpwd())); // 비밀번호 암호화
         user.setRole(Role.USER); // 기본 권한 설정
 
@@ -29,6 +29,12 @@ public class UserService {
         // 저장 (Cascade 사용해도 명시적으로 저장하는 것이 안정적)
         userRepository.save(user);
         addressRepository.save(address);
+
+        return user.getUno();
+    }
+    // 동일 폰 번호 찾기
+    public boolean existsByPhone(String phone) {
+        return userRepository.existsByUpno(phone);
     }
 
     // ===== 매칭 기능을 위한 메서드 추가 =====

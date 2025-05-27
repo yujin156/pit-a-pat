@@ -85,11 +85,15 @@ body, html {
 .Title{
     font-size: 45px;
     font-weight: 700;
+
+    font-family: "Poppins", sans-serif;
 }
 
 .Title-semi {
     font-weight: 400;
     font-size: 25px;
+
+    font-family: "Gmarket Sans","Poppins", sans-serif;
 }
 
 .PITaPAT {
@@ -116,6 +120,8 @@ body, html {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
 
     background: deeppink;
+
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
 }
 
 .title-box{
@@ -183,6 +189,7 @@ body, html {
     border-radius: 20px;
     font-size: 15px; /* 예전 그대로 */
     font-weight: 400;
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
     cursor: pointer;
     transition: background 0.3s;
 }

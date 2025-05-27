@@ -32,8 +32,8 @@ public class UserRegisterRequest {
     @NotNull
     private Date uBday;
 
-    @Min(0)
-    private int upno;
+    @NotBlank // 🔧 int → String으로 변경 + @NotBlank 추가
+    private String upno;
 
     @NotNull
     private Role role;
