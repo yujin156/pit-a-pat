@@ -40,7 +40,7 @@ public class User {
     private Date uBday;
 
     @Column(name = "u_pno", nullable = false)
-    private int upno;
+    private String upno; // 🔧 int → String 으로 변경!
 
     @Enumerated(EnumType.STRING)
     private Role role;

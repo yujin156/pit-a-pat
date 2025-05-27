@@ -56,6 +56,10 @@ body, html {
     border-left: 2px dotted #171616;
 }
 
+/*----------------------------------*/
+
+/*오른쪽*/
+
 .right-side {
     position: absolute;
     left: 657px;
@@ -76,12 +80,16 @@ body, html {
     font-size: 45px; /* 예전 그대로 유지 */
     font-weight: 700;
     margin-bottom: 10px;
+
+    font-family: "Poppins", sans-serif;
 }
 
 .Title-semi {
     font-weight: 400;
     font-size: 25px; /* 예전 그대로 유지 */
     color: #666;
+
+    font-family: "Gmarket Sans","Poppins", sans-serif;
 }
 
 .PITaPAT {
@@ -105,6 +113,7 @@ body, html {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
 }
 
 .form-content {
@@ -202,6 +211,7 @@ body, html {
     border-radius: 20px;
     font-size: 15px; /* 예전 그대로 */
     font-weight: 400;
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
     cursor: pointer;
     transition: background 0.3s;
 }
