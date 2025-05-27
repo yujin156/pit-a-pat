@@ -3,7 +3,7 @@ package pit.pet.Friend;
 import jakarta.persistence.*;
 import lombok.*;
 import pit.pet.Account.User.Dog;
-import pit.pet.Account.User.DogProfile;
+
 
 import java.time.LocalDateTime;
 

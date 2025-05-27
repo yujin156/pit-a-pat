@@ -1,0 +1,25 @@
+<!-- src/main/resources/templates/group/apply.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>그룹 가입 신청</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>그룹 가입 신청</h1>
+
+<form th:action="@{'/groups/' + ${gno} + '/apply'}" method="post">
+    <label for="dogId">가입할 강아지 선택</label>
+    <select name="dogId" id="dogId" required>
+        <option value="">-- 강아지를 선택하세요 --</option>
+        <option th:each="dog : ${myDogs}"
+                th:value="${dog.dno}"
+                th:text="${dog.dname}">강아지</option>
+    </select>
+
+    <button type="submit">가입 신청</button>
+</form>
+
+<a th:href="@{/groups/list}">← 그룹 목록으로</a>
+</body>
+</html>

@@ -29,17 +29,20 @@ public class AccountController {
 
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("address", new Address());
+        // User 안에 Address 객체를 넣어둡니다.
+        User user = new User();
+        user.setAddress(new Address());
+        model.addAttribute("user", user);
         return "Account/Register";
     }
 
     @PostMapping("/signup")
-    public String registerUser(@ModelAttribute User user,
-                               @ModelAttribute Address address) {
-        userService.registerUser(user, address);
-        return "redirect:/user/login";
+    public String registerUser(@ModelAttribute("user") User user) {
+        // user.getAddress() 안에 주소가 채워져서 들어옵니다.
+        userService.registerUser(user, user.getAddress());
+        return "redirect:/";
     }
+
 
     @GetMapping("/login")
     public String loginForm() {

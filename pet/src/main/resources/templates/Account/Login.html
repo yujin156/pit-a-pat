@@ -1,16 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>로그인</title>
+    <link rel="stylesheet" href="../../static/css/accountCSS/Login.css">
 </head>
 <body>
-<h2>로그인</h2>
+<div class="login-container">
+    <!-- 1. 왼쪽 큰 영역 -->
+    <div class="left-side">
+        <div class="left-inner">
+            <div class="login-header">
+                <div class="back-wrapper">
+                    <a href="javascript:history.back()" class="back-arrow">←</a>
+                </div>
+                <div class="welcome-wrapper">
+                    <p class="welcome-message">Welcome back!</p>
+                </div>
+            </div>
+            <!-- 내부 박스: 로고 + 입력폼 전체 묶음 -->
+            <div class="form-wrapper">
+                <div class="logo-placeholder"></div>
 
-<form th:action="@{/user/login}" method="post">
-    <input class="id" type="email" name="email" required />
-    <input class="pw" type="password" name="password" required />
-    <button type="submit">로그인</button>
-</form>
+                <form class="login-form" action="/login" method="post">
+                    <input type="text" name="username" placeholder="이메일 주소를 입력해주세요." required />
+                    <input type="password" name="password" placeholder="비밀번호를 입력해주세요." required />
+                    <button type="submit" class="LOGIN">LOGIN</button>
+                </form>
 
+                <div class="options">
+                    <label>
+                        <input type="checkbox" name="remember-me" />
+                        <span>로그인 상태 유지</span>
+                    </label>
+                    <span class="line"></span>
+                    <a href="/find-id" class="circle-link">아이디 찾기</a>
+                    <span class="line"></span>
+                    <a href="/find-pw" class="circle-link">비밀번호 찾기</a>
+                </div>
+
+                <div class="divider">
+                    <span class="line"></span>
+                    <span>또는 간편로그인</span>
+                    <span class="line"></span>
+                </div>
+
+                <div class="simple-login">
+                    <button class="google-login">Google로 시작하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 오른쪽 큰 영역 -->
+    <div class="right-side">
+        <div class="right-inner">
+            <h2>Welcome to PITaPAT</h2>
+            <p>우리 가족같은 반려견에게<br/>특별한 경험과 소중한 친구를<br/>만들어주세요!</p>
+            <button class="SIGNUP" onclick="location.href='/signup'">SIGN UP</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

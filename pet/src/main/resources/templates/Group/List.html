@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>그룹 목록</title>
+    <link rel="stylesheet" th:href="@{/css/Group.css}">
+</head>
+<body>
+<h1>전체 그룹 목록</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>그룹명</th>
+        <th>멤버 수</th>
+        <th>리더</th>
+        <th>가입</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="group : ${groupList}">
+        <!-- 그룹명 클릭 시 그룹 디테일 페이지로 이동 -->
+        <td>
+            <a th:href="@{'/groups/' + ${group.gno}}" th:text="${group.gname}">그룹명</a>
+        </td>
+        <td th:text="${group.gmembercount}">0</td>
+
+        <!-- 리더 이름: Map에서 group.gno로 조회 -->
+        <td th:text="${leaderNames[group.gno]}">리더 이름</td>
+
+        <td>
+            <a th:href="@{'/groups/' + ${group.gno} + '/apply'}">가입하기</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>내가 가입한 그룹 목록</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>그룹명</th>
+        <th>멤버 수</th>
+        <th>리더</th>
+        <th>탈퇴</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="membership : ${myMemberships}">
+        <td>
+            <a th:href="@{'/groups/' + ${membership.groupTable.gno}}"
+               th:text="${membership.groupTable.gname}">그룹명</a>
+        </td>
+        <td th:text="${membership.groupTable.gmembercount}">0</td>
+
+        <!-- 리더 이름도 leaderNames에서 groupTable.gno로 조회 -->
+        <td th:text="${leaderNames[membership.groupTable.gno]}">리더 이름</td>
+
+        <td>
+            <form th:action="@{'/groups/members/' + ${membership.gmno} + '/withdraw'}" method="post">
+                <input type="hidden" name="requesterGmno" th:value="${membership.gmno}" />
+                <button type="submit">탈퇴</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/groups/create}">← 그룹 만들기</a>
+</body>
+</html>

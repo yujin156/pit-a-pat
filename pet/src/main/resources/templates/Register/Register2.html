@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register2</title>
+    <link rel="stylesheet" href="../../static/css/registerCSS/Register2.css">
+</head>
+<body>
+<body>
+<div class="signup-container">
+    <div class="left-side">
+        <div class="foot-step-row">
+            <div class="foot step1"></div>
+            <div class="line line1"></div>
+            <div class="foot step2 active"></div>
+            <div class="line line2"></div>
+            <div class="foot step3"></div>
+            <div class="line line3"></div>
+            <div class="foot step4"></div>
+        </div>
+    </div>
+    <div class="right-side">
+        <div class="Title-Box">
+            <div class="Title">SIGN UP</div>
+            <div class="Title-semi">이용약관 > 회원정보 입력 > 강아지 정보 입력 > 회원가입 완료</div>
+            <div class="PITaPAT"></div>
+        </div>
+        <form class="Big-form" action="/register/step2" method="post">
+            <div class="form-content">
+                <h2 class="dog-size-title">우리 강아지 크기 선택하기</h2>
+                <div class="dog-size-options">
+                    <label>
+                        <input type="radio" name="dogSize" value="LARGE" required />
+                        <div class="option-box">
+                            <div class="size-title">대형견</div>
+                            <div class="size-subtitle">25kg, 60cm 이상</div>
+                            <div class="size-example">리트리버, 세퍼드, 도베르만 등</div>
+                        </div>
+                    </label>
+                    <label>
+                        <input type="radio" name="dogSize" value="MEDIUM" />
+                        <div class="option-box">
+                            <div class="size-title">중형견</div>
+                            <div class="size-subtitle">10kg ~ 25kg, 35cm ~ 60cm</div>
+                            <div class="size-example">시바견, 비글, 웰시코기 등</div>
+                        </div>
+                    </label>
+                    <label>
+                        <input type="radio" name="dogSize" value="SMALL" />
+                        <div class="option-box">
+                            <div class="size-title">소형견</div>
+                            <div class="size-subtitle">10kg, 35cm 이하</div>
+                            <div class="size-example">포메, 치와와, 푸들, 말티즈 등</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+
+
+            <div class="form-buttons">
+                <div class="form-buttons-left">
+                    <button type="button" class="HOME">HOME</button>
+                </div>
+                <div class="form-buttons-right">
+                    <button type="button" class="btn PREV">이전</button>
+                    <button type="submit" class="NEXT">다음</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="../../static/js/registerJS/register2.js"></script>
+</body>
+</html>

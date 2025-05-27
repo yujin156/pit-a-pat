@@ -11,10 +11,14 @@ import pit.pet.Account.Repository.DogProfileRepository;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.DogProfile;
+import pit.pet.Account.User.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class FriendService {
@@ -85,6 +89,19 @@ public class FriendService {
                 .forEach(fr -> friends.add(fr.getRequester()));
 
         return friends;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Dog> getAllFriendsOfUser(User user) {
+        // 1) 내 강아지 전부
+        List<Dog> myDogs = dogRepo.findByOwner(user);
+
+        // 2) 각각 친구 리스트를 Set으로 중복 제거하며 합치기
+        Set<Dog> all = new HashSet<>();
+        for (Dog d : myDogs) {
+            all.addAll(getFriends(d.getDno()));
+        }
+        return new ArrayList<>(all);
     }
 
     @Transactional(readOnly = true)

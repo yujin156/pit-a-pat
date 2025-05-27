@@ -1,0 +1,192 @@
+/* Friend_profile.css의 f_profile_card 부분을 복사하여 매칭용으로 수정 */
+
+.match_profile_card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m_profile_card {
+    width: 350px;
+    height: 550px;
+    border-radius: 25px;
+    padding: 30px 25px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.m_profile_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.profile_card_img,
+.profile_card_gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+}
+
+.profile_card_img {
+    background-size: cover;
+    background-position: center;
+    background-color: #f0f0f0;
+}
+
+.profile_card_img.default_bg {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    color: #ccc;
+}
+
+/* 그라데이션 효과 */
+.profile_card_gradient {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.7));
+    mix-blend-mode: multiply;
+    z-index: 9;
+}
+
+/* 프로필 카드 텍스트 + 키워드 */
+.profile_txt {
+    width: 90%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15%;
+    z-index: 99;
+}
+
+.profile_name {
+    margin: 0;
+    font-size: 32px;
+    color: #F4E7F1;
+    font-weight: bold;
+}
+
+.profile_name_icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.profile_hart_icon {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.profile_hart_icon:hover {
+    transform: scale(1.1);
+}
+
+.profile_hart_icon.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.heart_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.heart_btn:hover {
+    transform: scale(1.1);
+}
+
+.heart_btn.liked svg path {
+    fill: #EDA9DD !important;
+}
+
+.profile_keyword_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* 라벨 스타일 */
+label {
+    white-space: nowrap;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.profile_pink {
+    border: 1px solid #387FEB;
+    box-sizing: border-box;
+    color: #387FEB;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: #F4E7F1;
+}
+
+.profile_blue {
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: #387FEB;
+}
+
+/* 애니메이션 효과 */
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.heart_btn.animate {
+    animation: heartPulse 0.6s ease-in-out;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .m_profile_card {
+        width: 300px;
+        height: 450px;
+        padding: 25px 20px;
+    }
+
+    .profile_name {
+        font-size: 28px;
+    }
+
+    .profile_keyword_row label {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .m_profile_card {
+        width: 280px;
+        height: 420px;
+        padding: 20px 15px;
+    }
+
+    .profile_name {
+        font-size: 24px;
+    }
+
+    .profile_keyword_row {
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+}

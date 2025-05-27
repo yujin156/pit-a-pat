@@ -3,6 +3,7 @@ package pit.pet.Group.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import pit.pet.Account.User.Dog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,28 @@ public class GroupTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gno; // 그룹 번호 (PK)
+    @Column(name = "gno")
+    private Long gno;
 
-    private String gname; // 그룹 이름
+    @Column(name = "g_name")
+    private String gname;
 
-    private Integer g_membercount; // 그룹 총 인원
+    @Column(name = "g_info")
+    private String ginfo;  // 그룹 설명
 
-    private Long g_leader; // 리더(생성자)의 그룹멤버 번호
+    @Column(name = "interest")
+    private String interest;  // 관심사
+
+    @Column(name = "g_membercount")
+    private Integer gmembercount;
+
+    @Column(name = "g_leader")
+    private Long gleader;
 
     @OneToMany(mappedBy = "groupTable", cascade = CascadeType.ALL)
     private List<GroupMemberTable> groupMembers = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "dno", nullable = false)
+    private Dog dog;
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 수정</title>
+  <link rel="stylesheet" th:href="@{/css/boardCSS/boardEdit.css}">
+
+</head>
+<body>
+<h1>게시글 수정</h1>
+
+<form th:action="@{/board/update}" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="bno" th:value="${board.bno}" />
+
+  <div>
+    <label for="newContent">내용</label><br>
+    <textarea id="newContent" name="newContent" rows="6" cols="60" th:text="${board.bcontent}"></textarea>
+  </div>
+
+  <div id="image-area">
+    <label>이미지 수정</label>
+    <input type="file" id="newImages" name="newImages" multiple />
+    <div th:each="img : ${board.images}" class="image-box" th:data-id="${img.bino}">
+      <img th:src="@{${img.biurl}}" alt="기존 이미지" class="preview-img" />
+      <input type="hidden" name="deleteImgIds" th:value="${img.bino}" disabled />
+      <button type="button" class="remove-btn" onclick="removeExisting(this)">X</button>
+    </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <button type="submit">수정 완료</button>
+    <a th:href="@{'/board/view/' + ${board.bno}}">돌아가기</a>
+  </div>
+</form>
+<script th:src="@{/js/boardJS/boardEdit.js}" defer></script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 package pit.pet.Account.User;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDateTime;
 
@@ -16,12 +16,16 @@ public class Dogimg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dino;
 
-    @OneToOne
-    @JoinColumn(name = "dno", nullable = false)
+    @Column(name="di_title",nullable = false)
+    private String dititle;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dno", nullable = false, unique = true)
+    @JsonBackReference("dog-image")
     private Dog dog;
 
     @Column(name = "di_url", nullable = false)
-    private String di_url;
+    private String diurl;
 
     @CreationTimestamp
     @Column(name = "di_uploaded_at", nullable = false)

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <link rel="stylesheet" th:href="@{/css/boardCSS/boardDetail.css}">
+  <script th:src="@{/js/boardJS/boardDetail.js}" defer></script>
+</head>
+<body>
+<div class="board-detail-container">
+
+  <div th:if="${errorMessage}" class="error-box">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+  </div>
+
+  <div class="board-header">
+    <img
+            th:if="${board.writerdog.image != null}"
+            th:src="@{${board.writerdog.image.diurl}}"
+            alt="프로필 이미지" />
+    <span th:text="${board.writerdog.dname}">Dog_writer</span>
+  </div>
+
+  <div class="board-images">
+    <div th:each="img : ${board.images}">
+      <img th:src="@{${img.biurl}}" alt="첨부 이미지" class="board-image"/>
+    </div>
+  </div>
+
+  <div class="board-actions">
+    <input type="hidden" id="boardBno" th:value="${board.bno}" />
+    <input type="hidden" id="loginDogDno" th:value="${loginDog != null ? loginDog.dno : ''}" />
+
+    <button onclick="toggleLike()"
+            th:text="${isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"
+            th:style="${isLiked ? 'color: red;' : 'color: black;'}">
+      🤍 좋아요
+    </button>
+    <button onclick="toggleBookmark()"
+            th:text="${isBookmarked ? '📌 북마크 취소' : '📍 북마크'}"
+            th:style="${isBookmarked ? 'color: blue;' : 'color: black;'}">
+      📍 북마크
+    </button>
+    <span>♥ <span id="likeCount" th:text="${board.blikecount}">0</span></span>
+    <span>💬 <span th:text="${commentList.size()}">0</span></span>
+  </div>
+
+  <div class="board-description">
+    <p th:text="${board.bcontent}" style="white-space: pre-line;"></p>
+  </div>
+
+  <div th:if="${loginDog != null and loginDog.dno.equals(board.writerdog.dno)}" class="board-manage-buttons">
+    <a th:href="@{'/board/edit/' + ${board.bno}}" class="edit-button">✏ 수정</a>
+    <form th:action="@{'/board/delete'}" method="post">
+      <input type="hidden" name="bno" th:value="${board.bno}" />
+      <button type="submit" class="delete-button">🗑 삭제</button>
+    </form>
+  </div>
+
+  <hr/>
+
+  <div class="comment-list">
+    <h3>댓글</h3>
+    <div th:each="comment : ${commentList}" class="comment-item">
+      <strong th:text="${comment.dog.dname}">댓글작성자</strong>
+      <span th:id="'comment-content-' + ${comment.bcno}" th:text="${comment.bccomment}">댓글 내용</span>
+      <span class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>
+
+      <div th:if="${loginDog != null and comment.dog.dno == loginDog.dno}">
+        <button type="button" th:onclick="'showEdit(' + ${comment.bcno} + ')'">수정</button>
+        <form th:action="@{'/board/comment/' + ${comment.bcno} + '/delete'}" method="post" style="display:inline;">
+          <input type="hidden" name="bno" th:value="${board.bno}" />
+          <input type="hidden" name="dno" th:value="${loginDog.dno}" />
+          <button type="submit">삭제</button>
+        </form>
+      </div>
+
+      <form th:id="'edit-form-' + ${comment.bcno}"
+            th:action="@{'/board/comment/' + ${comment.bcno} + '/edit'}"
+            method="post"
+            style="display:none; margin-top: 10px;">
+        <input type="hidden" name="bno" th:value="${board.bno}" />
+        <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
+        <input type="text" name="bccomment" th:value="${comment.bccomment}" />
+        <button type="submit">수정 완료</button>
+      </form>
+    </div>
+
+    <hr/>
+
+    <div class="comment-form">
+      <form th:action="@{/board/comment/create}" method="post">
+        <input type="hidden" name="bno" th:value="${board.bno}" />
+        <input type="hidden" name="dno" th:value="${loginDog != null ? loginDog.dno : 0}" />
+        <textarea name="bccontent" placeholder="댓글을 입력하세요..." required></textarea>
+        <button type="submit">댓글 작성</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

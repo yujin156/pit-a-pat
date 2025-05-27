@@ -1,0 +1,208 @@
+/* 기본 스타일 초기화 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Gmarket Sans', sans-serif;
+    overflow: hidden; /* 스크롤바 방지 */
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 전체 회원가입 컨테이너 */
+.signup-container {
+    position: relative;
+    width: 1920px; /* */
+    height: 1080px; /* */
+    background: #FFFFFF; /* */
+    overflow: hidden; /* 내용이 넘치지 않도록 */
+}
+
+/* 왼쪽 배경 이미지 (강아지 사진) */
+.left-side {
+    position: absolute;
+    left: 0%; /* */
+    right: 65.78%; /* 너비 계산: 100% - 65.78% = 34.22% */
+    top: 0%; /* */
+    bottom: 0%; /* */
+    background: blue ;/* url('https://i.imgur.com/8Q9P2Yd.jpeg') center/cover no-repeat;  예시 이미지, 실제 강아지 이미지 URL로 교체 */
+    z-index: 1;
+}
+
+.foot-step-row {
+    position: absolute;
+    left: 550px;
+    top: 220px;
+    width: 81px;
+    height: 600px;
+    background: palevioletred;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between
+}
+
+.foot {
+    width: 81px;
+    height: 81px;
+    background: #EDA9DD;
+    border-radius: 50px;
+    opacity: 0.4; /* 기본은 반투명 */
+}
+
+.foot.active {
+    opacity: 1; /* 현재 단계는 진하게 */
+}
+
+.line {
+    height: 91px;
+    border-left: 2px dotted #171616;
+}
+
+
+/*----------------------------------*/
+
+/*오른쪽*/
+
+.right-side{
+    position: absolute;
+    left: 657px;
+    width: 1263px;
+    height: 1080px;
+    background: #F5F6F8;
+}
+
+/* 제목 */
+
+.Title-Box{
+    position: relative;
+    left: 170px;
+    top: 175px;
+
+    width: 940px;
+}
+
+.Title{
+    font-size: 45px;
+    font-weight: 700;
+}
+
+.Title-semi {
+    font-weight: 400;
+    font-size: 25px;
+}
+
+.PITaPAT {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 93px;
+    height: 91px;
+    background: #EDA9DD;
+}
+
+/* 폼 박스 */
+
+.Big-form {
+    position: absolute;
+    top: 301px;
+    left: 170px;
+
+    width: 940px;
+    height: 606px;
+
+    border-radius: 20px;
+
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+
+    background: deeppink;
+}
+
+.title-box{
+    position: absolute;
+    left: 50px;
+    top: 50px;
+
+    font-weight: 400;
+    font-size: 20px;
+    color: #B7B7B7;
+}
+
+.keyword-container {
+    display: flex;
+    flex-wrap: wrap; /* 줄바꿈 허용 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: 10px; /* 태그 사이 여백 */
+    margin-top: 150px;
+    max-width: 800px; /* 태그 영역의 최대 너비 (필요하면 조절) */
+    margin-left: auto; /* 가운데 정렬 */
+    margin-right: auto;
+    margin-bottom: 100px;
+}
+
+.keyword {
+    height: 32px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    font-size: 15px;
+    user-select: none;
+    font-weight: 400;
+
+    display: flex;            /* 🔥 가운데 정렬 핵심! */
+    align-items: center;      /* 수직 가운데 */
+    justify-content: center;  /* 수평 가운데 */
+}
+
+.keyword:hover {
+    background: rgba(58, 127, 235, 0.1);
+}
+
+.keyword.active {
+    background: #3A7FEB;
+    color: white;
+}
+
+/* 홈, 다음, 이전 박스 */
+
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    margin-top: auto;
+}
+
+.form-buttons button {
+    width: 149px;
+    height: 32px; /* 예전 그대로 */
+    border: 1px solid #3A7FEB;
+    border-radius: 20px;
+    font-size: 15px; /* 예전 그대로 */
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-buttons .NEXT {
+    background: #3A7FEB;
+    color: #fff;
+}
+
+.form-buttons .NEXT:hover {
+    background: #2c5ec4;
+}
+
+.form-buttons .PREV,
+.form-buttons .HOME {
+    background: transparent;
+    color: #3A7FEB;
+}
+
+.form-buttons .PREV:hover,
+.form-buttons .HOME:hover {
+    background: rgba(58, 127, 235, 0.1);
+}
