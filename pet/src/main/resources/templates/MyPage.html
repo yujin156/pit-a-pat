@@ -169,6 +169,22 @@
 </div>
 
 <!-- 모달 JavaScript 추가 (HTML은 동적 생성) -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const addBtn = document.getElementById("addProfileBtn");
+
+        if (addBtn) {
+            addBtn.addEventListener("click", function () {
+                if (typeof window.showAddFamilyModal === "function") {
+                    window.showAddFamilyModal();
+                } else {
+                    console.error("⚠️ showAddFamilyModal 함수가 정의되어 있지 않음");
+                }
+            });
+        }
+    });
+</script>
+
 <script src="/static/js/AddFamily_Modal.js"></script>
 
 <script  defer src="/static/js/MyPage.js"></script>
