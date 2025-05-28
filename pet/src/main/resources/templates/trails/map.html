@@ -10,8 +10,12 @@
         #sidebar ul { list-style:none; padding:0; }
         #sidebar li { margin:5px 0; cursor:pointer; }
         #sidebar li:hover { background:#f0f0f0; }
+        #postModal {
+            display:none; position:fixed; top:20%; left:30%; width:400px;
+            background:white; border:1px solid #ccc; padding:20px; z-index:999;
+        }
     </style>
-    <!-- 네이버 지도 JS: YOUR_CLIENT_ID 자리에 발급받은 키 넣기 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8rmgkdfw2q"></script>
 </head>
 <body>
@@ -21,85 +25,140 @@
     <ul id="trail-list"></ul>
 </div>
 
+<!-- 지도 -->
 <div id="map"></div>
+
+<!-- Trail 게시글 작성 모달 -->
+<div id="postModal">
+    <h3 id="modalTrailName">리뷰 작성</h3>
+    <form id="postForm" enctype="multipart/form-data">
+        <input type="hidden" name="trailId" id="trailId">
+        <label>강아지 선택:</label>
+        <select name="dogId" id="dogIdSelect">
+            <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+        </select><br><br>
+        <label>평점:</label>
+        <select name="rating">
+            <option value="5">⭐ 5</option>
+            <option value="4">⭐ 4</option>
+            <option value="3">⭐ 3</option>
+            <option value="2">⭐ 2</option>
+            <option value="1">⭐ 1</option>
+        </select><br><br>
+        <label>내용:</label><br>
+        <textarea name="content" rows="3" cols="40" maxlength="200"></textarea><br><br>
+        <label>사진:</label>
+        <input type="file" name="image" accept="image/*"><br><br>
+        <button type="submit">등록</button>
+        <button type="button" onclick="$('#postModal').hide()">취소</button>
+    </form>
+</div>
 <script>
     const map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(37.5665, 126.9780),
         zoom: 11
     });
+
     let currentPolylines = [];
 
-    fetch('/api/trails')
-        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-        .then(trails => {
-            const listEl = document.getElementById('trail-list');
-            trails.forEach(trail => {
-                // 사이드바에 추가
-                const li = document.createElement('li');
-                li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ${trail.difficulty})`;
-                listEl.appendChild(li);
+    function drawTrailPath(trail) {
+        // 기존 경로 제거
+        currentPolylines.forEach(line => line.setMap(null));
+        currentPolylines = [];
 
-                // 시작점 마커
-                const startMarker = new naver.maps.Marker({
+        // 경로 fetch 후 폴리라인 생성
+        fetch(`/api/trails/${trail.id}/path`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(path => {
+                const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
+                const poly = new naver.maps.Polyline({
                     map,
-                    position: new naver.maps.LatLng(trail.startLat, trail.startLng),
-                    icon: {
-                        url: '/images/icons8-marker-a-32.png',
-                        size: new naver.maps.Size(24,24),
-                        anchor: new naver.maps.Point(12,12)
-                    }
+                    path: coords,
+                    strokeWeight: 4,
+                    strokeColor: '#3366FF',
+                    strokeOpacity: 0.8
                 });
-                const startInfo = new naver.maps.InfoWindow({
-                    content: '<div style="padding:4px;white-space:nowrap;">출발점</div>'
+                currentPolylines.push(poly);
+
+                const bounds = new naver.maps.LatLngBounds();
+                coords.forEach(c => bounds.extend(c));
+                map.fitBounds(bounds);
+            })
+            .catch(err => console.error('경로 실패:', err));
+    }
+
+    function openModalForTrail(trail) {
+        document.getElementById("trailId").value = trail.id;
+        document.getElementById("modalTrailName").textContent = trail.name + " 리뷰 작성";
+        $('#postModal').show();
+    }
+
+    function loadTrailList() {
+        fetch('/api/trails')
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('trail-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ${trail.difficulty} / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    listEl.appendChild(li);
+
+                    new naver.maps.Marker({
+                        map,
+                        position: new naver.maps.LatLng(trail.startLat, trail.startLng),
+                        icon: {
+                            url: '/images/icons8-marker-a-32.png',
+                            size: new naver.maps.Size(24, 24),
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+
+                    new naver.maps.Marker({
+                        map,
+                        position: new naver.maps.LatLng(trail.endLat, trail.endLng),
+                        icon: {
+                            url: '/images/end-marker.png',
+                            size: new naver.maps.Size(24, 24),
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+
+                    li.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                        openModalForTrail(trail);
+                    });
                 });
-                startInfo.open(map, startMarker);
+            })
+            .catch(err => console.error('리스트 실패:', err));
+    }
 
-                // 종료점 마커
-                const endMarker = new naver.maps.Marker({
-                    map,
-                    position: new naver.maps.LatLng(trail.endLat, trail.endLng),
-                    icon: {
-                        url: '/images/end-marker.png',
-                        size: new naver.maps.Size(24,24),
-                        anchor: new naver.maps.Point(12,12)
-                    }
-                });
-                const endInfo = new naver.maps.InfoWindow({
-                    content: '<div style="padding:4px;white-space:nowrap;">종료점</div>'
-                });
-                endInfo.open(map, endMarker);
+    // 초기 로딩
+    loadTrailList();
 
-                // 리스트 클릭 시 경로 그리기
-                li.addEventListener('click', () => {
-                    // 기존 폴리라인들 제거
-                    currentPolylines.forEach(line => line.setMap(null));
-                    currentPolylines = [];
-
-                    fetch(`/api/trails/${trail.id}/path`)
-                        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-                        .then(path => {
-                            const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
-
-                            // 경로를 한 폴리라인으로
-                            const line = new naver.maps.Polyline({
-                                map,
-                                path: coords,
-                                strokeWeight: 4,
-                                strokeColor: '#3366FF',
-                                strokeOpacity: 0.8
-                            });
-                            currentPolylines.push(line);
-
-                            // 지도의 뷰를 경로 전체로 맞추기
-                            const bounds = new naver.maps.LatLngBounds();
-                            coords.forEach(c => bounds.extend(c));
-                            map.fitBounds(bounds);
-                        })
-                        .catch(err => console.error('경로 불러오기 실패:', err));
-                });
-            });
-        })
-        .catch(err => console.error('둘레길 목록 불러오기 실패:', err));
+    // 리뷰 등록 AJAX
+    $('#postForm').on('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        $.ajax({
+            url: '/trail-posts',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert("등록 완료");
+                $('#postModal').hide();
+                $('#postForm')[0].reset();
+                loadTrailList();  // ⭐ 평균 별점 다시 반영
+            },
+            error: function () {
+                alert("등록 실패");
+            }
+        });
+    });
 </script>
+
 </body>
 </html>

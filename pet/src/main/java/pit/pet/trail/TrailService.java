@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import pit.pet.Review.TrailPostRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class TrailService {
     private final TrailRepository trailRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final TrailPostRepository reviewRepository;
 
     private String classifyDifficulty(double km) {
         if (km < 5.0)         return "EASY";
@@ -236,5 +238,6 @@ public class TrailService {
         trailRepository.save(t);
         return String.format("저장 완료: %s (%s, %.2fkm)", name, diff, km);
     }
+    
 }
 

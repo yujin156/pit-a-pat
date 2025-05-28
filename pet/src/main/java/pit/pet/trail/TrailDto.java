@@ -19,7 +19,7 @@ public class TrailDto {
     private String sigunguCode;
     private String emdCode;
     private String regionName; // 서울시 강북구 수유동
-
+    private Double averageRating; // ⭐ 추가
     private List<LatLngDto> path;
 }
 

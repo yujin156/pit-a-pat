@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pit.pet.Review.TrailPost;
+import pit.pet.Review.TrailPostService;
 
 import java.util.List;
 
@@ -18,16 +20,23 @@ public class TrailController {
     private final TrailService trailService;
     private final TrailRepository trailRepository;
     private final ObjectMapper objectMapper;
+    private final TrailPostService trailPostService;
 
     @GetMapping
     public ResponseEntity<List<TrailSummaryDto>> listTrails() {
         List<TrailSummaryDto> list = trailRepository.findAll().stream()
                 .map(t -> new TrailSummaryDto(
-                        t.getId(), t.getName(), t.getLengthKm(),
-                        t.getStartLat(), t.getStartLng(),
-                        t.getEndLat(), t.getEndLng()
+                        t.getId(),
+                        t.getName(),
+                        t.getLengthKm(),
+                        t.getStartLat(),
+                        t.getStartLng(),
+                        t.getEndLat(),
+                        t.getEndLng(),
+                        trailPostService.getAverageRatingByTrail(t.getId())  // ⭐ 여기서 계산
                 ))
                 .toList();
+
         return ResponseEntity.ok(list);
     }
 
@@ -58,10 +67,15 @@ public class TrailController {
                 t.getPathJson(), new TypeReference<>() {});
         return ResponseEntity.ok(path);
     }
-
     public record TrailSummaryDto(
-            Long id, String name, double lengthKm,
-            Double startLat, Double startLng,
-            Double endLat,   Double endLng
+            Long id,
+            String name,
+            double lengthKm,
+            Double startLat,
+            Double startLng,
+            Double endLat,
+            Double endLng,
+            Double averageRating  // ⭐ 평균 별점 추가
     ) {}
+
 }

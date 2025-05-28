@@ -53,7 +53,10 @@ public class GroupController {
     public String createGroup(@ModelAttribute CreateGroupRequest request) {
         Dog dog = dogRepository.findById(request.getDogId())
                 .orElseThrow(() -> new RuntimeException("해당 강아지를 찾을 수 없습니다."));
-        groupService.createGroup(request.getGname(), dog);
+        groupService.createGroup(request.getGname(),
+                request.getGroupInfo(),
+                request.getInterest(),
+                dog);
         return "redirect:/groups/list";
     }
 
