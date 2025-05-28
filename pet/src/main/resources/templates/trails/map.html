@@ -2,57 +2,104 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Trail 시각화</title>
+    <title>둘레길 지도 보기</title>
     <style>
-        #map { width:100%; height:400px; }
+        body { margin:0; padding:0; display:flex; height:100vh; }
+        #sidebar { width:300px; overflow-y:auto; border-right:1px solid #ccc; padding:10px; }
+        #map { flex:1; }
+        #sidebar ul { list-style:none; padding:0; }
+        #sidebar li { margin:5px 0; cursor:pointer; }
+        #sidebar li:hover { background:#f0f0f0; }
     </style>
-    <!-- 네이버 지도 JS (ncpClientId에 발급받은 키 넣기) -->
+    <!-- 네이버 지도 JS: YOUR_CLIENT_ID 자리에 발급받은 키 넣기 -->
     <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8rmgkdfw2q"></script>
-    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 </head>
 <body>
-<h3 th:text="${trail.name}">Trail 이름</h3>
+
+<div id="sidebar">
+    <h3>서울 둘레길 목록</h3>
+    <ul id="trail-list"></ul>
+</div>
+
 <div id="map"></div>
+<script>
+    const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 11
+    });
+    let currentPolylines = [];
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    const trailId = /*[[${trail.id}]]*/ 0;
-    fetch(`/trail/${trailId}/path`)
-        .then(res => {
-            if (!res.ok) throw new Error(`서버 응답 ${res.status}`);
-            return res.json();
-        })
-        .then(path => {
-            if (!Array.isArray(path) || path.length === 0) {
-                alert('경로 데이터가 없습니다.');
-                return;
-            }
+    fetch('/api/trails')
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(trails => {
+            const listEl = document.getElementById('trail-list');
+            trails.forEach(trail => {
+                // 사이드바에 추가
+                const li = document.createElement('li');
+                li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ${trail.difficulty})`;
+                listEl.appendChild(li);
 
-            // — 여기를 고칩니다 —
-            const first = path[0];
-            const map = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(first.lat, first.lng),
-                zoom: 14
+                // 시작점 마커
+                const startMarker = new naver.maps.Marker({
+                    map,
+                    position: new naver.maps.LatLng(trail.startLat, trail.startLng),
+                    icon: {
+                        url: '/images/icons8-marker-a-32.png',
+                        size: new naver.maps.Size(24,24),
+                        anchor: new naver.maps.Point(12,12)
+                    }
+                });
+                const startInfo = new naver.maps.InfoWindow({
+                    content: '<div style="padding:4px;white-space:nowrap;">출발점</div>'
+                });
+                startInfo.open(map, startMarker);
+
+                // 종료점 마커
+                const endMarker = new naver.maps.Marker({
+                    map,
+                    position: new naver.maps.LatLng(trail.endLat, trail.endLng),
+                    icon: {
+                        url: '/images/end-marker.png',
+                        size: new naver.maps.Size(24,24),
+                        anchor: new naver.maps.Point(12,12)
+                    }
+                });
+                const endInfo = new naver.maps.InfoWindow({
+                    content: '<div style="padding:4px;white-space:nowrap;">종료점</div>'
+                });
+                endInfo.open(map, endMarker);
+
+                // 리스트 클릭 시 경로 그리기
+                li.addEventListener('click', () => {
+                    // 기존 폴리라인들 제거
+                    currentPolylines.forEach(line => line.setMap(null));
+                    currentPolylines = [];
+
+                    fetch(`/api/trails/${trail.id}/path`)
+                        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                        .then(path => {
+                            const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
+
+                            // 경로를 한 폴리라인으로
+                            const line = new naver.maps.Polyline({
+                                map,
+                                path: coords,
+                                strokeWeight: 4,
+                                strokeColor: '#3366FF',
+                                strokeOpacity: 0.8
+                            });
+                            currentPolylines.push(line);
+
+                            // 지도의 뷰를 경로 전체로 맞추기
+                            const bounds = new naver.maps.LatLngBounds();
+                            coords.forEach(c => bounds.extend(c));
+                            map.fitBounds(bounds);
+                        })
+                        .catch(err => console.error('경로 불러오기 실패:', err));
+                });
             });
-
-            // Polyline 그릴 좌표 배열
-            const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
-
-            const polyline = new naver.maps.Polyline({
-                map,
-                path: coords,
-                strokeColor: '#3366FF',
-                strokeWeight: 5,
-                strokeOpacity: 0.8
-            });
-
-            const bounds = new naver.maps.LatLngBounds();
-            coords.forEach(pt => bounds.extend(pt));
-            map.fitBounds(bounds);
         })
-        .catch(err => console.error(err));
-    /*]]>*/
+        .catch(err => console.error('둘레길 목록 불러오기 실패:', err));
 </script>
-
 </body>
 </html>
