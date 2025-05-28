@@ -5,8 +5,14 @@
     <title>Group</title>
 </head>
 
-<link rel="stylesheet" href="../../static/css/Content.css">
-<link rel="stylesheet" href="../../static/css/Group.css">
+<link rel="stylesheet" th:href="@{/css/Content.css}">
+<link rel="stylesheet" th:href="@{/css/Side_menu.css}">
+<link rel="stylesheet" th:href="@{/css/Login_center.css}">
+<link rel="stylesheet" th:href="@{/css/AddFamily_Modal.css}">
+
+<link rel="stylesheet" th:href="@{/css/Group.css}">
+
+<!--<link rel="stylesheet" href="/static/css/Group.css">-->
 
 <body>
 <div class="group_wrap">
@@ -17,9 +23,10 @@
     <!-- 탭 네비게이션과 검색 -->
     <div class="header_section">
         <div class="tab_navigation">
-            <div class="tab_item active" onclick="switchTab('my')">내 그룹</div>
-            <div class="tab_item" onclick="switchTab('all')">전체 그룹</div>
-            <div class="tab_item" onclick="switchTab('application')">가입 현황</div>
+            <!--   비회원일 경우 전체 그룹만 보여질 수 있도록  -->
+            <div class="tab_item active" th:classappend="${isAuthenticated} ? 'active' : ''" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
+            <div class="tab_item" th:classappend="${!isAuthenticated} ? 'active' : ''"  onclick="switchTab('all')">전체 그룹</div>
+            <div class="tab_item" th:if="${isAuthenticated}" onclick="switchTab('application')">가입 현황</div>
         </div>
         <div class="search_section">
             <select class="keyword_select" onchange="filterByKeyword(this.value)">
@@ -28,7 +35,6 @@
                 <option value="area">같은 동네</option>
                 <option value="training">훈련</option>
                 <option value="travel">여행</option>
-
             </select>
             <div class="search_box">
                 <input type="search" placeholder="그룹 이름으로 찾아보기" id="searchInput" oninput="searchGroups()">
@@ -43,104 +49,7 @@
     <!-- 메인 그룹 영역 -->
     <div class="main_groups_area">
         <div class="groups_grid" id="groupsGrid">
-
-            <!--  js 추가되는 부분  -->
-            <!-- 만들기 카드 (기본으로 내 그룹 표시) -->
-            <!--
-            <div class="group_card create_card" onclick="createGroup()">
-                <div class="create_plus">+</div>
-                <span class="create_text">만들기</span>
-            </div>
-
-
-            <div class="group_card" onclick="viewGroup('mygroup1')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('mygroup1')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">나의 푸들 친구들</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group2')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group2')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">아기 강아지 함께 키워요</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group3')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group3')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">대형견 산책회</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group4')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group4')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">리트리버 모임</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group5')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group5')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">똥꼬 발랄 모두를 좋아하는 강아지</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group6')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group6')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">아기 강아지 함께 키워요</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group7')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group7')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">대형견 산책회</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group8')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group8')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">리트리버 모임</h3>
-                </div>
-            </div>
-            -->
+            <!-- JavaScript로 동적 생성 -->
         </div>
     </div>
 
@@ -148,61 +57,18 @@
     <div class="recommended_section">
         <div class="section_header">
             <h3 class="section_title">모든 동네 인기 글</h3>
-            <span class="more_link">더보기 ></span>
+            <span class="more_link" style="cursor: pointer;">더보기 ></span>
         </div>
-        <div class="recommended_grid" id="recommendedGrid"></div>
-
-        <!--  js 추가되는 부분  -->
-
-        <div class="recommended_grid">
-            <div class="recommended_card" onclick="viewGroup('rec1')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">하루 산책 3시간 모임</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec2')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">물속성 강아지</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec3')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec4')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec5')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
+        <div class="recommended_grid" id="recommendedGrid">
+            <!-- JavaScript로 동적 생성 -->
         </div>
     </div>
 </div>
 
-<!--////////////////////////-->
-<!--///////   모달    ///////-->
-<!-- 그룹 만들기 모달 -->
+<!-- 그룹 만들기 모달 - 3단계 구조로 수정 -->
 <div class="modal_overlay" id="createGroupModal" onclick="closeModal()">
     <div class="modal_container" onclick="event.stopPropagation()">
+
         <!-- 첫 번째 단계: 관심사 선택 -->
         <div class="modal_step" id="step1">
             <div class="modal_header">
@@ -254,14 +120,12 @@
                 </div>
             </div>
             <div class="modal_buttons">
-                <button class="btn_secondary" onclick="closeModal()">이전</button>
-                <button class="btn_primary" id="nextStep1" onclick="nextStep(2)" disabled>완료</button>
+                <button class="btn_secondary" onclick="closeModal()">취소</button>
+                <button class="btn_primary" id="nextStep1" onclick="nextStep(2)" disabled>다음</button>
             </div>
         </div>
 
-
         <!-- 두 번째 단계: 모임 정보 입력 -->
-
         <div class="modal_step" id="step2" style="display: none;">
             <div class="modal_header">
                 <h2 class="modal_title">모임 이름</h2>
@@ -272,7 +136,7 @@
                     <div class="upload_placeholder" onclick="uploadImage()">
                         <div class="upload_icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30.997" height="30.981" viewBox="0 0 30.997 30.981">
-                                <path id="upload-image" d="M27.086,18.705a1.476,1.476,0,0,0-1.476,1.476v.561l-2.184-2.184a4.117,4.117,0,0,0-5.8,0l-1.033,1.033-3.66-3.66a4.206,4.206,0,0,0-5.8,0L4.951,18.115V9.851A1.476,1.476,0,0,1,6.427,8.376H16.756a1.476,1.476,0,1,0,0-2.951H6.427A4.427,4.427,0,0,0,2,9.851V27.559a4.427,4.427,0,0,0,4.427,4.427H24.134a4.427,4.427,0,0,0,4.427-4.427V20.181A1.476,1.476,0,0,0,27.086,18.705ZM6.427,29.035a1.476,1.476,0,0,1-1.476-1.476V22.291l4.279-4.279a1.166,1.166,0,0,1,1.608,0l4.678,4.678h0l6.345,6.345ZM25.61,27.559a1.313,1.313,0,0,1-.266.782l-6.655-6.685,1.033-1.033a1.136,1.136,0,0,1,1.623,0l4.265,4.294ZM32.56,5.852,28.133,1.426a1.526,1.526,0,0,0-2.1,0L21.611,5.852a1.482,1.482,0,0,0,2.1,2.1l1.9-1.918v8.249a1.476,1.476,0,1,0,2.951,0V6.03l1.9,1.918a1.482,1.482,0,1,0,2.1-2.1Z" transform="translate(-2 -1.005)" fill="#b7b7b7"/>
+                                <path d="M27.086,18.705a1.476,1.476,0,0,0-1.476,1.476v.561l-2.184-2.184a4.117,4.117,0,0,0-5.8,0l-1.033,1.033-3.66-3.66a4.206,4.206,0,0,0-5.8,0L4.951,18.115V9.851A1.476,1.476,0,0,1,6.427,8.376H16.756a1.476,1.476,0,1,0,0-2.951H6.427A4.427,4.427,0,0,0,2,9.851V27.559a4.427,4.427,0,0,0,4.427,4.427H24.134a4.427,4.427,0,0,0,4.427-4.427V20.181A1.476,1.476,0,0,0,27.086,18.705Z" fill="#b7b7b7"/>
                             </svg>
                         </div>
                         <span class="upload_text">강아지 사진 올리기</span>
@@ -289,11 +153,37 @@
             </div>
             <div class="modal_buttons">
                 <button class="btn_secondary" onclick="prevStep(1)">이전</button>
-                <button class="btn_primary" onclick="createNewGroup()">완료</button>
+                <button class="btn_primary" id="nextStep2" onclick="nextStep(3)">다음</button>
+            </div>
+        </div>
+
+        <!-- 세 번째 단계: 메인 프로필 선택 -->
+        <div class="modal_step" id="step3" style="display: none;">
+            <div class="modal_header">
+                <h2 class="modal_title">메인 프로필 선택</h2>
+                <p class="modal_subtitle">이 그룹에서 사용할 메인 프로필을 선택해주세요</p>
+            </div>
+            <div class="profile_selection_section">
+                <div class="profile_grid" id="profileGrid">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+
+            <div class="modal_buttons">
+                <button class="btn_secondary" onclick="prevStep(2)">이전</button>
+                <button class="btn_primary" id="completeBtn" onclick="createNewGroup()" disabled>완료</button>
             </div>
         </div>
     </div>
 </div>
-<script defer src="../../static/js/Group.js"></script>
+
+<!--<script src="/static/js/Group.js"></script>-->
+
+<script defer th:src="@{/js/Group.js}"></script>
+
+<script th:src="@{/js/Side_menu.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
+
 </body>
 </html>
