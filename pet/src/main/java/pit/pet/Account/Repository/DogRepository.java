@@ -8,6 +8,7 @@ import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DogRepository extends JpaRepository<Dog, Long> {
@@ -25,6 +26,11 @@ public interface DogRepository extends JpaRepository<Dog, Long> {
      * 최신 등록 순으로 모든 강아지 조회
      */
     List<Dog> findAllByOrderByDnoDesc();
+
+    /**
+     * 강아지 등록때 키워드 추가 코드
+     */
+    Optional<Dog> findTopByOwner_UnoOrderByDnoDesc(Long userId);
 
     /**
      * 필터 조건으로 강아지 검색 (성별, 견종, 지역, 키워드 검색 개선)

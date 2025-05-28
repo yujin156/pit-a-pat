@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register2</title>
-    <link rel="stylesheet" href="../../static/css/registerCSS/Register2.css">
+    <link rel="stylesheet" href="/css/registerCSS/Register2.css">
 </head>
 <body>
 <body>
@@ -25,12 +25,13 @@
             <div class="Title-semi">이용약관 > 회원정보 입력 > 강아지 정보 입력 > 회원가입 완료</div>
             <div class="PITaPAT"></div>
         </div>
-        <form class="Big-form" action="/register/step2" method="post">
+        <form class="Big-form" action="/dog/register/step2" method="post">
+            <input type="hidden" name="userId" th:value="${userId}" />
             <div class="form-content">
                 <h2 class="dog-size-title">우리 강아지 크기 선택하기</h2>
                 <div class="dog-size-options">
                     <label>
-                        <input type="radio" name="dogSize" value="LARGE" required />
+                        <input type="radio" name="size" value="LARGE" required />
                         <div class="option-box">
                             <div class="size-title">대형견</div>
                             <div class="size-subtitle">25kg, 60cm 이상</div>
@@ -38,7 +39,7 @@
                         </div>
                     </label>
                     <label>
-                        <input type="radio" name="dogSize" value="MEDIUM" />
+                        <input type="radio" name="size" value="MEDIUM" />
                         <div class="option-box">
                             <div class="size-title">중형견</div>
                             <div class="size-subtitle">10kg ~ 25kg, 35cm ~ 60cm</div>
@@ -46,7 +47,7 @@
                         </div>
                     </label>
                     <label>
-                        <input type="radio" name="dogSize" value="SMALL" />
+                        <input type="radio" name="size" value="SMALL" />
                         <div class="option-box">
                             <div class="size-title">소형견</div>
                             <div class="size-subtitle">10kg, 35cm 이하</div>
@@ -56,7 +57,8 @@
                 </div>
             </div>
 
-
+            <input type="hidden" name="currentDogIndex" th:value="${currentDogIndex}" />
+            <input type="hidden" name="totalDogs" th:value="${totalDogs}" />
 
             <div class="form-buttons">
                 <div class="form-buttons-left">
@@ -70,6 +72,6 @@
         </form>
     </div>
 </div>
-<script src="../../static/js/registerJS/register2.js"></script>
+<script src="/js/registerJS/register2.js"></script>
 </body>
 </html>

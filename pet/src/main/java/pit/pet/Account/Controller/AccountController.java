@@ -15,6 +15,9 @@ import pit.pet.Account.User.Address;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
 import pit.pet.Account.User.Role;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -33,21 +36,74 @@ public class AccountController {
         User user = new User();
         user.setAddress(new Address());
         model.addAttribute("user", user);
-        return "Account/Register";
+        return "Register/Register1";
     }
 
     @PostMapping("/signup")
-    public String registerUser(@ModelAttribute("user") User user) {
-        // user.getAddress() 안에 주소가 채워져서 들어옵니다.
-        userService.registerUser(user, user.getAddress());
-        return "redirect:/";
+    public String registerUser(@ModelAttribute("user") User user,
+                               @RequestParam("dogCount") int dogCount,
+                               HttpSession session,
+                               HttpServletResponse response) {
+        // 1️⃣ 회원가입: DB 저장
+        Long userId = userService.registerUser(user, user.getAddress());
+
+        // 2️⃣ 로그인 로직: JWT 토큰 발급 및 세션/쿠키 저장
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User savedUser = optionalUser.get();
+
+            // JWT 발급
+            String accessToken = jwtTokenProvider.createAccessToken(savedUser.getUemail(), savedUser.getRole());
+            String refreshToken = jwtTokenProvider.createRefreshToken(savedUser.getUemail(), savedUser.getRole());
+
+            // 쿠키에 저장
+            Cookie accessCookie = new Cookie("accessToken", accessToken);
+            accessCookie.setHttpOnly(true);
+            accessCookie.setPath("/");
+            accessCookie.setMaxAge(60 * 60);
+            response.addCookie(accessCookie);
+
+            Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+            refreshCookie.setHttpOnly(true);
+            refreshCookie.setPath("/");
+            refreshCookie.setMaxAge(60 * 60 * 24);
+            response.addCookie(refreshCookie);
+
+            // 세션에도 user 저장
+            session.setAttribute("user", savedUser);
+            session.setAttribute("userId", userId);  // ⭐ userId를 세션에 저장!
+            session.setMaxInactiveInterval(60 * 60 * 24);
+        }
+        return "redirect:/dog/register/step2?currentDogIndex=1&totalDogs=" + dogCount;
     }
 
+
+    @GetMapping("/check-email")
+    @ResponseBody
+    public Map<String, Object> checkEmailDuplicate(@RequestParam String email) {
+        boolean exists = userService.existsByEmail(email);
+        Map<String, Object> response = new HashMap<>();
+        response.put("exists", exists);
+        response.put("message", exists ? "이미 사용중인 이메일입니다." : "사용 가능한 이메일입니다.");
+        return response;
+    }
+
+    //  전화번호 중복확인용 매핑
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Object> checkPhoneDuplicate(@RequestParam String phone) {
+        boolean exists = userService.existsByPhone(phone);
+        Map<String, Object> response = new HashMap<>();
+        response.put("exists", exists);
+        response.put("message", exists ? "이미 사용중인 번호입니다." : "사용 가능한 번호입니다.");
+        return response;
+    }
 
     @GetMapping("/login")
     public String loginForm() {
         return "Account/Login_center";
     }
+
 
     @PostMapping("/login")
     public String login(@RequestParam String email,

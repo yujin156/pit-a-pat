@@ -33,31 +33,31 @@ public class DogService {
 
     private final String uploadDir = "src/main/resources/static/uploads/";
 
+    // 🔥 1️⃣ 회원가입 중 (userId 없이)
     @Transactional
-    public void registerDog(DogRegisterRequest request, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    public Long registerDog(DogRegisterRequest request, Long userId) {
 
+        // userId 없이 dog만 저장 (주인도 null로 두거나 기본값 처리)
         Dog dog = new Dog();
         dog.setDname(request.getName());
-        dog.setUgender(Gender.fromUserLabel(request.getGender()));
+        dog.setUgender(Gender.valueOf(request.getGender()));
         dog.setSize(DogSize.valueOf(request.getSize()));
         dog.setDBday(request.getBirthday());
         dog.setDintro(request.getIntro());
-        dog.setNeuterStatus(request.getNeuterStatus());
-        dog.setOwner(user);
 
+        // owner 연결
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        dog.setOwner(owner);
+
+        // 종
         Species species = speciesRepository.findById(request.getSpeciesId())
                 .orElseThrow(() -> new RuntimeException("종을 찾을 수 없습니다."));
         dog.setSpecies(species);
 
-        // 키워드1만 처리
-        List<Long> keyword1Ids = Optional.ofNullable(request.getKeyword1Ids()).orElse(Collections.emptyList());
-        dog.setKeywords1(keyword1Repository.findAllById(keyword1Ids));
-
         dogRepository.save(dog);
 
-        // 이미지 업로드 처리
+        // 이미지
         MultipartFile image = request.getImageFile();
         if (image != null && !image.isEmpty()) {
             try {
@@ -70,14 +70,31 @@ public class DogService {
                 dogimg.setDog(dog);
                 dogimg.setDititle(image.getOriginalFilename());
                 dogimg.setDiurl("/uploads/" + filename);
-
                 dogimgRepository.save(dogimg);
 
             } catch (IOException e) {
                 throw new RuntimeException("이미지 저장 실패", e);
             }
         }
+
+        return dog.getDno();
     }
+
+    @Transactional
+    public void updateDogKeywordsDirectly(Long dogId, List<Long> keywordIds) {
+        Dog dog = dogRepository.findById(dogId)
+                .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없습니다."));
+
+        dog.setKeywords1(keyword1Repository.findAllById(keywordIds));
+        dogRepository.save(dog);
+    }
+    @Transactional
+    public Long findLatestDogIdByUser(Long userId) {
+        Dog dog = dogRepository.findTopByOwner_UnoOrderByDnoDesc(userId)
+                .orElseThrow(() -> new RuntimeException("최근 등록된 강아지가 없습니다."));
+        return dog.getDno();
+    }
+
     // ===== 매칭 기능용 메서드들 추가 =====
 
     /**

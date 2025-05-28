@@ -1,5 +1,6 @@
 package pit.pet.Account.Controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogKeyword1Repository;
 import pit.pet.Account.Repository.SpeciesRepository;
 import pit.pet.Account.Repository.UserRepository;
@@ -17,13 +19,11 @@ import pit.pet.Account.User.DogSize;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-// DogController.java
-// DogController.java
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/dog")
@@ -35,23 +35,90 @@ public class DogController {
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
 
-    @GetMapping("/register")
-    public String showDogRegisterForm(Model model) {
-        model.addAttribute("dogRegisterRequest", new DogRegisterRequest());
+    // 1️⃣ 강아지 크기 선택 (Register2)
+    @GetMapping("/register/step2")
+    public String showDogSizeForm(@RequestParam int currentDogIndex,
+                                  @RequestParam int totalDogs,
+                                  Model model) {
+        model.addAttribute("currentDogIndex", currentDogIndex);
+        model.addAttribute("totalDogs", totalDogs);
+        return "Register/Register2";
+    }
+
+    @PostMapping("/register/step2")
+    public String handleDogSize(@RequestParam("size") String sizeStr, // 여기를 dogSize → size로
+                                @RequestParam("currentDogIndex") int currentDogIndex,
+                                @RequestParam("totalDogs") int totalDogs) {
+        DogSize dogSize = DogSize.valueOf(sizeStr);
+        return "redirect:/dog/register/step3?currentDogIndex=" + currentDogIndex
+                + "&totalDogs=" + totalDogs
+                + "&dogSize=" + dogSize;
+    }
+
+    // 2️⃣ 강아지 프로필 입력 (Register3)
+    @GetMapping("/register/step3")
+    public String showDogProfileForm(@RequestParam int currentDogIndex,
+                                     @RequestParam int totalDogs,
+                                     @RequestParam String dogSize,
+                                     Model model) {
+        model.addAttribute("dogSize", DogSize.valueOf(dogSize));
         model.addAttribute("speciesList", speciesRepository.findAll());
+        model.addAttribute("currentDogIndex", currentDogIndex);
+        model.addAttribute("totalDogs", totalDogs);
+        return "Register/Register3";
+    }
+
+    @PostMapping("/register/step3")
+    public String handleDogProfile(@ModelAttribute DogRegisterRequest request,
+                                   @RequestParam("dogImage") MultipartFile imageFile,
+                                   @RequestParam int currentDogIndex,
+                                   @RequestParam int totalDogs,
+                                   @RequestParam("size") String size,
+                                   HttpSession session) { // 새로 추가!
+
+        Long userId = (Long) session.getAttribute("userId");  // ⭐ userId 꺼내오기
+        Long dogId = dogService.registerDog(request, userId);  // ⭐ owner 설정된 강아지 등록
+
+        request.setSize(size); //
+        request.setImageFile(imageFile);
+
+
+        return "redirect:/dog/register/step4?currentDogIndex=" + currentDogIndex
+                + "&totalDogs=" + totalDogs
+                + "&dogId=" + dogId;
+    }
+
+    // 3️⃣ 강아지 키워드 선택 (Register4)
+    @GetMapping("/register/step4")
+    public String showDogKeywordForm(@RequestParam int currentDogIndex,
+                                     @RequestParam int totalDogs,
+                                     @RequestParam Long dogId,
+                                     Model model) {  // 🔥 Principal 제거!
+
         model.addAttribute("keyword1List", keyword1Repository.findAll());
-        return "Dog/DogRegister";
+        model.addAttribute("dogId", dogId);
+        model.addAttribute("currentDogIndex", currentDogIndex);
+        model.addAttribute("totalDogs", totalDogs);
+
+        return "Register/Register4";
     }
 
+    @PostMapping("/register/step4")
+    public String handleDogKeyword(@RequestParam("keywordIds") List<Long> keywordIds,
+                                   @RequestParam Long dogId,
+                                   @RequestParam int currentDogIndex,
+                                   @RequestParam int totalDogs) {
 
-    @PostMapping("/register")
-    public String registerDog(@ModelAttribute DogRegisterRequest request, Principal principal) {
-        Long userId = getUserIdFromPrincipal(principal);
-        dogService.registerDog(request, userId);
-        return "redirect:/";
+        dogService.updateDogKeywordsDirectly(dogId, keywordIds);
+
+        if (currentDogIndex < totalDogs) {
+            return "redirect:/dog/register/step2?currentDogIndex=" + (currentDogIndex + 1) + "&totalDogs=" + totalDogs;
+        } else {
+            return "redirect:/register/complete";
+        }
     }
 
-    // 강아지 상태 업데이트 API
+    // 🔹 강아지 상태 업데이트 API
     @PostMapping("/update-status")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateDogStatus(
@@ -74,14 +141,12 @@ public class DogController {
             Dog dog = dogRepository.findById(dogId)
                     .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없습니다."));
 
-            // 본인의 강아지인지 확인
             if (!dog.getOwner().getUno().equals(user.getUno())) {
                 response.put("success", false);
                 response.put("message", "권한이 없습니다.");
                 return ResponseEntity.ok(response);
             }
 
-            // 상태 업데이트
             dog.setStatus(status);
             dogRepository.save(dog);
 
@@ -99,6 +164,7 @@ public class DogController {
         }
     }
 
+    // 🔸 중복 제거한 유저ID 조회 메서드
     private Long getUserIdFromPrincipal(Principal principal) {
         String email = principal.getName();
         return userRepository.findByUemail(email)
