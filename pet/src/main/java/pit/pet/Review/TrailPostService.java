@@ -1,6 +1,7 @@
 package pit.pet.Review;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogRepository;
@@ -26,7 +27,7 @@ public class TrailPostService {
     private final DogRepository dogRepo;
     private final TrailPostRepository postRepo;
 
-    private final String uploadDir = "src/main/resources/static/uploads/trail-posts/";
+    private String uploadDir = "pet/src/main/resources/static/uploads/trail-posts/";
     public void savePost(Long trailId, Long dogId, String content, int rating, MultipartFile image) {
         Trail trail = trailRepo.findById(trailId).orElseThrow();
         Dog dog = dogRepo.findById(dogId).orElseThrow();

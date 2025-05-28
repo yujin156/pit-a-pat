@@ -5,19 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class RecommendRequestDto {
-    private Long userId;
-    private Long dogId;
+import java.util.List;
 
-    private String dogSize;
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+public class RecommendRequestDto {
+    private Long dogId;
+    private String dogSize;  // SMALL / MEDIUM / LARGE
 
     private String sidoCode;
     private String sigunguCode;
     private String emdCode;
 
-    private Double temperature;
-    private Boolean isRaining;
+    private List<TrailPostSummaryDto> recentPosts;  // 최근 게시글 요약
 }
