@@ -35,7 +35,7 @@ public class Dog {
     @Column(name = "d_intro", nullable = false)
     private String dintro;
 
-    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT '온라인'")
+    @Column(name = "status")
     private String status = "온라인";
 
     @ManyToOne(fetch = FetchType.LAZY)

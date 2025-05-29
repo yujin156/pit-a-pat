@@ -1,5 +1,6 @@
 package pit.pet.Board.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +28,12 @@ public class BoardTable {
     @Column(name = "b_nowtime")
     private LocalDateTime bnowtime;
 
+    // ✅ 게시글 - 그룹 (N:1)
     @ManyToOne
-    @JoinColumn(name = "blno", nullable = false)
-    private BoardListTable boardListTable;
-
-    @ManyToOne
-    @JoinColumn(name = "gno") // 또는 ERD 기준 컬럼명
+    @JoinColumn(name = "gno", nullable = false)
+    @JsonIgnore
     private GroupTable group;
+
 
     // ✅ 게시자 이름 연결에 대한 제안
 //    @Column(name = "b_writer_name")
@@ -45,10 +45,12 @@ public class BoardTable {
      private Dog writerdog;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<BoardImgTable> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<BoardLikeTable> likes;
+    @JsonIgnore
+    private List<BoardLikeTable> likes = new ArrayList<>();
 
     @Column(name = "b_like_count")
     private Integer blikecount = 0; // 기본값 0
@@ -61,7 +63,8 @@ public class BoardTable {
     }
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<BoardCommentTable> comments;
+    @JsonIgnore
+    private List<BoardCommentTable> comments = new ArrayList<>();
 
     public int getCommentCount() {
         return comments != null ? comments.size() : 0;
