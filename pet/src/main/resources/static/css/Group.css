@@ -1,4 +1,10 @@
-/* 프로필 페이지 전체 래퍼 */
+/*===================================================
+   그룹 페이지 스타일시트
+===================================================*/
+
+/* 기본 레이아웃
+   ===================================================*/
+
 .group_wrap {
     width: 1460px;
     margin-top: 30px;
@@ -7,7 +13,9 @@
     margin-right: 325px;
 }
 
-/*///////타이틀///////*/
+/* 타이틀 섹션
+   ===================================================*/
+
 .group_title {
     font-size: 45px;
     color: #0B0B0B;
@@ -19,7 +27,9 @@
     color: #B7B7B7;
 }
 
-/* 헤더 섹션 */
+/* 헤더 및 네비게이션
+   ===================================================*/
+
 .header_section {
     display: flex;
     justify-content: space-between;
@@ -56,7 +66,9 @@
     color: #387FEB;
 }
 
-/* 검색 섹션 */
+/* 검색 섹션
+   ===================================================*/
+
 .search_section {
     display: flex;
     gap: 10px;
@@ -106,7 +118,9 @@
     cursor: pointer;
 }
 
-/* 메인 그룹 영역 */
+/* 메인 그룹 영역
+   ===================================================*/
+
 .main_groups_area {
     background: #F5F6F8;
     border-radius: 20px;
@@ -120,7 +134,9 @@
     gap: 15px;
 }
 
-/* 그룹 카드 */
+/* 그룹 카드 - 기본 스타일
+   ===================================================*/
+
 .group_card {
     background: white;
     border-radius: 12px;
@@ -135,7 +151,7 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* 만들기 카드 */
+/* 새 그룹 만들기 카드 */
 .create_card {
     display: flex;
     flex-direction: column;
@@ -162,7 +178,7 @@
     color: #387FEB;
 }
 
-/* 카드 메뉴 */
+/* 카드 구성 요소 */
 .card_menu {
     transform: rotate(90deg);
     position: absolute;
@@ -172,9 +188,6 @@
     height: 24px;
     background: rgba(255,255,255,0.9);
     border-radius: 50%;
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*justify-content: center;*/
     cursor: pointer;
     z-index: 2;
     font-size: 14px;
@@ -187,7 +200,6 @@
     background: white;
 }
 
-/* 카드 이미지 */
 .card_image {
     width: 100%;
     height: 140px;
@@ -196,7 +208,6 @@
     background-repeat: no-repeat;
 }
 
-/* 멤버 프로필 */
 .member_profile {
     position: absolute;
     bottom: 45px;
@@ -214,7 +225,6 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-/* 카드 정보 */
 .card_info {
     padding: 12px;
 }
@@ -229,7 +239,9 @@
     overflow: hidden;
 }
 
-/* 추천 섹션 */
+/* 추천 섹션
+   ===================================================*/
+
 .recommended_section {
     padding: 25px;
     margin-top: 50px;
@@ -310,7 +322,9 @@
     line-height: 1.3;
 }
 
-/* 상태 배지 (가입 현황용) */
+/* 상태 배지
+   ===================================================*/
+
 .status_badge {
     position: absolute;
     top: 10px;
@@ -336,7 +350,9 @@
     color: white;
 }
 
-/* 모달 스타일 */
+/* 모달 - 기본 구조
+   ===================================================*/
+
 .modal_overlay {
     position: fixed;
     top: 0;
@@ -381,7 +397,9 @@
     color: #666;
 }
 
-/* 관심사 선택 그리드 */
+/* 모달 - 관심사 선택
+   ===================================================*/
+
 .interest_grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -419,7 +437,9 @@
     color: #333;
 }
 
-/* 폼 섹션 */
+/* 모달 - 폼 섹션
+   ===================================================*/
+
 .form_section {
     margin-bottom: 30px;
 }
@@ -509,7 +529,143 @@
     border-color: #387FEB;
 }
 
-/* 모달 버튼 */
+/* 모달 - 프로필 선택
+   ===================================================*/
+
+.profile_selection_section {
+    margin-bottom: 30px;
+}
+
+.profile_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profile_card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.profile_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.profile_card.selected {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(56, 127, 235, 0.3);
+    border: 2px solid #387FEB;
+}
+
+.profile_card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: #387FEB;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 3;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.profile_card_menu {
+    transform: rotate(90deg);
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.profile_card.selected .profile_card_menu {
+    display: none;
+}
+
+.profile_card_menu:hover {
+    transform: rotate(90deg);
+    background: white;
+}
+
+.profile_info_overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 30px 12px 12px;
+    color: white;
+}
+
+.profile_name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.profile_details {
+    font-size: 15px;
+    opacity: 0.9;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.profile_detail_item {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.main_profile_badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #FF6B6B;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* 모달 - 버튼
+   ===================================================*/
+
 .modal_buttons {
     display: flex;
     gap: 12px;
@@ -558,73 +714,61 @@
     background: #ccc;
 }
 
-/* 반응형 디자인 */
+/* 모달 변형
+   ===================================================*/
+
+#step3 .modal_container {
+    max-width: 600px;
+}
+
+/* 반응형 디자인
+   ===================================================*/
+
 @media (max-width: 1460px) {
-    .groups_grid,
-    .recommended_grid {
-        grid-template-columns: repeat(4, 1fr);
+    .profile_grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .group_wrap {
-        padding: 20px 15px;
-    }
-
-    .group_title {
-        font-size: 36px;
-    }
-
-    .header_section {
-        flex-direction: column;
-        gap: 20px;
-        align-items: stretch;
-    }
-
-    .search_section {
-        justify-content: center;
-    }
-
-    .search_box input {
-        width: 150px;
-    }
-
-    .groups_grid,
-    .recommended_grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .main_groups_area {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .group_wrap {
-        padding: 15px 10px;
-    }
-
-    .group_title {
-        font-size: 28px;
-    }
-
-    .groups_grid,
-    .recommended_grid {
+    .profile_grid {
         grid-template-columns: 1fr;
         gap: 12px;
     }
 
-    .tab_item {
-        padding: 8px 16px;
+    .profile_card {
+        height: 200px;
+    }
+
+    .profile_name {
+        font-size: 14px;
+    }
+
+    .profile_details {
+        font-size: 11px;
+        gap: 4px;
+    }
+
+    .profile_detail_item {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile_card {
+        height: 180px;
+    }
+
+    .profile_name {
         font-size: 13px;
     }
 
-    .search_section {
-        flex-direction: column;
-        gap: 10px;
+    .profile_info_overlay {
+        padding: 20px 10px 10px;
     }
 
-    .search_box input {
-        width: 100%;
+    .main_profile_badge {
+        font-size: 9px;
+        padding: 3px 6px;
     }
 }
