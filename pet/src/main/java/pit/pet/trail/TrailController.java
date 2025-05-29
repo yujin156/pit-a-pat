@@ -26,20 +26,14 @@ public class TrailController {
     public ResponseEntity<List<TrailSummaryDto>> listTrails() {
         List<TrailSummaryDto> list = trailRepository.findAll().stream()
                 .map(t -> new TrailSummaryDto(
-                        t.getId(),
-                        t.getName(),
-                        t.getLengthKm(),
-                        t.getStartLat(),
-                        t.getStartLng(),
-                        t.getEndLat(),
-                        t.getEndLng(),
-                        trailPostService.getAverageRatingByTrail(t.getId())  // ⭐ 여기서 계산
+                        t.getId(), t.getName(), t.getLengthKm(),
+                        t.getStartLat(), t.getStartLng(),
+                        t.getEndLat(), t.getEndLng(),
+                        trailPostService.getAverageRatingByTrail(t.getId())
                 ))
                 .toList();
-
         return ResponseEntity.ok(list);
     }
-
     @GetMapping("/load-overpass")
     public ResponseEntity<String> saveSingle(@RequestParam String name) throws Exception {
         return ResponseEntity.ok(trailService.fetchAndSaveSingle(name));
@@ -67,6 +61,8 @@ public class TrailController {
                 t.getPathJson(), new TypeReference<>() {});
         return ResponseEntity.ok(path);
     }
+
+
     public record TrailSummaryDto(
             Long id,
             String name,

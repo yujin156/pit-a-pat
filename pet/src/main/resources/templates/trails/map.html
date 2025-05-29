@@ -21,14 +21,21 @@
 <body>
 
 <div id="sidebar">
-    <h3>서울 둘레길 목록</h3>
-    <ul id="trail-list"></ul>
+    <h3>AI 추천 둘레길</h3>
+    <ul id="recommend-list"></ul>
+
+    <button onclick="toggleAllTrails()" style="margin-top:10px;">전체 둘레길 보기</button>
+
+    <div id="allTrailsSection" style="display:none; margin-top:20px;">
+        <h4>전체 둘레길 목록</h4>
+        <ul id="trail-list"></ul>
+    </div>
 </div>
 
-<!-- 지도 -->
+<!-- 지도 영역 -->
 <div id="map"></div>
 
-<!-- Trail 게시글 작성 모달 -->
+<!-- 리뷰 작성 모달 -->
 <div id="postModal">
     <h3 id="modalTrailName">리뷰 작성</h3>
     <form id="postForm" enctype="multipart/form-data">
@@ -53,20 +60,32 @@
         <button type="button" onclick="$('#postModal').hide()">취소</button>
     </form>
 </div>
+
 <script>
     const map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(37.5665, 126.9780),
         zoom: 11
     });
 
+    let allTrailsVisible = false;
     let currentPolylines = [];
 
+    function toggleAllTrails() {
+        allTrailsVisible = !allTrailsVisible;
+        document.getElementById("allTrailsSection").style.display = allTrailsVisible ? 'block' : 'none';
+
+        const btn = document.querySelector("button");
+        btn.textContent = allTrailsVisible ? "전체 둘레길 닫기" : "전체 둘레길 보기";
+
+        if (allTrailsVisible) {
+            loadTrailList();
+        }
+    }
+
     function drawTrailPath(trail) {
-        // 기존 경로 제거
         currentPolylines.forEach(line => line.setMap(null));
         currentPolylines = [];
 
-        // 경로 fetch 후 폴리라인 생성
         fetch(`/api/trails/${trail.id}/path`)
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(path => {
@@ -93,6 +112,26 @@
         $('#postModal').show();
     }
 
+    function loadAiRecommendations(dogId) {
+        fetch(`/api/recommend/by-review?dogId=${dogId}`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('recommend-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    li.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                        openModalForTrail(trail);
+                    });
+                    listEl.appendChild(li);
+                });
+            })
+            .catch(err => console.error('AI 추천 실패:', err));
+    }
+
     function loadTrailList() {
         fetch('/api/trails')
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
@@ -102,8 +141,6 @@
 
                 trails.forEach(trail => {
                     const li = document.createElement('li');
-                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ${trail.difficulty} / ⭐${(trail.averageRating || 0).toFixed(1)})`;
-                    listEl.appendChild(li);
 
                     new naver.maps.Marker({
                         map,
@@ -124,18 +161,16 @@
                             anchor: new naver.maps.Point(12, 12)
                         }
                     });
-
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
                     li.addEventListener('click', () => {
                         drawTrailPath(trail);
                         openModalForTrail(trail);
                     });
+                    listEl.appendChild(li);
                 });
             })
-            .catch(err => console.error('리스트 실패:', err));
+            .catch(err => console.error('전체 둘레길 실패:', err));
     }
-
-    // 초기 로딩
-    loadTrailList();
 
     // 리뷰 등록 AJAX
     $('#postForm').on('submit', function (e) {
@@ -151,12 +186,22 @@
                 alert("등록 완료");
                 $('#postModal').hide();
                 $('#postForm')[0].reset();
-                loadTrailList();  // ⭐ 평균 별점 다시 반영
+                if (allTrailsVisible) loadTrailList();  // 전체 목록 다시 로딩
+                const dogId = $('#dogIdSelect').val();
+                loadAiRecommendations(dogId); // AI 추천 다시 불러오기
             },
             error: function () {
                 alert("등록 실패");
             }
         });
+    });
+
+    // 페이지 로딩 시 추천 목록 불러오기
+    $(document).ready(function () {
+        const dogId = $('#dogIdSelect').val();
+        if (dogId) {
+            loadAiRecommendations(dogId);
+        }
     });
 </script>
 
