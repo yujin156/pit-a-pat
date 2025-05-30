@@ -1,22 +1,17 @@
-/** ✏️ [공통: 전체 레이아웃] **/
+/* 기본 레이아웃 */
 body, html {
     margin: 0;
-    padding: 0;
     font-family: 'Gmarket Sans', sans-serif;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
 }
 
 .login-container {
+    height: 100vh;
     display: flex;
-    width: 1920px;
-    height: 1080px;
 }
 
-/** ✏️ [좌측 큰 영역] **/
+/* 좌측 영역 */
 .left-side {
-    width: 65.78%;
+    width: 65%;
     background: #F5F6F8;
     display: flex;
     justify-content: center;
@@ -30,19 +25,21 @@ body, html {
     background: #FFFFFF;
     height: 714px;
     width: 500px;
+    max-width: 90%;
+    border-radius: 20px;
 }
 
-/** ✏️ [상단 전체 구조] **/
+/* 헤더 영역 */
 .login-header {
     width: 400px;
+    max-width: 90%;
     display: flex;
     align-items: center;
-    position: relative; /* 환영문구를 가운데에 고정하기 위함 */
+    position: relative;
     margin-bottom: 20px;
     margin-top: 50px;
 }
 
-/** ✏️ [뒤로가기 버튼: 좌측 고정] **/
 .back-wrapper {
     position: absolute;
     left: 0;
@@ -55,7 +52,6 @@ body, html {
     cursor: pointer;
 }
 
-/** ✏️ [환영 문구: 가운데 정렬] **/
 .welcome-wrapper {
     width: 100%;
     color: #DDDDDD;
@@ -69,42 +65,42 @@ body, html {
     margin: 0;
 }
 
+/* 폼 래퍼 */
 .form-wrapper {
     background: #ffffff;
     padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/** ✏️ [로고 자리만 비운 박스] **/
 .logo-placeholder {
-    width: 125px;
-    height: 129px;
-    border: 2px solid #ccc;
+    width: auto;
+    height: auto;
     margin-bottom: 60px;
 }
 
-/** ✏️ [로그인 폼 영역] **/
+/* 로그인 폼 */
 .login-form {
     display: flex;
     flex-direction: column;
     width: 400px;
+    max-width: 100%;
     gap: 15px;
 }
 
 .login-form input {
     height: 40px;
     border: 2px solid #3A7FEB;
-
     border-radius: 8px;
     padding: 0 10px;
 }
 
-/** ✏️ [입력칸 placeholder 색상] **/
 .login-form input::placeholder {
-    color: #3A7FEB; /* 원하는 색상으로 지정: 예를 들어 연한 회색 */
-    opacity: 1; /* 파이어폭스 등에서 투명도 제거 */
+    color: #3A7FEB;
+    opacity: 1;
     font-size: 15px;
     font-weight: 400;
 }
@@ -124,12 +120,13 @@ body, html {
     background: #2c5ec4;
 }
 
-/** ✏️ [로그인 상태 유지 / 찾기 링크 - 버튼 간격 및 스타일] **/
+/* 옵션 영역 */
 .options {
     display: flex;
-    justify-content: space-around; /* 1:1:1 간격 */
+    justify-content: space-around;
     align-items: center;
     width: 400px;
+    max-width: 100%;
     margin-top: 10px;
     font-size: 12px;
     color: #666;
@@ -144,32 +141,23 @@ body, html {
     margin-left: 5px;
 }
 
-.find-links a {
-    text-decoration: none;
-    color: #3A7FEB;
-    margin: 0 5px;
-}
-
-/** ✏️ [체크박스 모양을 동그라미로 커스텀] **/
 .options input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
     border: 1px solid #ccc;
-    border-radius: 50%; /* 동그란 모양 */
+    border-radius: 50%;
     outline: none;
     cursor: pointer;
     position: relative;
 }
 
-/** ✏️ [체크됐을 때 동그라미 색 채우기] **/
 .options input[type="checkbox"]:checked {
     background-color: #3A7FEB;
     border-color: #3A7FEB;
 }
 
-/** ✏️ [체크 표시 대신 내부 흰 동그라미로 표시] **/
 .options input[type="checkbox"]:checked::before {
     content: '';
     display: block;
@@ -182,24 +170,30 @@ body, html {
     left: 4px;
 }
 
-/** ✏️ [아이디 찾기 & 비밀번호 찾기 링크 색상, 밑줄 제거] **/
 .circle-link {
-    text-decoration: none !important; /* 밑줄 제거 */
-    color: #666 !important;           /* 기본 회색으로 강제 */
+    text-decoration: none !important;
+    color: #666 !important;
     margin: 0 5px;
 }
 
 .circle-link:hover {
-    color: #3A7FEB !important;        /* hover 시 파란색으로 */
+    color: #3A7FEB !important;
 }
 
+.options .line {
+    display: inline-block;
+    width: 1px;
+    height: 20px;
+    background: #ccc;
+    margin: 0 8px;
+}
 
-/** ✏️ [“또는 간편로그인” 문구 스타일] **/
-
+/* 구분선 */
 .divider {
     display: flex;
     align-items: center;
     width: 400px;
+    max-width: 100%;
     font-size: 12px;
     color: #999;
     margin: 20px 0;
@@ -216,9 +210,11 @@ body, html {
     white-space: nowrap;
 }
 
-/** ✏️ [Google 간편로그인 버튼] **/
+/* 간편로그인 */
 .simple-login {
     margin-top: 10px;
+    width: 400px;
+    max-width: 100%;
 }
 
 .google-login {
@@ -227,69 +223,327 @@ body, html {
     border-radius: 10px;
     padding: 8px 16px;
     cursor: pointer;
-
-    width: 400px;
+    width: 100%;
     height: 50px;
-
     font-size: 20px;
     font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .google-login:hover {
     background: rgba(58, 127, 235, 0.1);
 }
 
-.options .line {
-    display: inline-block;
-    width: 1px;
-    height: 20px; /* 라인의 높이 */
-    background: #ccc; /* 라인 색상 */
-    margin: 0 8px; /* 좌우 여백 */
-}
-
-/** ✏️ [우측 큰 영역] **/
+/* 우측 영역 */
 .right-side {
-    width: 34.22%;
-    /*background: url('/images/login-dog.jpg') center/cover no-repeat; !* 실제 이미지 경로 *!*/
-    background: pink;
+    width: 35%;
+    background-image: url("https://images.unsplash.com/photo-1599765625239-fe53131a58ee?q=80&w=2127&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.black_box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.2) 30%,
+            rgba(0, 0, 0, 0.3) 60%,
+            rgba(0, 0, 0, 0.4) 100%
+    );
+    z-index: 1;
 }
 
 .right-inner {
     text-align: center;
     color: white;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .right-inner h2 {
     margin: 0;
-    font-size: 35px;
+    font-size: 25px;
     font-weight: 900;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .right-inner p {
     margin: 40px 0;
-    font-size: 20px;
-    font-weight: 400;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 1.5;
+    text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8);
 }
 
 .SIGNUP {
     width: 233px;
     height: 50px;
-
-    background: transparent;
+    background: rgba(255, 255, 255, 0.2);
     border: 1px solid white;
     color: white;
     padding: 10px 20px;
     border-radius: 30px;
     cursor: pointer;
-
     font-weight: 700;
-    font-size: 25px;
+    font-size: 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
 .SIGNUP:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* 반응형 미디어 쿼리 */
+
+/* 태블릿 */
+@media (max-width: 1024px) {
+    .left-side {
+        width: 60%;
+    }
+
+    .right-side {
+        width: 40%;
+    }
+
+    .left-inner {
+        width: 450px;
+        height: auto;
+        min-height: 600px;
+        padding: 20px 0;
+    }
+
+    .login-header {
+        width: 350px;
+    }
+
+    .login-form,
+    .options,
+    .divider,
+    .simple-login {
+        width: 350px;
+    }
+
+    .right-inner h2 {
+        font-size: 22px;
+    }
+
+    .right-inner p {
+        font-size: 14px;
+        margin: 30px 0;
+    }
+
+    .SIGNUP {
+        width: 200px;
+        height: 45px;
+        font-size: 22px;
+    }
+}
+
+/* 태블릿 세로/모바일 가로 */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .left-side {
+        width: 100%;
+        order: 2;
+        padding: 20px 0;
+    }
+
+    .right-side {
+        width: 100%;
+        order: 1;
+        min-height: 250px;
+    }
+
+    .left-inner {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        margin: 0 20px;
+        box-shadow: none;
+    }
+
+    .login-header {
+        width: 100%;
+        max-width: 400px;
+        margin-top: 30px;
+    }
+
+    .form-wrapper {
+        padding: 20px;
+    }
+
+    .logo-placeholder {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 40px;
+    }
+
+    .login-form,
+    .options,
+    .divider,
+    .simple-login {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .right-inner {
+        padding: 30px 20px;
+    }
+
+    .right-inner h2 {
+        font-size: 20px;
+    }
+
+    .right-inner p {
+        font-size: 13px;
+        margin: 20px 0;
+    }
+
+    .SIGNUP {
+        width: 180px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+/* 모바일 세로 */
+@media (max-width: 480px) {
+    .left-inner {
+        margin: 0 10px;
+    }
+
+    .form-wrapper {
+        padding: 15px;
+    }
+
+    .logo-placeholder {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 30px;
+    }
+
+    .login-header {
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+
+    .welcome-message {
+        font-size: 14px;
+    }
+
+    .back-arrow {
+        font-size: 16px;
+    }
+
+    .login-form input {
+        height: 45px;
+        font-size: 14px;
+    }
+
+    .LOGIN {
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .google-login {
+        height: 45px;
+        font-size: 16px;
+    }
+
+    .options {
+        font-size: 11px;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .options .line {
+        display: none;
+    }
+
+    .divider {
+        font-size: 11px;
+        margin: 15px 0;
+    }
+
+    .right-side {
+        min-height: 200px;
+    }
+
+    .right-inner {
+        padding: 20px 15px;
+    }
+
+    .right-inner h2 {
+        font-size: 18px;
+    }
+
+    .right-inner p {
+        font-size: 12px;
+        margin: 15px 0;
+    }
+
+    .SIGNUP {
+        width: 150px;
+        height: 35px;
+        font-size: 16px;
+    }
+}
+
+/* 매우 작은 모바일 */
+@media (max-width: 360px) {
+    .left-inner {
+        margin: 0 5px;
+    }
+
+    .form-wrapper {
+        padding: 10px;
+    }
+
+    .login-form input {
+        height: 40px;
+        font-size: 13px;
+    }
+
+    .LOGIN,
+    .google-login {
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .right-inner h2 {
+        font-size: 16px;
+    }
+
+    .right-inner p {
+        font-size: 11px;
+    }
+
+    .SIGNUP {
+        width: 130px;
+        height: 32px;
+        font-size: 14px;
+    }
+}
