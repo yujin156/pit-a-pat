@@ -96,6 +96,48 @@ body{
     width: 16px;
     height: 16px;
 }
+/* 셀렉트 박스 스타일 */
+.dog_select {
+    position: relative;
+    flex-shrink: 0;
+    width: 160px;
+}
+
+.dog_select select {
+    width: 100%;
+    height: 40px;
+    padding: 0 40px 0 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #f8f9fa;
+    color: #666;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all 0.3s ease;
+}
+
+.dog_select select:focus {
+    outline: none;
+    border-color: #2a9c90;
+    box-shadow: 0 0 0 3px rgba(42, 156, 144, 0.1);
+}
+
+.dog_select::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #b7b7b7;
+    pointer-events: none;
+}
 
 /* 아이템 리스트 컨테이너 */
 .walking_content {
