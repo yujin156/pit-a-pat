@@ -25,4 +25,12 @@ public class DogRegisterRequest {
     private List<Long> keyword1Ids;
 
     private MultipartFile imageFile;
+
+    public MultipartFile getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
+    }
 }
