@@ -44,7 +44,7 @@ public class MatchingController {
             model.addAttribute("isLoggedIn", false);
             model.addAttribute("userDogs", Collections.emptyList());
             model.addAttribute("showProfileSelector", false);
-            model.addAttribute("matchingDogs", Collections.emptyList()); // ✅ 변수명 변경
+            model.addAttribute("matchingDogs", Collections.emptyList());
             model.addAttribute("keywords", Collections.emptyList());
 
             boolean isLoggedIn = (principal != null);
@@ -128,7 +128,7 @@ public class MatchingController {
             }
 
             System.out.println("최종 강아지 데이터 수: " + matchingDogsData.size());
-            model.addAttribute("matchingDogs", matchingDogsData); // ✅ 매칭용 강아지 데이터
+            model.addAttribute("matchingDogs", matchingDogsData);
 
             // 키워드 목록 로드
             List<Map<String, Object>> keywordsData = new ArrayList<>();
@@ -164,7 +164,7 @@ public class MatchingController {
             model.addAttribute("isLoggedIn", false);
             model.addAttribute("userDogs", Collections.emptyList());
             model.addAttribute("showProfileSelector", false);
-            model.addAttribute("matchingDogs", Collections.emptyList()); // ✅ 변수명 변경
+            model.addAttribute("matchingDogs", Collections.emptyList());
             model.addAttribute("keywords", Collections.emptyList());
 
             return "Match/Match";
@@ -189,10 +189,23 @@ public class MatchingController {
                 dogData.put("species", Map.of("name", dog.getSpecies().getName()));
             }
 
+            // 주소 정보 안전하게 변환
             if (dog.getOwner() != null && dog.getOwner().getAddress() != null) {
                 Map<String, Object> addressData = new HashMap<>();
-                addressData.put("city", dog.getOwner().getAddress().getCity());
-                addressData.put("county", dog.getOwner().getAddress().getCounty());
+                String city = dog.getOwner().getAddress().getCity() != null ? dog.getOwner().getAddress().getCity() : "";
+                String county = dog.getOwner().getAddress().getCounty() != null ? dog.getOwner().getAddress().getCounty() : "";
+
+                addressData.put("city", city);
+                addressData.put("county", county);
+                addressData.put("fullAddress", (city + " " + county).trim());
+
+                dogData.put("owner", Map.of("address", addressData));
+            } else {
+                // 주소가 없는 경우 기본값 설정
+                Map<String, Object> addressData = new HashMap<>();
+                addressData.put("city", "위치");
+                addressData.put("county", "미공개");
+                addressData.put("fullAddress", "위치 미공개");
                 dogData.put("owner", Map.of("address", addressData));
             }
 
@@ -317,6 +330,7 @@ public class MatchingController {
             return ResponseEntity.ok(Collections.emptyList());
         }
     }
+
     /**
      * 좋아요/패스 API
      */
@@ -366,7 +380,7 @@ public class MatchingController {
             }
 
             if ("like".equals(action)) {
-                // ✅ MatchingService의 toggleLike 메서드 사용
+                // MatchingService의 toggleLike 메서드 사용
                 boolean isMatched = matchingService.toggleLike(user, dogId, myDog.getDno());
 
                 response.put("success", true);

@@ -59,8 +59,7 @@ public class GroupController {
 
     // 전체 그룹, 가입한 그룹 보여주기
     @GetMapping("/list")
-    public String groupList(Model model,
-                            @AuthenticationPrincipal UserDetails principal) {
+    public String groupList(Model model, @AuthenticationPrincipal UserDetails principal) {
 
         // 🔥 로그인 안되어 있으면 /login으로 리다이렉트
         if (principal == null) {
