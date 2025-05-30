@@ -22,12 +22,12 @@ public class DogLike {
     private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_dog_id", nullable = false)
-    private Dog senderDog;  // 좋아요를 보내는 강아지
+    @JoinColumn(name = "sender_dog_id", nullable = false)  // 이름은 테이블 컬럼명에 맞게
+    private Dog senderDog;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_dog_id", nullable = false)
-    private Dog receiverDog;  // 좋아요를 받는 강아지
+    private Dog receiverDog;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

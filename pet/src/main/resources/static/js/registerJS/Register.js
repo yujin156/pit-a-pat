@@ -61,11 +61,35 @@ function updateStep() {
 
 // 다음 스텝
 function nextStep() {
+    // ✅ 현재 iframe의 form을 찾고 submit!
+    const activeIframe = document.querySelector('.content_step.active iframe');
+    if (activeIframe) {
+        const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
+        const form = iframeDoc.querySelector('form');
+        if (form) {
+            // ✅ Step1 (약관동의)만 유효성 체크!
+            if (currentStep === 1 && typeof iframeDoc.validateTerms === 'function') {
+                if (!iframeDoc.validateTerms()) {
+                    return; // 필수 체크 안되면 stop
+                }
+            }
+
+            // ✅ form을 submit (서버로 POST)
+            form.submit();
+
+            // ✅ iframe submit 후 step 증가 → nextStep으로 전환
+            currentStep++;
+            updateStep();
+            return; // 아래 로직은 skip
+        }
+    }
+
+    // ✅ 단계만 넘기는 로직 (iframe form이 없거나 submit 안했을 때)
     if (currentStep < totalSteps) {
         currentStep++;
         updateStep();
     } else {
-        // 완료 처리
+        // 마지막 단계 처리 (강아지 키워드까지 완료)
         alert('회원가입이 완료되었습니다!');
         goHome();
     }

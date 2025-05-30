@@ -23,9 +23,9 @@
     <!-- 탭 네비게이션과 검색 -->
     <div class="header_section">
         <div class="tab_navigation">
-            <!--   비회원일 경우 전체 그룹만 보여질 수 있도록  -->
-            <div class="tab_item active" th:classappend="${isAuthenticated} ? 'active' : ''" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
-            <div class="tab_item" th:classappend="${!isAuthenticated} ? 'active' : ''"  onclick="switchTab('all')">전체 그룹</div>
+            <!-- 🔥 비로그인: 내 그룹, 가입 현황 안보임 -->
+            <div class="tab_item active" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
+            <div class="tab_item" onclick="switchTab('all')">전체 그룹</div>
             <div class="tab_item" th:if="${isAuthenticated}" onclick="switchTab('application')">가입 현황</div>
         </div>
         <div class="search_section">

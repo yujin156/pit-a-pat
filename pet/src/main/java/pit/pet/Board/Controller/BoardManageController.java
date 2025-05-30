@@ -5,16 +5,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
+import pit.pet.Board.Entity.BoardImgTable;
 import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Service.BoardManageService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,6 +27,37 @@ public class BoardManageController {
 
     private final BoardManageService boardManageService;
     private final DogRepository dogRepository;
+
+    @GetMapping("/groups/{gno}")
+    public String showGroupPage(@PathVariable Long gno, Model model) {
+        List<BoardTable> posts = boardManageService.getPostsByGroup(gno);
+        model.addAttribute("posts", posts);
+        System.out.println("✅ posts.size(): " + posts.size());
+        return "group/groupPage"; // 이 뷰 경로는 네가 실제로 사용하는 경로로 바꿔!
+    }
+
+    @GetMapping("/api/groups/{gno}/posts")
+    @ResponseBody
+    public List<Map<String, Object>> getPostsByGroup(@PathVariable Long gno) {
+        List<BoardTable> posts = boardManageService.getPostsByGroup(gno);
+        System.out.println("🔍 posts.size(): " + posts.size());
+        posts.forEach(p -> System.out.println("🔍 post: " + p.getBcontent()));
+        return posts.stream().map(post -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("bno", post.getBno());
+            map.put("bcontent", post.getBcontent());
+            map.put("dno", post.getWriterdog() != null ? post.getWriterdog().getDno() : null);
+            map.put("writerDogName", post.getWriterdog() != null ? post.getWriterdog().getDname() : "알 수 없음");
+            map.put("gno", post.getGroup() != null ? post.getGroup().getGno() : null);
+            map.put("images", post.getImages() != null ?
+                    post.getImages().stream().map(BoardImgTable::getBiurl).collect(Collectors.toList()) :
+                    new ArrayList<>()
+            );
+            // ✅ 댓글 개수도 반환
+            map.put("commentCount", post.getCommentCount());
+            return map;
+        }).collect(Collectors.toList());
+    }
 
     // ✅ 좋아요 토글
     @PostMapping("/{bno}/like")

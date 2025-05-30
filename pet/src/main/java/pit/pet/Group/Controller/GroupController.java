@@ -1,6 +1,8 @@
 package pit.pet.Group.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -41,40 +43,73 @@ public class GroupController {
     public String createGroupForm(Model model,
                                   @AuthenticationPrincipal UserDetails principal) {
         User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         List<Dog> myDogs = dogRepository.findByOwner(me);
+
         model.addAttribute("createGroupRequest", new CreateGroupRequest());
         model.addAttribute("myDogs", myDogs);
+
         return "Group/Create";
     }
 
-    // 그룹 생성 처리
+    // ✅ 1. Form submit 처리
     @PostMapping("/create")
-    public String createGroup(@ModelAttribute CreateGroupRequest request) {
+    public String createGroup(@ModelAttribute @Valid CreateGroupRequest request,
+                              @AuthenticationPrincipal UserDetails principal) {
+
+        if (principal == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         Dog dog = dogRepository.findById(request.getDogId())
-                .orElseThrow(() -> new RuntimeException("해당 강아지를 찾을 수 없습니다."));
-        groupService.createGroup(request.getGname(),
-                request.getGroupInfo(),
-                request.getInterest(),
-                dog);
+                .orElseThrow(() -> new RuntimeException("대표 강아지를 찾을 수 없습니다."));
+
+        // JS처럼 interest 따로 선택X, Form submit 시에는 그냥 넘어오는 걸로 가정
+        if (request.getInterest() == null) {
+            throw new RuntimeException("관심사(키워드)를 선택하지 않았습니다.");
+        }
+
+        groupService.createGroup(request, dog);
+
         return "redirect:/groups/list";
     }
+
+    // ✅ 2. AJAX (JSON) 처리
+    @PostMapping("/api/create")
+    @ResponseBody
+    public ResponseEntity<?> createGroupViaApi(@ModelAttribute @Valid CreateGroupRequest request,
+                                               @AuthenticationPrincipal UserDetails principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Dog dog = dogRepository.findById(request.getDogId())
+                .orElseThrow(() -> new RuntimeException("대표 강아지를 찾을 수 없습니다."));
+
+        if (request.getInterest() == null) {
+            return ResponseEntity.badRequest().body("관심사(키워드)를 선택하지 않았습니다.");
+        }
+
+        groupService.createGroup(request, dog);
+
+        return ResponseEntity.ok("그룹 생성 완료!");
+    }
+
 
     // 전체 그룹, 가입한 그룹 보여주기
     @GetMapping("/list")
     public String groupList(Model model,
                             @AuthenticationPrincipal UserDetails principal) {
-
-        // 🔥 로그인 안되어 있으면 /login으로 리다이렉트
-        if (principal == null) {
-            return "Account/Login";
-        }
-
-        // 전체 그룹 목록
+        // 🔥 전체 그룹 목록
         List<GroupTable> groups = groupService.getAllGroups();
         model.addAttribute("groupList", groups);
 
-        // 🔥 리더 이름 맵 만들기: <gno, dname>
+        // 🔥 리더 이름 맵 만들기
         Map<Long, String> leaderNames = new HashMap<>();
         for (GroupTable group : groups) {
             Long leaderGmno = group.getGleader(); // GroupMemberTable의 PK
@@ -82,16 +117,52 @@ public class GroupController {
                 leaderNames.put(group.getGno(), member.getDog().getDname());
             });
         }
-        model.addAttribute("leaderNames", leaderNames); // Thymeleaf에서 group.gno로 조회
+        model.addAttribute("leaderNames", leaderNames);
 
-        // 현재 로그인한 유저의 강아지 → 그룹 가입 목록
+        // ✅ 로그인 한 경우에만 "내 그룹" 정보 전달
+        if (principal != null) {
+            User me = userRepository.findByUemail(principal.getUsername())
+                    .orElseThrow();
+            List<Dog> myDogs = dogRepository.findByOwner(me);
+            model.addAttribute("myDogs", myDogs);
+            List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
+            model.addAttribute("myMemberships", myMemberships);
+
+            // 추가: 로그인 여부도 Thymeleaf에서 사용할 수 있도록
+            model.addAttribute("isAuthenticated", true);
+        } else {
+            // 비로그인인 경우
+            model.addAttribute("isAuthenticated", false);
+        }
+
+        return "Group/Group";
+    }
+
+    @GetMapping("/api/all")
+    @ResponseBody
+    public List<GroupTable> getAllGroups() {
+        return groupService.getAllGroups();
+    }
+
+    @GetMapping("/api/my-groups")
+    @ResponseBody
+    public List<GroupTable> getMyApprovedGroups(@AuthenticationPrincipal UserDetails principal) {
+        if (principal == null) {
+            // 🔥 비로그인 상태에서는 빈 배열 반환
+            return List.of();
+        }
+
         User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         List<Dog> myDogs = dogRepository.findByOwner(me);
-        List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
-        model.addAttribute("myMemberships", myMemberships);
 
-        return "Group/List";
+        // ✅ "APPROVED" 상태인 멤버십만 찾기
+        List<GroupMemberTable> approvedMemberships = groupMemberService.findByDogsAndStatus(myDogs, "ACCEPTED");
+
+        // ✅ GroupTable만 DTO로 변환해서 반환
+        return approvedMemberships.stream()
+                .map(GroupMemberTable::getGroupTable)
+                .toList();
     }
 
     // 그룹 가입 신청 폼 (강아지 선택)
@@ -183,11 +254,9 @@ public class GroupController {
     @GetMapping("/{gno}")
     public String groupDetail(@PathVariable Long gno, Model model) {
         GroupTable group = groupService.findById(gno);
-        List<BoardTable> boardList = boardManageService.getBoardListByGroup(group);
 
         model.addAttribute("group", group);
-        model.addAttribute("boardList", boardList);
 
-        return "Group/Detail";
+        return "Group/Group_board";
     }
 }
