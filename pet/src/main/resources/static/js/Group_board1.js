@@ -15,107 +15,53 @@ let calendarState = {
     apiLoaded: false
 };
 
-let posts = []
+// 게시물 데이터 배열
+const posts = [
+    {
+        id: 1,
+        username: "Dog_writer",
+        userProfile: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=150&h=150&fit=crop&crop=face",
+        timeAgo: "1일 전",
+        image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&h=600&fit=crop",
+        likes: ["Dog_name1", "Happy_pup", "Lovely_dog"],
+        content: "Dog_name1 님 여러명이 좋아합니다",
+        description: "오늘의 산책 🐾 날씨가 너무 좋아서 공원에서 신나게 뛰어놀았어요!",
+        comments: 4,
+        liked: false,
+        bookmarked: false
+    },
+    {
+        id: 2,
+        username: "Happy_pup",
+        userProfile: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop&crop=face",
+        timeAgo: "3시간 전",
+        image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&h=600&fit=crop",
+        likes: ["Cute_doggy", "Best_friend", "Puppy_love"],
+        content: "멍멍이친구들이 좋아합니다",
+        description: "새로운 장난감을 받았어요! 🎾 너무 신나서 하루종일 가지고 놀았답니다 ❤️",
+        comments: 12,
+        liked: false,
+        bookmarked: false
+    },
+    {
+        id: 3,
+        username: "Lovely_dog",
+        userProfile: "https://images.unsplash.com/photo-1574293876203-46753ed3d387?w=150&h=150&fit=crop&crop=face",
+        timeAgo: "6시간 전",
+        image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=800&h=600&fit=crop",
+        likes: ["Dog_writer", "Happy_pup", "Sweet_puppy"],
+        content: "강아지 친구들이 좋아합니다",
+        description: "오늘 미용실 다녀왔어요! ✨ 털이 너무 예쁘게 잘렸죠? 친구들 만나러 가야겠어요 🥰",
+        comments: 8,
+        liked: false,
+        bookmarked: false
+    }
+];
 
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
-    const gno = window.location.pathname.split("/").pop();
 
-    fetch(`/board/api/groups/${gno}/posts`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // 🔍 여기서 출력
-            posts = data; // 전역 posts 배열에 넣기
-            const container = document.querySelector('.board_member_row');
-            posts.forEach((post, index) => {
-                const element = createPostElement(post, index);
-                container.appendChild(element);
-            });
-        })
-        .catch(error => console.error("게시글 로딩 실패:", error));
-
-
-    // 폼 submit 이벤트 잡기 (추가!)
-    const createPostForm = document.getElementById('createPostForm');
-    console.log('createPostForm:', createPostForm); // 여기도 찍어봐!
-    createPostForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // 기본 submit 막기 (Ajax 방식으로 전송하려면!)
-
-        const formData = new FormData(this);
-        console.log('🐞 formData gno:', formData.get('gno'));
-        fetch('/board/create', { // 📌 서버 주소
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.ok ? response.text() : Promise.reject(response))
-            .then(data => {
-                console.log('✅ 게시글 작성 성공:', data);
-
-                // 모달 닫기
-                hideCreatePostModal();
-
-                // 이후 UI 업데이트 (예: 새 게시물 렌더링)
-                createPosts(); // 혹은 게시물 새로고침
-
-                // 메시지 표시 등...
-                showSuccessMessage('게시글이 성공적으로 작성되었습니다! 🎉');
-            })
-            .catch(error => {
-                console.error('❌ 게시글 작성 실패:', error);
-            });
-        document.querySelectorAll(".comment-options-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const menu = e.target.nextElementSibling;
-                menu.style.display = menu.style.display === "block" ? "none" : "block";
-            });
-        });
-
-        document.querySelectorAll(".delete-comment-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const commentItem = e.target.closest(".modal_text");
-                const cno = commentItem.dataset.cno;
-                if (confirm("정말 삭제하시겠습니까?")) {
-                    fetch(`/api/comments/${cno}`, { method: "DELETE" })
-                        .then(() => location.reload());
-                }
-            });
-        });
-
-        document.querySelectorAll(".edit-comment-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const commentItem = e.target.closest(".modal_text");
-                const cno = commentItem.dataset.cno;
-                const oldText = commentItem.querySelector(".modal_post_text").innerText;
-                const newText = prompt("댓글 수정", oldText);
-                if (newText) {
-                    fetch(`/api/comments/${cno}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ text: newText })
-                    }).then(() => location.reload());
-                }
-            });
-        });
-    });
     console.log('🚀 페이지 로드 완료 - 초기화 시작');
-
-    function loadMyGroupDogs(gno) {
-        fetch(`/board/api/my-group-dogs?gno=${gno}`)
-            .then(response => response.json())
-            .then(data => {
-                const select = document.getElementById('dno');
-                select.innerHTML = '<option value="">-- 선택하세요 --</option>';
-                data.forEach(dog => {
-                    const option = document.createElement('option');
-                    option.value = dog.dno;
-                    option.textContent = dog.dname;
-                    select.appendChild(option);
-                });
-            })
-            .catch(error => console.error('❌ 강아지 목록 불러오기 실패:', error));
-    }
 
     // 게시물 생성
     createPosts();
@@ -230,21 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
         postDiv.className = 'group_board';
         postDiv.setAttribute('data-post-id', post.id);
 
-        // const imageUrl = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
-
-        const imageUrl = (post.images || []).map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
-
-        const dogName = post.writerDogName || '알 수 없음';
-        console.log('🐞 createPostElement post:', post);
         postDiv.innerHTML = `
             <div class="group_boar_post_writer">
                 <div class="group_board_writer">
                     <div class="post_user_info">
                         <div class="post_profile_img">
-                            <img src="${post.userProfile}" alt="${post.writerDogName}" onerror="this.src='https://picsum.photos/40/40'"">
+                            <img src="${post.userProfile}" alt="${post.username}" onerror="this.src='https://picsum.photos/40/40'"">
                         </div>
                         <div class="post_user_details">
-                            <div class="board_write_user">${post.writerDogName}</div>
+                            <div class="board_write_user">${post.username}</div>
                             <span class="board_write_time">${post.timeAgo}</span>
                         </div>
                     </div>
@@ -258,9 +198,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         </svg>
                     </div>
                 </div>
-                    <div class="board_post_img" data-post-index="${index}">
-                        ${imageUrl}
-                    </div>
+                <div class="board_post_img" data-post-index="${index}">
+                    <img src="${post.image}" alt="게시물 이미지" onerror="this.src='https://via.placeholder.com/800x600/74b9ff/ffffff?text=🐕'">
+                </div>
                 <div class="board_svg_row">
                     <div class="post_right_nav">
                         <div class="post_heart_icon" data-post-index="${index}">
@@ -290,14 +230,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div class="post_content_section">
-                    <span class="post_who_like"><!-- 여기다가 누구누구 외 몇명 좋아함 넣을것 --></span>
+                    <span class="post_who_like">${post.content}</span>
                     <div class="post_content">
-                        <span class="post_username">${post.writerDogName}</span>
-                        <span class="post_text">${post.bcontent}</span>
+                        <span class="post_username">${post.username}</span>
+                        <span class="post_text">${post.description}</span>
                     </div>
-                    <span class="post_comment_count">
-                        댓글 ${post.commentCount}개 모두 보기
-                    </span>
+                    <span class="post_comment_count">댓글 ${post.comments}개 모두 보기</span>
                 </div>
             </div>
         `;
@@ -308,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 생성 함수
     function createModal(post, index) {
         const modal = document.createElement('div');
-        const imagesHtml = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
         modal.className = 'post_modal';
         modal.innerHTML = `
             <div class="modal_overlay">
@@ -316,17 +253,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="modal_close">&times;</div>
                     <div class="modal_left">
                         <div class="modal_image">
-                            ${imagesHtml}
+                            <img src="${post.image}" alt="게시물 이미지" class="modal_main_image" onerror="this.src='https://via.placeholder.com/600x400/74b9ff/ffffff?text=🐕'">
                         </div>
                     </div>
                     <div class="modal_right">
                         <div class="modal_header">
                             <div class="modal_user_info">
                                 <div class="modal_profile">
-                                    <!-- <img src="${post.userProfile}" alt="${post.username}""> -->
+                                    <img src="${post.userProfile}" alt="${post.username}" onerror="this.src='https://via.placeholder.com/32x32/ff6b6b/ffffff?text=🐕'">
                                 </div>
                                 <div class="modal_user_details">
-                                    <div class="modal_username">${post.writerDogName}</div>
+                                    <div class="modal_username">${post.username}</div>
                                     <div class="modal_time">${post.timeAgo}</div>
                                 </div>
                             </div>
@@ -335,17 +272,59 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="modal_content_area">
                             <div class="modal_post_content">
                                 <div class="modal_profile_small">
-                                    <!-- <img src="${post.userProfile}" alt="${post.username}"> -->
+                                    <img src="${post.userProfile}" alt="${post.username}" onerror="this.src='https://via.placeholder.com/28x28/ff6b6b/ffffff?text=🐕'">
                                 </div>
                                 <div class="modal_text">
-                                    <span class="modal_post_username">${post.writerDogName}</span>
-                                    <span class="modal_post_text">${post.bcontent}</span>
-                                    
+                                    <span class="modal_post_username">${post.username}</span>
+                                    <span class="modal_post_text">${post.description}</span>
                                 </div>
                             </div>
                             <div class="modal_comments">
+                                <div class="comment_item">
+                                    <div class="comment_profile">
+                                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=28&h=28&fit=crop&crop=face" alt="user" onerror="this.src='https://via.placeholder.com/28x28/74b9ff/ffffff?text=🐕'">
+                                    </div>
+                                    <div class="comment_text">
+                                        <span class="comment_username">cute_puppy</span>
+                                        <span>너무 귀여워요! 🥰</span>
+                                    </div>
+                                </div>
+                                <div class="comment_item">
+                                    <div class="comment_profile">
+                                        <img src="https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=28&h=28&fit=crop&crop=face" alt="user" onerror="this.src='https://via.placeholder.com/28x28/fd79a8/ffffff?text=🐕'">
+                                    </div>
+                                    <div class="comment_text">
+                                        <span class="comment_username">dog_lover</span>
+                                        <span>우리도 같이 산책해요!</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="modal_likes"></div>
+                        </div>
+                        <div class="modal_actions">
+                            <div class="modal_buttons">
+                                <div class="modal_heart_icon" data-post-index="${index}">
+                                    <!-- SVG 좋아요 아이콘 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="43.511" height="38.931" viewBox="0 0 43.511 38.931">
+                                      <path id="heart" d="M12.235,2.014a10.519,10.519,0,0,0-8.057,3C-.164,9.362.29,16.664,4.936,21.316L6.421,22.8,19.907,36.3a1.446,1.446,0,0,0,2.042,0L35.431,22.8l1.484-1.484c4.646-4.652,5.1-11.953.752-16.3s-11.629-3.885-16.273.764l-.469.469-.469-.469A12.614,12.614,0,0,0,12.235,2.014Z" transform="translate(0.831 0.005)" fill="none" stroke="#b7b7b7" stroke-width="4"/>
+                                    </svg>
+                                </div>
+                                <div class="modal_comment_icon">
+                                    <!-- SVG 댓글 아이콘 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24.506" height="24.452" viewBox="0 0 39.506 39.452">
+                                      <path id="chat" d="M13.862,19.752a1.972,1.972,0,1,0,1.973,1.972A1.972,1.972,0,0,0,13.862,19.752Zm7.89,0a1.972,1.972,0,1,0,1.973,1.972A1.972,1.972,0,0,0,21.753,19.752Zm7.89,0a1.972,1.972,0,1,0,1.973,1.972A1.972,1.972,0,0,0,29.643,19.752ZM21.753,2A19.725,19.725,0,0,0,2.027,21.725,19.508,19.508,0,0,0,6.485,34.211L2.54,38.156A1.923,1.923,0,0,0,4,41.45H21.753a19.725,19.725,0,1,0,0-39.45Zm0,35.5h-13l1.834-1.834a1.93,1.93,0,0,0,0-2.781A15.78,15.78,0,1,1,21.753,37.5Z" transform="translate(-1.972 -2)" fill="#b7b7b7"/>
+                                    </svg>
+                                                                    </div>
+                                <div class="modal_bookmark_icon" data-post-index="${index}">
+                                    <!-- SVG 북마크 아이콘 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="33.069" height="44.093" viewBox="0 0 33.069 44.093">
+                                      <g id="bookmark" fill="none">
+                                        <path d="M30.314,0H2.756A2.756,2.756,0,0,0,0,2.756V41.337a2.756,2.756,0,0,0,4.477,2.152l12.057-9.646,12.057,9.646a2.756,2.756,0,0,0,4.477-2.152V2.756A2.756,2.756,0,0,0,30.314,0Z" stroke="none"/>
+                                        <path d="M 4.000003814697266 4 L 4.000003814697266 38.74836730957031 L 16.53466415405273 28.72048950195312 L 29.06933403015137 38.74837112426758 L 29.06933403015137 4 L 4.000003814697266 4 M 2.755783081054688 0 L 30.31355285644531 0 C 31.83553314208984 0 33.06933212280273 1.233798980712891 33.06933212280273 2.755779266357422 L 33.06933212280273 41.336669921875 C 33.06952285766602 42.3961296081543 32.46233367919922 43.36188125610352 31.5074634552002 43.82088088989258 C 30.55259323120117 44.27988052368164 29.41913414001465 44.15082931518555 28.59188270568848 43.48892974853516 L 16.53466415405273 33.84302139282227 L 4.477453231811523 43.48892974853516 C 3.650121688842773 44.15053176879883 2.516819000244141 44.2794075012207 1.561862945556641 43.82038116455078 C 0.6071434020996094 43.36135101318359 3.814697265625e-06 42.39577102661133 3.814697265625e-06 41.336669921875 L 3.814697265625e-06 2.755779266357422 C 3.814697265625e-06 1.233798980712891 1.233802795410156 0 2.755783081054688 0 Z" stroke="none" fill="#b8b8b8"/>
+                                      </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="modal_likes">${post.content}</div>
                             <div class="modal_comment_input">
                                 <input type="text" placeholder="댓글 달기..." class="comment_input">
                                 <button class="comment_submit">게시</button>
@@ -363,40 +342,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(postIndex) {
         const post = posts[postIndex];
         const modal = createModal(post, postIndex);
-        modal.setAttribute('data-bno', post.bno);
         document.body.appendChild(modal);
 
-        // 댓글 불러오기
-        fetch(`/board/api/comments/${post.bno}`)
-            .then(response => response.json())
-            .then(comments => {
-                console.log('받아온 댓글:', comments);
-
-                // 1️⃣ 댓글 개수 동적으로 업데이트
-                const commentCountElement = document.querySelector(`.post_comment_count[data-post-id="${post.bno}"]`);
-                if (commentCountElement) {
-                    commentCountElement.textContent = `댓글 ${comments.length}개 모두 보기`;
-                }
-
-                // 2️⃣ 모달 내 댓글 목록 초기화 및 추가
-                const commentContainer = modal.querySelector('.modal_comments');
-                commentContainer.innerHTML = '';
-                comments.forEach(comment => {
-                    const commentItem = document.createElement('div');
-                    commentItem.classList.add('comment_item');
-                    commentItem.innerHTML = `
-        <div class="comment_profile">
-          <img src="https://via.placeholder.com/28x28/fd79a8/ffffff?text=🐕" alt="user">
-        </div>
-        <div class="comment_text">
-          <span class="comment_username">${comment.dogName}</span>
-          <span>${comment.bccomment}</span>
-        </div>
-      `;
-                    commentContainer.appendChild(commentItem);
-                });
-            })
-            .catch(err => console.error('❌ 댓글 로드 실패:', err));
         // 모달 애니메이션
         setTimeout(() => {
             modal.classList.add('show');
@@ -525,44 +472,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 댓글 작성
-
-        if (e.target.classList.contains('comment_submit')) {
-            const modal = e.target.closest('.post_modal');
-            const input = modal.querySelector('.comment_input');
-            const bccomment = input.value.trim();
-            if (!bccomment) return;
-
-            const bno = posts[modal.getAttribute('data-post-index')].id;
-
-            const requestBody = { bno, dno, content: bccomment };
-
-            fetch('/board/comment/api/comments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-                .then(response => response.json())
-                .then(newComment => {
-                    const commentContainer = modal.querySelector('.modal_comments');
-                    const commentItem = document.createElement('div');
-                    commentItem.classList.add('comment_item');
-                    commentItem.innerHTML = `
-          <div class="comment_profile">
-            <img src="https://via.placeholder.com/28x28/fd79a8/ffffff?text=🐕" alt="user">
-          </div>
-          <div class="comment_text">
-            <span class="comment_username">${newComment.dogName}</span>
-            <span>${newComment.bccomment}</span>
-          </div>
-        `;
-                    commentContainer.appendChild(commentItem);
-
-                    input.value = '';
-                })
-                .catch(err => console.error('❌ 댓글 등록 실패:', err));
-        }
-
         // 좋아요 버튼 클릭
         if (e.target.closest('.post_heart_icon')) {
             const heartIcon = e.target.closest('.post_heart_icon');
@@ -651,53 +560,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 게시글 추가 버튼 클릭 이벤트
-    // const addPostBtn = document.querySelector('.add_post_btn');
-    // if (addPostBtn) {
-    //     addPostBtn.addEventListener('click', function() {
-    //         console.log('📝 게시글 작성 모달 열기');
-    //         const groupId = this.getAttribute('data-group-id'); // 예를 들어 data-group-id 속성으로 받아오도록!
-    //         showCreatePostModal(groupId);
-    //
-    //         // 클릭 애니메이션
-    //         this.style.transform = 'scale(0.95)';
-    //         setTimeout(() => {
-    //             this.style.transform = 'scale(1)';
-    //         }, 100);
-    //     });
-    // }
-    document.addEventListener('click', function(e) {
-        console.log('🐞 e.target:', e.target);  // ⭐️ 클릭된 정확한 요소
-        const addPostBtn = e.target.closest('.add_post_btn');
-        console.log('🐞 addPostBtn:', addPostBtn);  // ⭐️ 찾은 add_post_btn (null이면 못 찾음!)
+    const addPostBtn = document.querySelector('.add_post_btn');
+    if (addPostBtn) {
+        addPostBtn.addEventListener('click', function() {
+            console.log('📝 게시글 작성 모달 열기');
+            showCreatePostModal();
 
-        if (addPostBtn) {
-            const groupId = addPostBtn.getAttribute('data-group-id');
-            console.log('✅ groupId (위임방식):', groupId);
-
-            // ✅ 방어코드: groupId가 없으면 중단
-            if (!groupId || groupId === 'undefined') {
-                console.warn('⚠️ groupId가 undefined거나 비어있습니다. 요청 중단!');
-                return;
-            }
-
-            showCreatePostModal(groupId);
-        }
-    });
-
+            // 클릭 애니메이션
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+        });
+    }
 
     // 게시글 작성 모달 관련 함수들
-    function showCreatePostModal(groupId) {
+    function showCreatePostModal() {
         const modal = document.getElementById('createPostModal');
         if (modal) {
-            console.log('✅ showCreatePostModal groupId:', groupId);
-            loadMyGroupDogs(groupId);
-            // 🪄 여기서 숨겨진 input에 gno 채워주기!
-            const gnoInput = modal.querySelector('input[name="gno"]');
-            if (gnoInput) {
-                gnoInput.value = groupId; // groupId를 gno에 대입!
-                console.log('✅ 그룹번호(gno) 입력 완료:', groupId);
-            }
-
             modal.style.display = 'flex';
             setTimeout(() => {
                 modal.classList.add('show');
@@ -711,57 +591,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setupCreatePostModalEvents();
         }
     }
-
-    document.addEventListener('click', function(e) {
-        // 댓글 등록 버튼 클릭 처리
-        if (e.target.classList.contains('comment_submit')) {
-            const modal = e.target.closest('.post_modal');
-            const input = modal.querySelector('.comment_input');
-            const content = input.value.trim();
-            if (!content) {
-                alert('댓글 내용을 입력하세요!');
-                return;
-            }
-
-            const bno = modal.getAttribute('data-bno');
-            const dno = modal.getAttribute('data-dno'); // 예: 모달에 dno 저장했다면
-
-            fetch('/board/api/comments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    bno: bno,
-                    dno: dno,
-                    content: content
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    console.log('✅ 댓글 등록 성공:', data);
-
-                    // 입력칸 비우기
-                    input.value = '';
-
-                    // 댓글 목록에 추가
-                    const commentsDiv = modal.querySelector('.modal_comments');
-                    const commentHtml = `
-                    <div class="comment_item">
-                        <div class="comment_profile">
-                            <img src="/img/default-profile.jpg" alt="user">
-                        </div>
-                        <div class="comment_text">
-                            <span class="comment_username">${data.dogName}</span>
-                            <span>${data.bccomment}</span>
-                        </div>
-                    </div>`;
-                    commentsDiv.innerHTML += commentHtml;
-                })
-                .catch(err => {
-                    console.error('❌ 댓글 등록 실패:', err);
-                    alert('댓글 등록에 실패했습니다.');
-                });
-        }
-    });
 
     function hideCreatePostModal() {
         const modal = document.getElementById('createPostModal');
@@ -829,9 +658,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 게시하기 버튼 이벤트
         const saveBtn = document.getElementById('saveCreatePost');
         if (saveBtn) {
-            // saveBtn.removeEventListener('click', handleCreatePost);
-            // saveBtn.addEventListener('click', handleCreatePost);
-            saveBtn.replaceWith(saveBtn.cloneNode(true));
+            saveBtn.removeEventListener('click', handleCreatePost);
+            saveBtn.addEventListener('click', handleCreatePost);
         }
     }
 
