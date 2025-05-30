@@ -22,7 +22,15 @@
 
 <div id="sidebar">
     <h3>AI 추천 둘레길</h3>
-    <ul id="recommend-list"></ul>
+    <label>강아지 선택:</label>
+    <select id="dogIdSelect">
+        <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+    </select>
+    <button id="loadRecommendBtn" style="margin-top:10px;">추천하기</button>
+    <div id="loadingSpinner" style="display:none; margin-top:10px;">
+        <img src="/images/loading-spinner.gif" alt="로딩중..." width="30" height="30">
+    </div>
+    <ul id="recommend-list" style="margin-top:15px;"></ul>
 
     <button onclick="toggleAllTrails()" style="margin-top:10px;">전체 둘레길 보기</button>
 
@@ -41,7 +49,7 @@
     <form id="postForm" enctype="multipart/form-data">
         <input type="hidden" name="trailId" id="trailId">
         <label>강아지 선택:</label>
-        <select name="dogId" id="dogIdSelect">
+        <select name="dogId" id="modalDogSelect">
             <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
         </select><br><br>
         <label>평점:</label>
@@ -72,15 +80,38 @@
 
     function toggleAllTrails() {
         allTrailsVisible = !allTrailsVisible;
-        document.getElementById("allTrailsSection").style.display = allTrailsVisible ? 'block' : 'none';
 
-        const btn = document.querySelector("button");
-        btn.textContent = allTrailsVisible ? "전체 둘레길 닫기" : "전체 둘레길 보기";
+        const allTrailsSection = document.getElementById("allTrailsSection");
+        const recommendList = document.getElementById("recommend-list");
+        const loadRecommendBtn = document.getElementById("loadRecommendBtn");
+        const dogIdSelect = document.getElementById("dogIdSelect");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+
+        // 버튼 텍스트 바꾸기
+        const toggleBtn = document.querySelector("button[onclick='toggleAllTrails()']");
+        toggleBtn.textContent = allTrailsVisible ? "전체 둘레길 닫기" : "전체 둘레길 보기";
+
+        if (allTrailsVisible) {
+            allTrailsSection.style.display = 'block';
+            // 추천 UI 숨김
+            recommendList.style.display = 'none';
+            loadRecommendBtn.style.display = 'none';
+            dogIdSelect.style.display = 'none';
+            loadingSpinner.style.display = 'none';
+        } else {
+            allTrailsSection.style.display = 'none';
+            // 추천 UI 다시 보임
+            recommendList.style.display = 'block';
+            loadRecommendBtn.style.display = 'inline-block';
+            dogIdSelect.style.display = 'inline-block';
+        }
 
         if (allTrailsVisible) {
             loadTrailList();
         }
     }
+
+
 
     function drawTrailPath(trail) {
         currentPolylines.forEach(line => line.setMap(null));
@@ -106,13 +137,23 @@
             .catch(err => console.error('경로 실패:', err));
     }
 
+
     function openModalForTrail(trail) {
         document.getElementById("trailId").value = trail.id;
         document.getElementById("modalTrailName").textContent = trail.name + " 리뷰 작성";
         $('#postModal').show();
     }
 
-    function loadAiRecommendations(dogId) {
+    document.getElementById('loadRecommendBtn').addEventListener('click', () => {
+        const dogId = $('#dogIdSelect').val();
+        if (!dogId) {
+            alert("강아지를 선택해주세요.");
+            return;
+        }
+
+        $('#loadingSpinner').show();
+        $('#recommend-list').empty();
+
         fetch(`/api/recommend/by-review?dogId=${dogId}`)
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(trails => {
@@ -129,8 +170,15 @@
                     listEl.appendChild(li);
                 });
             })
-            .catch(err => console.error('AI 추천 실패:', err));
-    }
+            .catch(err => {
+                console.error('AI 추천 실패:', err);
+                alert("추천 로딩 실패");
+            })
+            .finally(() => {
+                $('#loadingSpinner').hide();
+            });
+    });
+
 
     function loadTrailList() {
         fetch('/api/trails')
@@ -172,7 +220,11 @@
             .catch(err => console.error('전체 둘레길 실패:', err));
     }
 
-    // 리뷰 등록 AJAX
+    $('#dogIdSelect').on('change', function () {
+        const dogId = $(this).val();
+        loadAiRecommendations(dogId);
+    });
+
     $('#postForm').on('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -186,9 +238,9 @@
                 alert("등록 완료");
                 $('#postModal').hide();
                 $('#postForm')[0].reset();
-                if (allTrailsVisible) loadTrailList();  // 전체 목록 다시 로딩
+                if (allTrailsVisible) loadTrailList();
                 const dogId = $('#dogIdSelect').val();
-                loadAiRecommendations(dogId); // AI 추천 다시 불러오기
+                loadAiRecommendations(dogId);
             },
             error: function () {
                 alert("등록 실패");
@@ -196,13 +248,42 @@
         });
     });
 
-    // 페이지 로딩 시 추천 목록 불러오기
     $(document).ready(function () {
         const dogId = $('#dogIdSelect').val();
         if (dogId) {
             loadAiRecommendations(dogId);
         }
     });
+
+    function loadAiRecommendations(dogId) {
+        $('#loadingSpinner').show();
+        $('#recommend-list').empty();
+
+        fetch(`/api/recommend/by-review?dogId=${dogId}`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('recommend-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    li.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                        openModalForTrail(trail);
+                    });
+                    listEl.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error('AI 추천 실패:', err);
+                alert("추천 로딩 실패");
+            })
+            .finally(() => {
+                $('#loadingSpinner').hide();
+            });
+    }
+
 </script>
 
 </body>

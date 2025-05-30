@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AiRecommendService {
+    public class AiRecommendService {
 
     private final TrailPostRepository trailPostRepository;
     private final RestTemplate restTemplate;

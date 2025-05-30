@@ -20,18 +20,17 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/recommend")
-public class RecommendController {
+public class TrailRecommendController {
 
-    private final AiRecommendService aiRecommendService;
+    private final TrailAiRecommendService aiRecommendService;
     private final TrailRepository trailRepository;
     private final TrailPostService trailPostService;
 
     @GetMapping("/by-review")
-    public ResponseEntity<List<TrailController.TrailSummaryDto>> recommendByReview(@RequestParam Long dogId) {
-        List<Long> ids = aiRecommendService.recommendByLatestReview(dogId);
+    public ResponseEntity<List<TrailController.TrailSummaryDto>> getAiRecommendation(@RequestParam Long dogId) {
+        List<Long> recommendedIds = aiRecommendService.getAiRecommendedTrails(dogId);
 
-        List<TrailController.TrailSummaryDto> list = trailRepository.findAllById(ids)
-                .stream()
+        List<TrailController.TrailSummaryDto> result = trailRepository.findAllById(recommendedIds).stream()
                 .map(t -> new TrailController.TrailSummaryDto(
                         t.getId(),
                         t.getName(),
@@ -44,7 +43,6 @@ public class RecommendController {
                 ))
                 .toList();
 
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(result);
     }
-
 }
