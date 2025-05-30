@@ -17,9 +17,10 @@
     <!-- 탭 네비게이션과 검색 -->
     <div class="header_section">
         <div class="tab_navigation">
-            <div class="tab_item active" onclick="switchTab('my')">내 그룹</div>
-            <div class="tab_item" onclick="switchTab('all')">전체 그룹</div>
-            <div class="tab_item" onclick="switchTab('application')">가입 현황</div>
+            <!--   비회원일 경우 전체 그룹만 보여질 수 있도록  -->
+            <div class="tab_item active" th:classappend="${isAuthenticated} ? 'active' : ''" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
+            <div class="tab_item" th:classappend="${!isAuthenticated} ? 'active' : ''"  onclick="switchTab('all')">전체 그룹</div>
+            <div class="tab_item" th:if="${isAuthenticated}" onclick="switchTab('application')">가입 현황</div>
         </div>
         <div class="search_section">
             <select class="keyword_select" onchange="filterByKeyword(this.value)">
@@ -28,7 +29,6 @@
                 <option value="area">같은 동네</option>
                 <option value="training">훈련</option>
                 <option value="travel">여행</option>
-
             </select>
             <div class="search_box">
                 <input type="search" placeholder="그룹 이름으로 찾아보기" id="searchInput" oninput="searchGroups()">
@@ -43,104 +43,7 @@
     <!-- 메인 그룹 영역 -->
     <div class="main_groups_area">
         <div class="groups_grid" id="groupsGrid">
-
-            <!--  js 추가되는 부분  -->
-            <!-- 만들기 카드 (기본으로 내 그룹 표시) -->
-            <!--
-            <div class="group_card create_card" onclick="createGroup()">
-                <div class="create_plus">+</div>
-                <span class="create_text">만들기</span>
-            </div>
-
-
-            <div class="group_card" onclick="viewGroup('mygroup1')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('mygroup1')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">나의 푸들 친구들</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group2')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group2')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">아기 강아지 함께 키워요</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group3')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group3')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">대형견 산책회</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group4')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group4')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">리트리버 모임</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group5')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group5')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">똥꼬 발랄 모두를 좋아하는 강아지</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group6')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group6')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">아기 강아지 함께 키워요</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group7')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group7')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">대형견 산책회</h3>
-                </div>
-            </div>
-
-            <div class="group_card" onclick="viewGroup('group8')">
-                <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('group8')">⋯</div>
-                <div class="card_image" style="background-image: url('/api/placeholder/280/200');"></div>
-                <div class="member_profile">
-                    <div class="profile_avatar" style="background-image: url('/api/placeholder/32/32');"></div>
-                </div>
-                <div class="card_info">
-                    <h3 class="card_title">리트리버 모임</h3>
-                </div>
-            </div>
-            -->
+            <!-- JavaScript로 동적 생성 -->
         </div>
     </div>
 
@@ -148,61 +51,18 @@
     <div class="recommended_section">
         <div class="section_header">
             <h3 class="section_title">모든 동네 인기 글</h3>
-            <span class="more_link">더보기 ></span>
+            <span class="more_link" style="cursor: pointer;">더보기 ></span>
         </div>
-        <div class="recommended_grid" id="recommendedGrid"></div>
-
-        <!--  js 추가되는 부분  -->
-
-        <div class="recommended_grid">
-            <div class="recommended_card" onclick="viewGroup('rec1')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">하루 산책 3시간 모임</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec2')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">물속성 강아지</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec3')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec4')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
-
-            <div class="recommended_card" onclick="viewGroup('rec5')">
-                <div class="rec_image" style="background-image: url('/api/placeholder/300/200');"></div>
-                <div class="rec_info">
-                    <span class="rec_category">산책</span>
-                    <div class="rec_title">장난감 뽀서</div>
-                </div>
-            </div>
+        <div class="recommended_grid" id="recommendedGrid">
+            <!-- JavaScript로 동적 생성 -->
         </div>
     </div>
 </div>
 
-<!--////////////////////////-->
-<!--///////   모달    ///////-->
-<!-- 그룹 만들기 모달 -->
+<!-- 그룹 만들기 모달 - 3단계 구조로 수정 -->
 <div class="modal_overlay" id="createGroupModal" onclick="closeModal()">
     <div class="modal_container" onclick="event.stopPropagation()">
+
         <!-- 첫 번째 단계: 관심사 선택 -->
         <div class="modal_step" id="step1">
             <div class="modal_header">
@@ -254,14 +114,12 @@
                 </div>
             </div>
             <div class="modal_buttons">
-                <button class="btn_secondary" onclick="closeModal()">이전</button>
-                <button class="btn_primary" id="nextStep1" onclick="nextStep(2)" disabled>완료</button>
+                <button class="btn_secondary" onclick="closeModal()">취소</button>
+                <button class="btn_primary" id="nextStep1" onclick="nextStep(2)" disabled>다음</button>
             </div>
         </div>
 
-
         <!-- 두 번째 단계: 모임 정보 입력 -->
-
         <div class="modal_step" id="step2" style="display: none;">
             <div class="modal_header">
                 <h2 class="modal_title">모임 이름</h2>
@@ -279,6 +137,7 @@
                                 </svg>
                             </div>
                             <span class="upload_text">강아지 사진 올리기</span>
+
                         </div>
                     </div>
                     <div class="form_group">
@@ -308,5 +167,6 @@
     </div>
 </div>
 <script defer src="/js/Group.js"></script>
+
 </body>
 </html>

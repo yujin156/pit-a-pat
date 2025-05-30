@@ -67,8 +67,9 @@ function updateTabContent(tabType) {
         groupsGrid.innerHTML = getAllGroupsHTML();
     } else if (tabType === 'application') {
         groupsGrid.innerHTML = getApplicationStatusHTML();
+
     }
-}
+};
 
 function getMyGroupsHTML() {
     let html = `
@@ -91,10 +92,10 @@ function getAllGroupsHTML() {
             </div>
             <div class="card_info">
                 <span class="card_title">${group.gname}</span>
+
             </div>
-        </div>
-    `).join('');
-}
+        `;
+    },
 
 function createGroupCard(group) {
     return `
@@ -103,9 +104,28 @@ function createGroupCard(group) {
             <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
             <div class="member_profile">
                 <div class="profile_avatar" style="background-image: url('${group.avatarUrl ? group.avatarUrl : '/groups/images/default_avatar.jpg'}')"></div>
+
             </div>
-            <div class="card_info">
-                <span class="card_title">${group.title}</span>
+        `;
+    },
+
+    profileCard(profile) {
+        return `
+            <div class="profile_card ${profile.isMain ? 'selected' : ''}" 
+                 data-profile-id="${profile.id}" 
+                 onclick="ModalManager.selectProfile('${profile.id}')"
+                 style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${profile.avatarUrl}');">
+                
+                ${!profile.isMain ? `<div class="profile_card_menu" onclick="event.stopPropagation(); ModalManager.openProfileMenu('${profile.id}')"></div>` : ''}
+                
+                <div class="profile_info_overlay">
+                    <div class="profile_name">${profile.petName}</div>
+                    <div class="profile_details">
+                        <span class="profile_detail_item">${profile.breed}</span>
+                        <span class="profile_detail_item">${profile.size}</span>
+                        <span class="profile_detail_item">${profile.gender}</span>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -143,7 +163,10 @@ function searchGroups() {
                         title.includes('스터디') || title.includes('배우') || title.includes('발랄');
                     break;
             }
+            this.renderProfileGrid();
         }
+        this.showStep(stepNumber);
+    },
 
         // 텍스트 검색
         if (searchTerm) {
@@ -179,6 +202,7 @@ function openModal() {
     showStep(1);
     selectedInterest = null;
     updateNextButton();
+
 }
 function closeModal() {
     document.getElementById('createGroupModal').classList.remove('show');
@@ -308,4 +332,3 @@ function viewGroup(groupId) {
     window.location.href = `/groups/${groupId}`;
 }
 function openGroupMenu(groupId) { alert(`${groupId} 그룹 메뉴를 열었습니다.`); }
-

@@ -8,7 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
     <link rel="stylesheet" th:href="@{/css/AddFamily_Modal.css}">
-<!--    <link rel="stylesheet" href="../static/css/Home.css">-->
+    <!--    <link rel="stylesheet" href="../static/css/Home.css">-->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 </head>
 <body>
@@ -16,15 +18,21 @@
     <div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
 
     <div class="main_content">
-        <!--    메인배너    -->
+        <!-- 메인 베너 Swiper -->
         <div class="main-banner">
-            <div class="banner-image">
-                <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=600&q=80" alt="강아지 이미지">
-            </div>
-            <div class="banner-content">
-                <h2 class="title">우리집 강아지 성격은?</h2>
-                <p class="subtitle">간단한 테스트로 우리강아지 유형을 알아보자!</p>
-                <a href="/dog-test" class="banner-button">보러가기</a>
+            <div class="swiper mainSwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide main-slide"><a href="#">
+                        <img src="/img/MainBanner_1.png" alt="배너 이미지1" />
+                    </div>
+                    <div class="swiper-slide main-slide"><a href="#" onclick="openTraiWidow(); return false;">
+                        <img src="/img/MainBanner_2.png" alt="배너 이미지2" />
+                    </div></a>
+                    <div class="swiper-slide main-slide">
+                        <img src="/img/MainBanner_3.png" alt="배너 이미지3" />
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
             </div>
         </div>
         <!--    우리동네 인기 멍스타    -->
@@ -63,7 +71,9 @@
         </div>
 
         <!--    중간 배너   -->
-        <div class="mid_banner"></div>
+        <div class="mid_banner"><a href="#">
+            <img src="/img/MidBanner.png"></a>
+        </div>
 
         <!--  모임  -->
         <span class="dog_group_title">강아지 모임</span>
@@ -113,18 +123,28 @@
 
 <!--<script  src="../static/js/Home.js" defer></script>-->
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".mainSwiper", {
+        spaceBetween: 30,
+        centeredSlides: true,
+        loop: true,
+        autoplay: {
+            delay: 2500,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+    });
+</script>
+
 
 <script th:src="@{/js/Home.js}" defer></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
 
-<!--<script th:inline="javascript">-->
-<!--    const imagePaths = {-->
-<!--        large: [[@{/img/large.png}]],-->
-<!--        medium: [[@{/img/medium.png}]],-->
-<!--        small: [[@{/img/small.png}]]-->
-<!--    };-->
-<!--</script>-->
 
 <script defer th:src="@{/js/AddFamily_Modal.js}"></script>
 
