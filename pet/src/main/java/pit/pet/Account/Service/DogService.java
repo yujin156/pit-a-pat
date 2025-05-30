@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,28 +50,26 @@ public class DogService {
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         dog.setOwner(owner);
 
-        // 종 연결
+        // 종
         Species species = speciesRepository.findById(request.getSpeciesId())
                 .orElseThrow(() -> new RuntimeException("종을 찾을 수 없습니다."));
         dog.setSpecies(species);
 
         dogRepository.save(dog);
 
-        // ⭐ 이미지 저장 처리
+        // 이미지
         MultipartFile image = request.getImageFile();
         if (image != null && !image.isEmpty()) {
             try {
-                String originalFilename = Paths.get(image.getOriginalFilename()).getFileName().toString();
-                String filename = UUID.randomUUID() + "_" + originalFilename;
+                String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
                 Path filepath = Paths.get(uploadDir, filename);
                 Files.createDirectories(filepath.getParent());
                 Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
 
                 Dogimg dogimg = new Dogimg();
                 dogimg.setDog(dog);
-                dogimg.setDititle(originalFilename);
+                dogimg.setDititle(image.getOriginalFilename());
                 dogimg.setDiurl("/uploads/" + filename);
-                dogimg.setDi_uploaded_at(LocalDateTime.now());
                 dogimgRepository.save(dogimg);
 
             } catch (IOException e) {

@@ -27,8 +27,7 @@ public class BoardCommentService {
     public BoardCommentTable createComment(BoardCommentCreateRequest request, Long dno) {
         BoardTable board = boardRepository.findById(request.getBno())
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-
-        Dog dog = dogRepository.findById(dno)   // 🔥 여기서 dno를 파라미터로 직접 받음!
+        Dog dog = dogRepository.findById(request.getDno())
                 .orElseThrow(() -> new IllegalArgumentException("강아지 정보가 존재하지 않습니다."));
 
         BoardCommentTable comment = new BoardCommentTable();

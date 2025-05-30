@@ -21,7 +21,4 @@ public interface GroupMemberRepository extends JpaRepository<GroupMemberTable, L
     List<GroupMemberTable> findByDogIn(List<Dog> dogs);
 
     List<GroupMemberTable> findByGroupTable_Gno(Long gno);
-
-    // 🔥 새로 추가! 특정 상태의 멤버만
-    List<GroupMemberTable> findByDogInAndState(List<Dog> dogs, MemberStatus state);
 }

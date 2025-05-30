@@ -3,50 +3,38 @@ package pit.pet.Board.Controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pit.pet.Account.Repository.DogRepository;
-import pit.pet.Account.Repository.UserRepository;
-import pit.pet.Account.User.Dog;
-import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardCommentTable;
 import pit.pet.Board.Request.BoardCommentCreateRequest;
 import pit.pet.Board.Request.BoardCommentUpdateRequest;
 import pit.pet.Board.Service.BoardCommentService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/board")
+@RequestMapping("/board/comment")
 public class BoardCommentController {
 
     private final BoardCommentService boardCommentService;
-    private final UserRepository userRepository;
-    private final DogRepository dogRepository;
 
     // ✅ 댓글 등록
-//    @PostMapping("/comment/create")
-//    public String createComment(@RequestParam Long bno,
-//                                @RequestParam Long dno,
-//                                @RequestParam String bccontent) {
-//        if (dno == null) return "redirect:/error"; // 로그인 안 한 상태 등 예외 처리
-//
-//        BoardCommentCreateRequest request = new BoardCommentCreateRequest();
-//        request.setBno(bno);
-//        request.setContent(bccontent);
-//
-//        boardCommentService.createComment(request, dno);
-//
-//        return "redirect:/board/view/" + bno;
-//    }
+    @PostMapping("/create")
+    public String createComment(@RequestParam Long bno,
+                                @RequestParam Long dno,
+                                @RequestParam String bccontent) {
+        if (dno == null) return "redirect:/error"; // 로그인 안 한 상태 등 예외 처리
 
+        BoardCommentCreateRequest request = new BoardCommentCreateRequest();
+        request.setBno(bno);
+        request.setDno(dno);
+        request.setContent(bccontent);
 
+        boardCommentService.createComment(request, dno);
+
+        return "redirect:/board/view/" + bno;
+    }
 
     // ✅ 댓글 수정
     @PutMapping("/update")
@@ -82,48 +70,5 @@ public class BoardCommentController {
     public ResponseEntity<List<BoardCommentTable>> getComments(@PathVariable Long bno) {
         List<BoardCommentTable> comments = boardCommentService.getCommentsByBoard(bno);
         return ResponseEntity.ok(comments);
-    }
-
-    // ✅ 댓글 등록
-    @PostMapping("/api/comments")
-    @ResponseBody
-    public Map<String, Object> createCommentApi(@RequestBody BoardCommentCreateRequest request,
-                                                @AuthenticationPrincipal UserDetails principal) {
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
-
-        // 🔥 대표 강아지 dno 자동 지정
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
-
-        if (dno == null) {
-            throw new IllegalStateException("강아지 정보가 없습니다!");
-        }
-
-        // 🔥 여기서 dno를 컨트롤러가 직접 지정
-        BoardCommentTable comment = boardCommentService.createComment(request, dno);
-
-        // 응답 JSON
-        Map<String, Object> result = new HashMap<>();
-        result.put("bcno", comment.getBcno());
-        result.put("bccomment", comment.getBccomment());
-        result.put("dogName", comment.getDog().getDname());
-        return result;
-    }
-
-    // ✅ 게시글에 달린 댓글 목록 조회
-    @GetMapping("/api/comments/{bno}")
-    @ResponseBody
-    public List<Map<String, Object>> getCommentsApi(@PathVariable Long bno) {
-        List<BoardCommentTable> comments = boardCommentService.getCommentsByBoard(bno);
-
-        return comments.stream().map(comment -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("bcno", comment.getBcno());
-            map.put("bccomment", comment.getBccomment());
-            map.put("dogName", comment.getDog().getDname());
-            map.put("createdDate", comment.getCreatedAt());
-            return map;
-        }).collect(Collectors.toList());
     }
 }

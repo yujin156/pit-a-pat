@@ -40,15 +40,6 @@ public class GroupMemberService {
     }
 
     /**
-     * ✅ 가입 요청 승인된 그룹만 - 내 그룹으로
-     */
-
-    public List<GroupMemberTable> findByDogsAndStatus(List<Dog> dogs, String status) {
-        MemberStatus memberStatus = MemberStatus.valueOf(status); // 예: "APPROVED"를 ENUM으로 변환
-        return groupMemberRepository.findByDogInAndState(dogs, memberStatus);
-    }
-
-    /**
      * ✅ 가입 요청 승인 / 거부 (리더만 가능)
      */
 

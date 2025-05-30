@@ -2,32 +2,24 @@ package pit.pet.Group.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pit.pet.Account.User.Dog;
+import pit.pet.Board.Entity.BoardListTable;
+import pit.pet.Board.Repository.BoardListRepository;
 import pit.pet.Group.Repository.GroupMemberRepository;
 import pit.pet.Group.Repository.GroupRepository;
-import pit.pet.Group.Request.CreateGroupRequest;
 import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
-import pit.pet.Group.entity.Keyword;
 import pit.pet.Group.entity.MemberStatus;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GroupService {
-
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final BoardListRepository boardListRepository;
 
     /**
      * 그룹 생성
@@ -36,46 +28,36 @@ public class GroupService {
      * - 생성자의 gmno를 그룹의 g_leader로 설정
      */
     @Transactional
-    public GroupTable createGroup(CreateGroupRequest request, Dog dog) {
+    public GroupTable createGroup(String gname, Dog dog) {
+        // 1. 그룹 객체 생성
         GroupTable group = new GroupTable();
-        group.setGname(request.getGname());
-        group.setGmembercount(1);
+        group.setGname(gname);
+        group.setGmembercount(1); // 생성자 포함 1명
 
-        String keyword = request.getInterest() != null ? request.getInterest().toUpperCase() : "BREED";
-        group.setGkeyword(Keyword.valueOf(keyword));
         group.setDog(dog);
 
-        group.setGcontent(request.getGroupInfo());
-        group.setGuploadedat(LocalDateTime.now());
+        // 2. 일단 그룹 저장 (gno 생성)
+        groupRepository.save(group);
 
-        if (request.getGimg() != null && !request.getGimg().isEmpty()) {
-            try {
-                // 이 부분 나중에 클라우드 스토리지 경로로 바꿀것
-                String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/uploads/img";
-                String filename = UUID.randomUUID() + "_" + request.getGimg().getOriginalFilename();
-                Path filepath = Paths.get(uploadDir, filename);
-                Files.createDirectories(filepath.getParent());
-                Files.copy(request.getGimg().getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
-
-                group.setGimg("/img/" + filename);
-            } catch (Exception e) {
-                throw new RuntimeException("이미지 저장 실패", e);
-            }
-        }
-
-        // ✅ 생성자 멤버 등록
+        // 3. 그룹 생성자 멤버 등록
         GroupMemberTable creator = new GroupMemberTable();
         creator.setGroupTable(group);
         creator.setDog(dog);
-        creator.setState(MemberStatus.ACCEPTED);
+        creator.setState(MemberStatus.ACCEPTED); // 생성자는 승인 상태
 
+        // 4. 멤버 저장
         groupMemberRepository.save(creator);
 
-        // ✅ 리더 설정 후 최종 저장 (이미지, gcontent, guploadedat까지 전부 한번에 저장!)
+        // 5. 생성자의 gmno를 그룹 리더로 등록
         group.setGleader(creator.getGmno());
-        return groupRepository.save(group);
-    }
 
+        BoardListTable boardList = new BoardListTable();
+        boardList.setGroupTable(group);
+        boardList.setBlContent("기본 게시판");
+        boardListRepository.save(boardList);
+
+        return groupRepository.save(group); // 최종 저장
+    }
 
     /**
      * ✅ 그룹 조회

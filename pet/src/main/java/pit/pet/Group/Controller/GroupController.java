@@ -1,8 +1,6 @@
 package pit.pet.Group.Controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -43,63 +41,21 @@ public class GroupController {
     public String createGroupForm(Model model,
                                   @AuthenticationPrincipal UserDetails principal) {
         User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+                .orElseThrow();
         List<Dog> myDogs = dogRepository.findByOwner(me);
-
         model.addAttribute("createGroupRequest", new CreateGroupRequest());
         model.addAttribute("myDogs", myDogs);
-
         return "Group/Create";
     }
 
-    // ✅ 1. Form submit 처리
+    // 그룹 생성 처리
     @PostMapping("/create")
-    public String createGroup(@ModelAttribute @Valid CreateGroupRequest request,
-                              @AuthenticationPrincipal UserDetails principal) {
-
-        if (principal == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
-        }
-
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    public String createGroup(@ModelAttribute CreateGroupRequest request) {
         Dog dog = dogRepository.findById(request.getDogId())
-                .orElseThrow(() -> new RuntimeException("대표 강아지를 찾을 수 없습니다."));
-
-        // JS처럼 interest 따로 선택X, Form submit 시에는 그냥 넘어오는 걸로 가정
-        if (request.getInterest() == null) {
-            throw new RuntimeException("관심사(키워드)를 선택하지 않았습니다.");
-        }
-
-        groupService.createGroup(request, dog);
-
+                .orElseThrow(() -> new RuntimeException("해당 강아지를 찾을 수 없습니다."));
+        groupService.createGroup(request.getGname(), dog);
         return "redirect:/groups/list";
     }
-
-    // ✅ 2. AJAX (JSON) 처리
-    @PostMapping("/api/create")
-    @ResponseBody
-    public ResponseEntity<?> createGroupViaApi(@ModelAttribute @Valid CreateGroupRequest request,
-                                               @AuthenticationPrincipal UserDetails principal) {
-
-        if (principal == null) {
-            return ResponseEntity.status(401).body("로그인이 필요합니다.");
-        }
-
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        Dog dog = dogRepository.findById(request.getDogId())
-                .orElseThrow(() -> new RuntimeException("대표 강아지를 찾을 수 없습니다."));
-
-        if (request.getInterest() == null) {
-            return ResponseEntity.badRequest().body("관심사(키워드)를 선택하지 않았습니다.");
-        }
-
-        groupService.createGroup(request, dog);
-
-        return ResponseEntity.ok("그룹 생성 완료!");
-    }
-
 
     // 전체 그룹, 가입한 그룹 보여주기
     @GetMapping("/list")
@@ -129,33 +85,10 @@ public class GroupController {
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow();
         List<Dog> myDogs = dogRepository.findByOwner(me);
-        model.addAttribute("myDogs", myDogs);
         List<GroupMemberTable> myMemberships = groupMemberService.findByDogs(myDogs);
         model.addAttribute("myMemberships", myMemberships);
 
-        return "Group/Group";
-    }
-
-    @GetMapping("/api/all")
-    @ResponseBody
-    public List<GroupTable> getAllGroups() {
-        return groupService.getAllGroups();
-    }
-
-    @GetMapping("/api/my-groups")
-    @ResponseBody
-    public List<GroupTable> getMyApprovedGroups(@AuthenticationPrincipal UserDetails principal) {
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-
-        // ✅ "APPROVED" 상태인 멤버십만 찾기
-        List<GroupMemberTable> approvedMemberships = groupMemberService.findByDogsAndStatus(myDogs, "ACCEPTED");
-
-        // ✅ GroupTable만 DTO로 변환해서 반환
-        return approvedMemberships.stream()
-                .map(GroupMemberTable::getGroupTable) // GroupTable만 추출
-                .toList();
+        return "Group/List";
     }
 
     // 그룹 가입 신청 폼 (강아지 선택)
@@ -247,9 +180,11 @@ public class GroupController {
     @GetMapping("/{gno}")
     public String groupDetail(@PathVariable Long gno, Model model) {
         GroupTable group = groupService.findById(gno);
+        List<BoardTable> boardList = boardManageService.getBoardListByGroup(group);
 
         model.addAttribute("group", group);
+        model.addAttribute("boardList", boardList);
 
-        return "Group/Group_board";
+        return "Group/Detail";
     }
 }

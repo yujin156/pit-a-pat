@@ -8,7 +8,7 @@
 <body>
 <h1>새 그룹 만들기</h1>
 
-<form>
+<form th:action="@{/groups/create}" method="post">
   <div>
     <label for="gname">그룹 이름</label>
     <input type="text" id="gname" name="gname" required />

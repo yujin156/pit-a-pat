@@ -70,14 +70,17 @@ public class DogController {
 
     @PostMapping("/register/step3")
     public String handleDogProfile(@ModelAttribute DogRegisterRequest request,
+                                   @RequestParam("dogImage") MultipartFile imageFile,
                                    @RequestParam int currentDogIndex,
                                    @RequestParam int totalDogs,
                                    @RequestParam("size") String size,
                                    HttpSession session) { // 새로 추가!
 
         Long userId = (Long) session.getAttribute("userId");  // ⭐ userId 꺼내오기
-        request.setSize(size); //
         Long dogId = dogService.registerDog(request, userId);  // ⭐ owner 설정된 강아지 등록
+
+        request.setSize(size); //
+        request.setImageFile(imageFile);
 
 
         return "redirect:/dog/register/step4?currentDogIndex=" + currentDogIndex

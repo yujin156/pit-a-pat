@@ -7,15 +7,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Board.Entity.BoardImgTable;
+import pit.pet.Board.Entity.BoardListTable;
 import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Repository.BoardImgRepository;
+import pit.pet.Board.Repository.BoardListRepository;
 import pit.pet.Board.Repository.BoardRepository;
 import pit.pet.Board.Request.BoardCreateRequest;
 import pit.pet.Board.Request.BoardImgUploadRequest;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Board.Request.BoardUpdateRequest;
-import pit.pet.Group.Repository.GroupRepository;
 import pit.pet.Group.entity.GroupTable;
 
 import java.io.File;
@@ -36,10 +37,8 @@ public class BoardWriteService {
 
     private final BoardRepository boardRepository;
     private final BoardImgRepository boardImgRepository;
+    private final BoardListRepository boardListRepository;
     private final DogRepository dogRepository;
-    private final GroupRepository groupRepository; // ✅ 그룹 리포지토리로 대체
-
-    private final String uploadDir = new File("pet/src/main/resources/static/uploads/img").getAbsolutePath();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -49,53 +48,54 @@ public class BoardWriteService {
     public BoardTable createPost(BoardCreateRequest request, BoardImgUploadRequest imgRequest) {
         Dog dog = dogRepository.findById(request.getDno())
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
-        GroupTable group = groupRepository.findById(request.getGno())
-                .orElseThrow(() -> new IllegalArgumentException("그룹 정보 없음"));
+
+        BoardListTable boardList = boardListRepository.findById(request.getBlno())
+                .orElseThrow(() -> new IllegalArgumentException("게시판 카테고리 없음"));
+
+        GroupTable group = boardList.getGroupTable(); // ✅ 게시판에서 그룹을 가져옴
 
         BoardTable board = new BoardTable();
         board.setBcontent(request.getContent());
+        board.setBoardListTable(boardList);
         board.setWriterdog(dog);
-        board.setGroup(group);
+        board.setGroup(group); // ✅ 여기가 핵심
 
         BoardTable savedBoard = boardRepository.save(board);
 
+        // 이미지 처리
         List<MultipartFile> images = imgRequest.getImageFiles();
         if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
                 if (image.isEmpty()) continue;
 
                 try {
-                    // 파일명 랜덤으로 생성
-                    String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                    Path savePath = Paths.get(uploadDir, fileName);
+                    String uploadDir = new File("C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/img").getAbsolutePath();
+                    String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                    Path filepath = Paths.get(uploadDir, filename);
+                    Files.createDirectories(filepath.getParent());
+                    Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
 
-                    // 디렉토리 없으면 생성
-                    Files.createDirectories(savePath.getParent());
-
-                    // 파일 복사
-                    Files.copy(image.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
-
-                    // DB에는 웹에서 접근 가능한 경로로 저장!
                     BoardImgTable img = new BoardImgTable();
                     img.setBoard(savedBoard);
-                    img.setBiurl("/uploads/img/" + fileName); // ✅ 웹 URL만 저장!
+                    img.setBiurl("/img/" + filename);
                     img.setBititle("첨부 이미지");
                     img.setBiuploadedat(LocalDateTime.now());
                     boardImgRepository.save(img);
-                    System.out.println("💡 uploadDir = " + uploadDir);
-                    System.out.println("✅ 이미지 저장 성공: " + img.getBiurl());
+
+                    System.out.println("✅ 이미지 저장 성공: " + filepath);
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw new RuntimeException("이미지 저장 실패", e);
                 }
             }
-            boardImgRepository.flush();
+            boardImgRepository.flush(); // 저장을 DB에 반영
+            savedBoard = boardRepository.findById(savedBoard.getBno()).orElseThrow();
         }
 
         return savedBoard;
     }
 
-    // ✅ 게시글 내용 수정
+    // ✅ 게시글 내용 수정 (작성자 본인인지 확인)
     @Transactional
     public void updateBoard(BoardUpdateRequest request,
                             List<MultipartFile> newImages,
@@ -109,13 +109,13 @@ public class BoardWriteService {
             throw new SecurityException("수정 권한 없음");
         }
 
-        // ✅ 삭제 대상 이미지 제거
+        // ✅ 1. 삭제 대상 이미지 제거
         if (deleteImgIds != null && !deleteImgIds.isEmpty()) {
             board.getImages().removeIf(img -> {
                 if (deleteImgIds.contains(img.getBino())) {
                     try {
-                        String realPath = new File("src/main/resources/static" + img.getBiurl()).getAbsolutePath();
-                        Files.deleteIfExists(Path.of(realPath));
+                        String path = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static" + img.getBiurl();
+                        Files.deleteIfExists(Path.of(path));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -125,25 +125,23 @@ public class BoardWriteService {
             });
         }
 
-        // ✅ 내용 수정
+        // ✅ 2. 내용 수정
         board.setBcontent(request.getNewContent());
 
-        // ✅ 새 이미지 업로드 추가
+        // ✅ 3. 새 이미지 업로드 추가
         if (newImages != null && !newImages.isEmpty()) {
             for (MultipartFile image : newImages) {
                 if (image.isEmpty()) continue;
 
                 try {
-                    String uploadDir = new File("src/main/resources/static/uploads/img").getAbsolutePath();
+                    String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/img";
                     String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
                     Path filepath = Paths.get(uploadDir, filename);
-                    Files.createDirectories(filepath.getParent());
                     Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
 
                     BoardImgTable img = new BoardImgTable();
                     img.setBoard(board);
-                    // ✅ /uploads/img로 경로 통일!
-                    img.setBiurl("/uploads/img/" + filename);
+                    img.setBiurl("/img/" + filename);
                     img.setBititle("첨부 이미지");
                     img.setBiuploadedat(LocalDateTime.now());
 
@@ -156,7 +154,7 @@ public class BoardWriteService {
         }
     }
 
-    // ✅ 게시글 삭제
+    // ✅ 게시글 삭제 (작성자 본인인지 확인)
     @Transactional
     public void deletePost(Long bno, Long dno) {
         BoardTable board = boardRepository.findById(bno)
