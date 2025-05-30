@@ -1,10 +1,14 @@
 package pit.pet.Group.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import pit.pet.Group.entity.Keyword;
 import lombok.Getter;
 import lombok.Setter;
 import pit.pet.Account.User.Dog;
+import pit.pet.Board.Entity.BoardTable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +31,26 @@ public class GroupTable {
     @Column(name = "g_leader")
     private Long gleader;
 
+    @Column(name = "g_content") //그룹소개
+    private String gcontent;
+
+    @Column(name = "g_img") //그룹 프로필 이미지
+    private String gimg;
+
+    @Column(name = "g_uploaded_at") //그룹 생성 시간
+    private LocalDateTime guploadedat;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "g_keyword")
+    private Keyword gkeyword;  // ✅ 반드시 너가 만든 Keyword!
+
     @OneToMany(mappedBy = "groupTable", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<GroupMemberTable> groupMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardTable> boards = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "dno", nullable = false)
