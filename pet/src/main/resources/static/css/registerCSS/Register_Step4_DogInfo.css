@@ -1,0 +1,140 @@
+/* 오른쪽 정보 입력 칸 */
+.Big-form {
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
+}
+
+.form-content {
+    display: flex;
+    gap: 30px;
+}
+
+.box-1, .box-2 {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.image-preview {
+    height: 100%;
+    background: #F5F6F8;
+    border: 2px dashed #3A7FEB;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.box-2 .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.box-2 label {
+        font-weight: lighter;
+        font-size: 10px;
+        color: #B7B7B7;
+        margin-bottom: 5px;
+}
+
+.box-2 input,
+.box-2 select,
+.box-2 textarea {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 15px; /* 예전 그대로 */
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.box-2 input:focus,
+.box-2 select:focus,
+.box-2 textarea:focus {
+    border-color: #3A7FEB;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group.half1,
+.form-group.half2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half1{
+    flex: 4;
+}
+
+.form-group.half2 {;
+}
+
+
+/*label{*/
+/*    font-weight: lighter;*/
+/*    font-size: 10px;*/
+/*    color: #B7B7B7;*/
+/*    margin-bottom: 5px;*/
+/*}*/
+
+.input-btn-wrapper > button{
+    border: 1.5px solid #3A7FEB;
+    border-radius: 8px;
+    color: white;
+    background-color: #387FEB;
+}
+
+.form-group input, select {
+    height: 40px;
+    width: 100%;
+    padding-left: 10px;
+    box-sizing: border-box;
+
+    border: 1.5px solid #3A7FEB;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.input-btn-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.input-btn-wrapper input {
+    flex: 1; /* 남은 공간 다 차지 */
+}
+
+.input-btn-wrapper button {
+    white-space: nowrap;
+    padding: 8px 12px;
+}
+
+/* placeholder 스타일 */
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+    font-family: 'Gmarket Sans', sans-serif;
+    color: #B7B7B7;
+    font-size: 14px;
+}
+
+/* 입력값(사용자 입력) 스타일 */
+input,
+select,
+textarea {
+    font-family: 'Gmarket Sans', sans-serif;
+    color: #333;
+    font-size: 14px;
+}

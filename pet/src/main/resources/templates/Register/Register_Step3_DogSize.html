@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register2</title>
+    <link rel="stylesheet" href="/../static/css/registerCSS/Register_Step3_DogSize.css">
+</head>
+<body>
+
+<form class="Big-form" action="/dog/register/step2" method="post">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <div class="form-content">
+                <div class="dog-size-options">
+                    <label>
+                        <input type="radio" name="size" value="LARGE" required />
+                        <div class="size_card" data-size="large">
+                            <img src="/static/img/large.png" alt="대형견" class="size_image">
+                            <div class="size_info">
+                                <h3>대형견</h3>
+                                <p>25kg, 60cm 이상</p>
+                                <span class="size_breeds">리트리버, 셰퍼드, 도베르만 등등</span>
+                            </div>
+                        </div>
+                    </label>
+                    <label>
+                        <input type="radio" name="size" value="MEDIUM" />
+                        <div class="size_card" data-size="medium">
+                            <img src="/static/img/medium.png" alt="중형견" class="size_image">
+                            <div class="size_info">
+                                <h3>중형견</h3>
+                                <p>10kg ~ 25kg<br>35cm ~ 60cm</p>
+                                <span class="size_breeds">시바견, 비글, 웰시코기 등</span>
+                            </div>
+                        </div>
+                    </label>
+                    <label>
+                        <input type="radio" name="size" value="SMALL" />
+                        <div class="size_card" data-size="small">
+                            <img src="/static/img/small.png" alt="소형견" class="size_image">
+                            <div class="size_info">
+                                <h3>소형견</h3>
+                                <p>10kg, 35cm 이하</p>
+                                <span class="size_breeds">포메, 치와와, 푸들, 말티즈 등</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <input type="hidden" name="currentDogIndex" th:value="${currentDogIndex}" />
+            <input type="hidden" name="totalDogs" th:value="${totalDogs}" />
+        </form>
+
+<script src="/static/js/registerJS/register2.js"></script>
+</body>
+</html>

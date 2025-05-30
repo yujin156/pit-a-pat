@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원정보 입력</title>
+    <link rel="stylesheet" href="/../static/css/registerCSS/Register_Step2_UserInfo.css">
+</head>
+<body>
+<form class="Big-form" th:object="${user}" action="/user/signup" method="post">
+    <div class="form-content">
+        <div class="box-2">
+            <div class="form-group-row">
+                <div class="form-group half1">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="uname" placeholder="이름을 입력해주세요."/>
+                </div>
+                <div class="form-group half2">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="ugender">
+                        <option value="">성별</option>
+                        <option value="MALE">남자</option>
+                        <option value="FEMALE">여자</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-btn-wrapper">
+                    <input type="email" id="email" name="uemail" placeholder="이메일 주소를 입력해주세요."
+                           autocomplete="new-password"/>
+                    <button type="button" id="emailCheck">중복 확인</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="upwd" placeholder="비밀번호를 입력해주세요."
+                       autocomplete="new-password"/><br>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password Check</label>
+                <input type="password" id="passwordCheck" name="passwordCheck" placeholder="비밀번호 확인"/>
+            </div>
+        </div>
+
+        <div class="box-3">
+            <div class="form-group">
+                <label for="tel">Phone Number</label>
+                <div class="input-btn-wrapper">
+                    <input type="tel" id="tel" name="upno" placeholder="010 - 1234 - 5678"/>
+                    <button type="button" id="telCheck">중복 확인</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Address</label>
+                <div class="form-group-row">
+                    <select id="sido" th:field="*{address.city}" required>
+                        <option value="">시도</option>
+                    </select>
+
+                    <select id="sigungu" th:field="*{address.county}" disabled required>
+                        <option value="">시군구</option>
+                    </select>
+
+                    <select id="dong" th:field="*{address.town}" disabled required>
+                        <option value="">동</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="birth">Birthday</label>
+                <input type="date" id="birth" name="uBday"/><br>
+            </div>
+
+            <div class="form-group">
+                <label for="dogCount">강아지는 몇마리 있나요?</label>
+                <select id="dogCount" name="dogCount">
+                    <option value="1" selected>1마리</option>
+                    <option value="2">2마리</option>
+                    <option value="3">3마리</option>
+                    <option value="4">4마리</option>
+                    <option value="5">5마리</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="/static/js/registerJS/register1.js"></script>
+</body>
+</html>

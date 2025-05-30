@@ -1,0 +1,105 @@
+.Big-form {
+    font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
+}
+
+.form-content{
+    display: flex;
+    gap: 30px;
+}
+
+.box-2, .box-3 {
+    flex: 1;
+    font-size: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* 정보 입력창 */
+
+
+.box-2 label, .box-3 label {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 16px;  /* 원하는 만큼 조절 (예: 20px, 24px도 가능) */
+}
+
+.form-group-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-group.half1 {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-row select {
+    height: 40px;
+}
+
+
+label{
+    font-weight: lighter;
+    font-size: 10px;
+    color: #B7B7B7;
+    margin-bottom: 5px;
+}
+
+.input-btn-wrapper > button{
+    border: 1.5px solid #3A7FEB;
+    border-radius: 8px;
+    color: white;
+    background-color: #387FEB;
+}
+
+.form-group input, select {
+    height: 40px;
+    width: 100%;
+    padding-left: 10px;
+    box-sizing: border-box;
+
+    border: 1.5px solid #3A7FEB;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.input-btn-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.input-btn-wrapper input {
+    flex: 1; /* 남은 공간 다 차지 */
+}
+
+.input-btn-wrapper button {
+    white-space: nowrap;
+    padding: 8px 12px;
+}
+
+/* placeholder 스타일 */
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+    font-family: 'Gmarket Sans', sans-serif;
+    color: #B7B7B7;
+    font-size: 14px;
+}
+
+/* 입력값(사용자 입력) 스타일 */
+input,
+select,
+textarea {
+    font-family: 'Gmarket Sans', sans-serif;
+    color: #333;
+    font-size: 14px;
+}
