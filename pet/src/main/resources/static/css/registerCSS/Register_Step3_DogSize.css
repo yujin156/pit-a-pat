@@ -1,0 +1,76 @@
+/* 폼 박스 */
+.dog-size-options{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.size_card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.size_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.size_card.selected {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+}
+
+.size_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.size_card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.size_info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 2;
+    color: white;
+}
+
+.size_info h3 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 8px;
+    color: #FFFFFF;
+}
+
+.size_info p {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.size_breeds {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+
+.dog-size-options input[type="radio"] {
+    display: none;
+}
+
+.dog-size-options input[type="radio"]:checked + .option-box {
+    outline: 3px solid #3A7FEB;
+    transform: scale(1.05);
+}

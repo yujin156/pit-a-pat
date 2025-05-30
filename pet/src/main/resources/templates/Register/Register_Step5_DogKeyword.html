@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register4</title>
+    <link rel="stylesheet" href="/../static/css/registerCSS/Register_Step5_DogKeyword.css">
+</head>
+<body>
+<form class="Big-form" action="/dog/register/step4" method="post">
+    <input type="hidden" name="userId" th:value="${userId}"/>
+    <input type="hidden" name="dogId" th:value="${dogId}"/>
+    <input type="hidden" name="currentDogIndex" th:value="${currentDogIndex}"/>
+    <input type="hidden" name="totalDogs" th:value="${totalDogs}"/>
+    <div class="keyword-container">
+        <div th:each="keyword : ${keyword1List}" class="keyword">
+            <input type="checkbox" name="keywordIds" th:value="${keyword.dkno}" style="display:none"/>
+            <span th:text="${keyword.dktag}">키워드명</span>
+        </div>
+    </div>
+
+    <input type="hidden" id="currentDogIndex" th:value="${currentDogIndex}"/>
+    <input type="hidden" id="totalDogs" th:value="${totalDogs}"/>
+
+</form>
+<script src="/static/js/registerJS/register4.js"></script>
+</body>
+</html>
