@@ -29,7 +29,8 @@ public class TrailController {
                         t.getId(), t.getName(), t.getLengthKm(),
                         t.getStartLat(), t.getStartLng(),
                         t.getEndLat(), t.getEndLng(),
-                        trailPostService.getAverageRatingByTrail(t.getId())
+                        trailPostService.getAverageRatingByTrail(t.getId()
+                        ),t.getDifficulty()
                 ))
                 .toList();
         return ResponseEntity.ok(list);
@@ -71,7 +72,8 @@ public class TrailController {
             Double startLng,
             Double endLat,
             Double endLng,
-            Double averageRating  // ⭐ 평균 별점 추가
+            Double averageRating,  // ⭐ 평균 별점 추가
+            String difficulty
     ) {}
 
 }

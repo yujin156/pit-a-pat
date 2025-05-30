@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>WalkingCourse - AI 추천 둘레길</title>
+    <link rel="stylesheet" th:href="@{/css/WalkingCourse.css}">
+    <style>
+        body { margin:0; padding:0; display:flex; height:100vh; }
+        #sidebar { width:300px; overflow-y:auto; border-right:1px solid #ccc; padding:10px; }
+        #map { flex:1; height: 100%; width: 100%;}
+        #sidebar ul { list-style:none; padding:0; }
+        #sidebar li { margin:5px 0; cursor:pointer; }
+        #sidebar li:hover { background:#f0f0f0; }
+        #postModal {
+            display:none; position:fixed; top:20%; left:30%; width:400px;
+            background:white; border:1px solid #ccc; padding:20px; z-index:999;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8rmgkdfw2q"></script>
+<!--    <script src="../../static/js/WalkingCourse.js"></script>-->
+</head>
+<body>
+<div id="map"></div>
+<div class="map_wrap">
+
+
+    <aside class="map_contain">
+        <header class="map_header">
+            <div class="map_logo">
+                <svg id="그룹_162519" xmlns="http://www.w3.org/2000/svg" width="39.264" height="40.369" viewBox="0 0 39.264 40.369">
+                    <path d="M2.725,267.241H1.682v2.479H0v-6.906H2.725c1.692,0,2.538.954,2.538,2.223a2.225,2.225,0,0,1-2.538,2.2M2.6,265.9c.669,0,.954-.334.954-.866s-.285-.866-.954-.866H1.682V265.9Z" transform="translate(0 -229.429)" fill="#2a9c90"/>
+                    <rect width="1.682" height="6.906" transform="translate(5.942 33.385)" fill="#2a9c90"/>
+                    <path d="M65.126,262.815h5.342v1.348h-1.83v5.558H66.956v-5.558h-1.83Z" transform="translate(-56.853 -229.429)" fill="#2a9c90"/>
+                    <path d="M112.073,273.346a1.91,1.91,0,0,1,1.692.856v-.777h1.682v5.489h-1.682v-.777a1.941,1.941,0,0,1-1.7.856,2.858,2.858,0,0,1,.01-5.646m.492,1.466a1.222,1.222,0,0,0-1.2,1.348,1.24,1.24,0,0,0,1.2,1.367,1.368,1.368,0,0,0,0-2.715" transform="translate(-95.724 -238.623)" fill="#2a9c90"/>
+                    <path d="M170.413,267.861H169.37v2.479h-1.682v-6.906h2.725c1.692,0,2.538.954,2.538,2.223a2.225,2.225,0,0,1-2.538,2.2m-.128-1.338c.669,0,.954-.334.954-.866s-.285-.866-.954-.866h-.915v1.731Z" transform="translate(-146.387 -229.97)" fill="#2a9c90"/>
+                    <path d="M215.648,269.12h-2.577l-.413,1.22H210.9l2.5-6.906h1.948l2.5,6.906h-1.781Zm-1.289-3.827-.846,2.528h1.7Z" transform="translate(-184.107 -229.97)" fill="#2a9c90"/>
+                    <path d="M267.041,263.434h5.342v1.348h-1.83v5.558h-1.682v-5.558h-1.83Z" transform="translate(-233.119 -229.97)" fill="#2a9c90"/>
+                </svg>
+                <span class="logo_text blind">PIT A PAT</span>
+            </div>
+
+            <search class="search_container">
+                <div class="map_search_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16.354" height="15.854" viewBox="0 0 16.354 15.854">
+                        <path d="M-5627-9759.75l4,4Zm-11.5-4.5a6.5,6.5,0,0,1,6.5-6.5,6.5,6.5,0,0,1,6.5,6.5,6.5,6.5,0,0,1-6.5,6.5A6.5,6.5,0,0,1-5638.5-9764.249Z" transform="translate(5639 9771.25)" fill="none" stroke="#b7b7b7" stroke-width="1"/>
+                    </svg>
+                </div>
+                <input type="text" placeholder="동네 검색하기" id="searchInput">
+            </search>
+
+            <div class="dog_select">
+                <select id="dogIdSelect">
+                    <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+                </select>
+            </div>
+
+            <div id="loadingSpinner" style="display:none; margin-top:10px;">
+                <img src="/images/loading-spinner.gif" alt="로딩중..." width="30" height="30">
+            </div>
+            <ul id="recommend-list" style="margin-top:15px;"></ul>
+            <button onclick="toggleAllTrails()" style="margin-top:10px;">전체 둘레길 보기</button>
+
+            <div id="allTrailsSection" style="display:none; margin-top:20px;">
+                <h4>전체 둘레길 목록</h4>
+                <ul id="trail-list"></ul>
+            </div>
+        </header>
+
+        <div class="walking_content">
+            <div class="walking_item_list" id="walkingItemList"></div>
+            <div class="load_more_container">
+                <button class="load_more_btn" id="loadMoreBtn">더보기</button>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div id="postModal">
+    <h3 id="modalTrailName">리뷰 작성</h3>
+    <form id="postForm" enctype="multipart/form-data">
+        <input type="hidden" name="trailId" id="trailId">
+        <label>강아지 선택:</label>
+        <select name="dogId" id="modalDogSelect">
+            <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+        </select><br><br>
+        <label>평점:</label>
+        <select name="rating">
+            <option value="5">⭐ 5</option>
+            <option value="4">⭐ 4</option>
+            <option value="3">⭐ 3</option>
+            <option value="2">⭐ 2</option>
+            <option value="1">⭐ 1</option>
+        </select><br><br>
+        <label>내용:</label><br>
+        <textarea name="content" rows="3" cols="40" maxlength="200"></textarea><br><br>
+        <label>사진:</label>
+        <input type="file" name="image" accept="image/*"><br><br>
+        <button type="submit">등록</button>
+        <button type="button" onclick="$('#postModal').hide()">취소</button>
+    </form>
+</div>
+
+<script th:src="@{/js/WalkingCourse.js}"></script>
+<!--<script th:src="@{/js/map.js}"></script>-->
+</body>
+</html>
+
+
+
+

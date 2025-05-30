@@ -33,7 +33,7 @@ public class MapController {
             List<Dog> myDogs = dogRepo.findByOwner(user);
             model.addAttribute("myDogs", myDogs);  // ✅ 강아지 리스트 전달
         }
-        return "trails/map";
+        return "trails/WalkingCourse";
     }
 
 

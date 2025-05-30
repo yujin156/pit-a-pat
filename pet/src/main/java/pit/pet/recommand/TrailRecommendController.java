@@ -39,7 +39,8 @@ public class TrailRecommendController {
                         t.getStartLng(),
                         t.getEndLat(),
                         t.getEndLng(),
-                        trailPostService.getAverageRatingByTrail(t.getId())
+                        trailPostService.getAverageRatingByTrail(t.getId()),
+                        t.getDifficulty()
                 ))
                 .toList();
 
