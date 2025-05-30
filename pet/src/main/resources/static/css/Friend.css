@@ -1,4 +1,4 @@
-/*합칠떄 봐야하는거*/
+/*합칠때 봐야하는거*/
 
 .login-panel{
     opacity: 1;
@@ -41,12 +41,54 @@
 .friend_title {
     font-size: 45px;
     color: #0B0B0B;
+    margin-bottom: 10px;
 }
 
 .friend_sub_title {
     font-size: 20px;
     margin: 0 0 20px 0;
     color: #B7B7B7;
+}
+
+/* ===== ✅ 프로필 선택 드롭다운 스타일 ===== */
+.friend_profile_selector {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.friend_profile_selector label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 120px;
+}
+
+.friend-profile-select {
+    padding: 12px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 250px;
+}
+
+.friend-profile-select:focus {
+    border-color: #387FEB;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(56, 127, 235, 0.1);
+}
+
+.friend-profile-select:hover {
+    border-color: #387FEB;
 }
 
 /*//////검색//////*/
@@ -75,6 +117,13 @@
     outline: none;
     padding-left: 25px;
     background-color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+.search_type:focus,
+.search_friend:focus {
+    border-color: #387FEB;
+    box-shadow: 0 0 0 2px rgba(56, 127, 235, 0.1);
 }
 
 /*//////content//////*/
@@ -85,6 +134,55 @@
     background-color: #F5F6F8;
     padding: 25px 30px;
     box-sizing: border-box;
+}
+
+/* ===== ✅ 친구가 없을 때 스타일 ===== */
+.no-friends-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 20px;
+    color: #7f8c8d;
+    min-height: 400px;
+}
+
+.no-friends-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.no-friends-message h3 {
+    font-size: 24px;
+    color: #387FEB;
+    margin-bottom: 10px;
+}
+
+.no-friends-message p {
+    font-size: 16px;
+    margin-bottom: 30px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.goto-matching-btn {
+    padding: 12px 30px;
+    background: #387FEB;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.goto-matching-btn:hover {
+    background: #2c6cd6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
 }
 
 /* 그리드 컨테이너 기본 스타일 */
@@ -115,18 +213,19 @@
 /*//////친구 강아지 카드//////*/
 .friend_dog_card {
     width: 300px;
-    height: 400px;
+    height: 450px; /* 액션 버튼 공간 추가로 높이 증가 */
     border-radius: 30px;
     background-color: #ffffff;
     padding: 30px;
     box-sizing: border-box;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
 .friend_dog_card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .f_dog_card_cont {
@@ -140,8 +239,15 @@
 .f_dog_hbtn {
     transform: rotate(180deg);
     cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
 }
 
+.friend_dog_card:hover .f_dog_hbtn {
+    opacity: 0.8;
+}
+
+/* ===== 개선된 이미지 스타일 (이름 첫 글자 표시) ===== */
 .f_dog_img {
     width: 200px;
     height: 200px;
@@ -150,11 +256,31 @@
     background-size: cover;
     background-position: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    color: white;
+    font-weight: bold;
+}
+
+/* 실제 이미지가 있을 때 */
+.f_dog_img:not(.default-img) {
+    font-size: 0; /* 텍스트 숨기기 */
+}
+
+/* 기본 이미지 (이름 첫 글자) */
+.f_dog_img.default-img {
+    background: linear-gradient(135deg, #387FEB, #6FA4FF);
+    background-size: 100% 100%;
 }
 
 .f_dog_name {
     font-size: 25px;
     margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
 .f_dog_group {
@@ -163,6 +289,7 @@
     font-size: 15px;
     padding: 7px 25px;
     border-radius: 35px;
+    background: #f8f9ff;
 }
 
 .dog_keyword_row {
@@ -170,6 +297,7 @@
     gap: 5px;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 15px;
 }
 
 .dog_keyword {
@@ -178,61 +306,209 @@
     font-size: 12px;
     padding: 7px 12px;
     border-radius: 35px;
+    background: white;
+    transition: all 0.3s ease;
 }
 
-/* 반응형 처리 */
-@media screen and (max-width: 1500px) {
+.dog_keyword:hover {
+    border-color: #387FEB;
+    color: #387FEB;
+}
+
+/* ===== ✅ 친구 액션 버튼들 ===== */
+.friend_actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.friend_action_btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #e9ecef;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #7f8c8d;
+}
+
+.friend_action_btn:hover:not(:disabled) {
+    border-color: #387FEB;
+    color: #387FEB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 127, 235, 0.2);
+}
+
+.friend_action_btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #e9ecef;
+    color: #B7B7B7;
+}
+
+.friend_action_btn.profile_btn:hover:not(:disabled) {
+    background: #387FEB;
+    color: white;
+}
+
+.friend_action_btn.chat_btn:hover:not(:disabled) {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+/* ===== 로딩 스피너 ===== */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 9999;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #387FEB;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    color: #7f8c8d;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* ===== 알림 토스트 ===== */
+.friend-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: #387FEB;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    z-index: 10000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.friend-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.friend-notification.success {
+    background: #28a745;
+}
+
+.friend-notification.error {
+    background: #dc3545;
+}
+
+.friend-notification.info {
+    background: #17a2b8;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
     .friend_wrap {
-        width: 100%;
-        justify-content: center;
+        margin-left: 0;
+        margin-right: 25px;
+        padding: 20px;
+    }
+
+    .friend_profile_selector {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .friend_profile_selector label {
+        min-width: auto;
+        margin-bottom: 10px;
+    }
+
+    .friend-profile-select {
+        min-width: 200px;
     }
 }
 
-@media screen and (max-width: 1200px) {
-    .dog-grid-container > div {
-        width: calc(33.333% - 20px);
-    }
-
-    .card-wrapper {
-        flex: 0 0 calc(33.333% - 20px); /* 3열 레이아웃 */
-        max-width: calc(33.333% - 20px);
-    }
-}
-
-@media screen and (max-width: 900px) {
-    .dog-grid-container > div {
-        width: calc(50% - 20px);
-    }
-
-    .card-wrapper {
-        flex: 0 0 calc(50% - 20px); /* 2열 레이아웃 */
-        max-width: calc(50% - 20px);
-    }
-
-    .friend_title {
-        font-size: 36px;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .dog-grid-container > div {
-        width: 100%;
-    }
-
+@media (max-width: 768px) {
     .friend_input {
         flex-direction: column;
+        gap: 15px;
     }
 
-    .search_friend, .search_type {
+    .search_type,
+    .search_friend {
         width: 100%;
-    }
-
-    .card-wrapper {
-        flex: 0 0 100%; /* 1열 레이아웃 */
-        max-width: 100%;
     }
 
     .dog-grid-container {
-        gap: 15px; /* 간격 줄이기 */
+        justify-content: center;
+    }
+
+    .friend_dog_card {
+        width: 280px;
+        height: 420px;
+        padding: 25px;
+    }
+
+    .f_dog_img {
+        width: 180px;
+        height: 180px;
+        font-size: 50px;
+    }
+
+    .f_dog_name {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .friend_content {
+        padding: 15px;
+    }
+
+    .friend_dog_card {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+
+    .f_dog_img {
+        width: 160px;
+        height: 160px;
+        font-size: 45px;
+    }
+
+    .dog_keyword {
+        font-size: 11px;
+        padding: 6px 10px;
     }
 }

@@ -12,6 +12,7 @@ import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.DogProfile;
 import pit.pet.Account.User.User;
+import pit.pet.Match.DogLikeRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class FriendService {
     private final FriendRequestRepository friendRepo;
     private final DogRepository        dogRepo;
+    private final DogLikeRepository dogLikeRepo;
 
     @Transactional
     public void sendRequest(Long reqDno, Long resDno, String principalEmail) {
@@ -103,7 +105,12 @@ public class FriendService {
         }
         return new ArrayList<>(all);
     }
-
+    @Transactional(readOnly = true)
+    public List<Dog> getMatchedFriends(Long dogId) {
+        Dog dog = dogRepo.findById(dogId)
+                .orElseThrow(() -> new EntityNotFoundException("강아지를 찾을 수 없습니다."));
+        return dogLikeRepo.findMutuallyLikedDogs(dog);
+    }
     @Transactional(readOnly = true)
     public List<FriendRequest> getPendingRequests(Long myDogDno) {
         Dog me = dogRepo.findById(myDogDno)

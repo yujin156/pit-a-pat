@@ -51,12 +51,29 @@
             <option value="암컷">암컷</option>
           </select>
 
-          <input type="text" id="breedFilter" class="filter-input" placeholder="견종 검색">
-          <input type="text" id="locationFilter" class="filter-input" placeholder="지역 검색">
+          <!-- 견종 검색 (자동완성) -->
+          <div class="breed-search-container">
+            <input type="text" id="breedInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
+            <div id="breedAutocompleteList" class="autocomplete-list"></div>
+            <input type="hidden" id="selectedBreedId" />
+          </div>
+
+          <!-- 지역 선택 3단계 드롭다운 -->
+          <div class="location-filters">
+            <select id="cityFilter" class="filter-select">
+              <option value="">시/도 선택</option>
+            </select>
+            <select id="countyFilter" class="filter-select" disabled>
+              <option value="">시/군/구 선택</option>
+            </select>
+            <select id="townFilter" class="filter-select" disabled>
+              <option value="">읍/면/동 선택</option>
+            </select>
+          </div>
         </div>
         <div class="filter-actions">
-          <button id="searchBtn" class="filter-btn primary">검색</button>
-          <button id="resetBtn" class="filter-btn secondary">초기화</button>
+          <button id="searchBtn" class="action-btn primary">검색</button>
+          <button id="resetBtn" class="action-btn secondary">초기화</button>
         </div>
       </div>
 
@@ -65,8 +82,8 @@
         <h2>관심 키워드 선택</h2>
         <p class="keyword-info">
           선택된 키워드: <span id="selectedCount">0</span>개
-          <span th:if="${isLoggedIn == null or !isLoggedIn}"> (비회원은 최대 2개)</span>
-          <span th:if="${isLoggedIn != null and isLoggedIn}"> (회원은 무제한)</span>
+          <span th:if="${isLoggedIn == null or !isLoggedIn}"> (키워드 선택은 로그인후 이용해주세요)</span>
+          <span th:if="${isLoggedIn != null and isLoggedIn}"> (원하는 키워들 선택해주세요)</span>
         </p>
 
         <!-- 키워드 그리드 -->
@@ -80,7 +97,7 @@
 
         <!-- 키워드 액션 버튼 -->
         <div class="keyword-actions">
-          <button id="showAllBtn" class="action-btn secondary">전체 보기</button>
+          <button id="showAllBtn" class="action-btn secondary">ALL</button>
         </div>
       </div>
     </div>
@@ -134,7 +151,7 @@
   <!-- Login Panel -->
   <div class="login-panel" th:insert="~{Login_center :: login}"></div>
 </div>
-<!-- 기존 코드는 그대로 두고, JavaScript 부분만 수정 -->
+
 <script th:inline="javascript">
   console.log('=== Match.html 데이터 로드 시작 ===');
 

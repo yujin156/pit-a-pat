@@ -29,7 +29,7 @@ public class MatchingService {
     private final FriendRequestRepository friendRequestRepository;
 
     /**
-     * 🎯 좋아요 토글 - 매칭의 핵심 메서드
+     * 좋아요 토글 - 매칭의 핵심 메서드
      */
     @Transactional
     public boolean toggleLike(User currentUser, Long targetDogId, Long myDogId) {
@@ -60,52 +60,51 @@ public class MatchingService {
             }
             log.info("✅ 자기 자신 체크 완료");
 
-            // 5. ⚠️ 기존 좋아요 기록 확인
+            // 5. 기존 좋아요 기록 확인
             log.info("🔍 기존 좋아요 기록 확인 중...");
             Optional<DogLike> existingLike = dogLikeRepository
                     .findBySenderDogAndReceiverDog(myDog, targetDog);
 
             if (existingLike.isPresent()) {
-                log.warn(" 이미 좋아요한 강아지입니다!");
+                log.warn("⚠️ 이미 좋아요한 강아지입니다!");
                 log.warn("기존 좋아요 ID: {}", existingLike.get().getLikeId());
                 log.warn("{} -> {} (이미 존재)", myDog.getDname(), targetDog.getDname());
-                return false; // 여기서 false 반환하면 매칭 모달이 안 뜸
+                return false;
             }
             log.info("새로운 좋아요 가능");
 
-            // 6.  새로운 좋아요 저장 - 가장 중요한 부분!
-            log.info(" 새로운 좋아요 저장 시작...");
+            // 6. 새로운 좋아요 저장
+            log.info("💖 새로운 좋아요 저장 시작...");
             DogLike newLike = new DogLike();
             newLike.setSenderDog(myDog);
             newLike.setReceiverDog(targetDog);
-            // newLike.setCreatedAt(LocalDateTime.now()); // @PrePersist가 처리하므로 생략 가능
 
-            log.info(" DogLike 객체 생성 완료");
+            log.info("🔥 DogLike 객체 생성 완료");
             log.info("- Sender: {} (ID: {})", myDog.getDname(), myDog.getDno());
             log.info("- Receiver: {} (ID: {})", targetDog.getDname(), targetDog.getDno());
 
-            // 실제 저장 - 여기가 핵심!
+            // 실제 저장
             DogLike savedLike = dogLikeRepository.save(newLike);
-            log.info("좋아요 저장 성공!");
+            log.info("✅ 좋아요 저장 성공!");
             log.info("저장된 좋아요 ID: {}", savedLike.getLikeId());
             log.info("저장 시간: {}", savedLike.getCreatedAt());
 
-            // 7.  저장 직후 즉시 확인
-            log.info(" 저장 직후 확인...");
+            // 7. 저장 직후 즉시 확인
+            log.info("🔍 저장 직후 확인...");
             Optional<DogLike> savedCheck = dogLikeRepository
                     .findBySenderDogAndReceiverDog(myDog, targetDog);
             if (savedCheck.isPresent()) {
-                log.info(" 저장 확인 성공! ID: {}", savedCheck.get().getLikeId());
+                log.info("✅ 저장 확인 성공! ID: {}", savedCheck.get().getLikeId());
             } else {
-                log.error(" 저장 확인 실패! 트랜잭션 문제일 수 있음");
+                log.error("❌ 저장 확인 실패! 트랜잭션 문제일 수 있음");
             }
 
             // 8. 전체 좋아요 개수 확인
             long totalLikes = dogLikeRepository.count();
-            log.info(" 현재 전체 좋아요 개수: {}", totalLikes);
+            log.info("📊 현재 전체 좋아요 개수: {}", totalLikes);
 
             // 9. 상대방이 나에게 좋아요했는지 확인 (상호 좋아요)
-            log.info(" 상호 좋아요 확인 중...");
+            log.info("💕 상호 좋아요 확인 중...");
             Optional<DogLike> reverseLike = dogLikeRepository
                     .findBySenderDogAndReceiverDog(targetDog, myDog);
 
@@ -113,7 +112,7 @@ public class MatchingService {
             log.info("상호 좋아요 결과: {}", isMatched ? "✅ 매칭됨" : "❌ 단방향");
 
             if (isMatched) {
-                log.info(" 매칭 성사! ");
+                log.info("🎉 매칭 성사! 🎉");
                 log.info("매칭된 강아지들: {} ↔ {}", myDog.getDname(), targetDog.getDname());
 
                 // 상대방 좋아요 정보도 로그
@@ -124,7 +123,7 @@ public class MatchingService {
                 createFriendshipIfNotExists(myDog, targetDog);
                 printMatchingStats(myDog, targetDog);
             } else {
-                log.info(" 좋아요 전송 완료 (매칭 대기 중)");
+                log.info("💌 좋아요 전송 완료 (매칭 대기 중)");
                 log.info("{} -> {} 에게 좋아요를 보냈습니다", myDog.getDname(), targetDog.getDname());
             }
 
@@ -132,17 +131,17 @@ public class MatchingService {
             return isMatched;
 
         } catch (Exception e) {
-            log.error(" 좋아요 처리 중 오류 발생: {}", e.getMessage());
+            log.error("💥 좋아요 처리 중 오류 발생: {}", e.getMessage());
             log.error("스택 트레이스: ", e);
-            throw e; // 다시 던져서 상위에서 처리
+            throw e;
         }
     }
 
     /**
-     *  친구 관계 생성
+     * 친구 관계 생성
      */
     private void createFriendshipIfNotExists(Dog dog1, Dog dog2) {
-        log.info(" 친구 관계 생성 시작...");
+        log.info("👫 친구 관계 생성 시작...");
 
         // 이미 친구 관계가 있는지 확인
         Optional<FriendRequest> existingFriendship = friendRequestRepository
@@ -159,7 +158,7 @@ public class MatchingService {
 
             FriendRequest savedFriendship = friendRequestRepository.save(friendRequest);
 
-            log.info(" 친구 관계 생성 완료!");
+            log.info("✅ 친구 관계 생성 완료!");
             log.info("친구 관계 ID: {}", savedFriendship.getId());
             log.info("친구: {} ↔ {}", dog1.getDname(), dog2.getDname());
             log.info("상태: {}", savedFriendship.getStatus());
@@ -169,10 +168,10 @@ public class MatchingService {
     }
 
     /**
-     *  매칭 통계 출력
+     * 매칭 통계 출력
      */
     private void printMatchingStats(Dog dog1, Dog dog2) {
-        log.info(" === 매칭 통계 ===");
+        log.info("📊 === 매칭 통계 ===");
 
         // dog1의 통계
         long dog1SentLikes = dogLikeRepository.countBySenderDog(dog1);
@@ -194,15 +193,15 @@ public class MatchingService {
         boolean isMutual = dogLikeRepository.isMutualLike(dog1, dog2);
         log.info("상호 좋아요 상태: {}", isMutual ? "✅ 매칭 완료" : "❌ 단방향");
 
-        log.info(" === 통계 종료 ===");
+        log.info("📊 === 통계 종료 ===");
     }
 
     /**
-     * 🔍 상호 좋아요 친구 목록 조회
+     * 상호 좋아요 친구 목록 조회
      */
     @Transactional(readOnly = true)
     public List<Dog> getMutuallyLikedFriends(Dog myDog) {
-        log.info(" {} 의 상호 좋아요 친구 목록 조회", myDog.getDname());
+        log.info("💕 {} 의 상호 좋아요 친구 목록 조회", myDog.getDname());
 
         List<Dog> mutualFriends = dogLikeRepository.findMutuallyLikedDogs(myDog);
 
