@@ -1,33 +1,18 @@
-/*합칠때 봐야하는거*/
-
-.login-panel{
+/* ===== 기본 레이아웃 ===== */
+.login-panel {
     opacity: 1;
 }
+
 @media (max-width: 1024px) {
-    .login-panel{
+    .login-panel {
         opacity: 0;
         transition: opacity 0.3s ease;
     }
 }
-.layout-container{
+
+.layout-container {
     display: flex;
 }
-.main_content{
-    width: 100%;
-    height: auto;
-    margin-left: 120px;
-    margin-right: 325px;
-
-}
-@media (max-width: 1024px) {
-
-    .main_content{
-        margin-right: 25px;
-    }
-}
-
-/*//////////////////*/
-/*//////////////////*/
 
 .friend_wrap {
     width: 100%;
@@ -36,8 +21,15 @@
     margin-right: 325px;
 }
 
-/*//////////////////*/
-/*///////타이틀///////*/
+@media (max-width: 1024px) {
+    .friend_wrap {
+        margin-left: 0;
+        margin-right: 25px;
+        padding: 20px;
+    }
+}
+
+/* ===== 타이틀 영역 ===== */
 .friend_title {
     font-size: 45px;
     color: #0B0B0B;
@@ -50,7 +42,7 @@
     color: #B7B7B7;
 }
 
-/* ===== ✅ 프로필 선택 드롭다운 스타일 ===== */
+/* ===== 프로필 선택 드롭다운 ===== */
 .friend_profile_selector {
     background: white;
     padding: 25px;
@@ -91,7 +83,7 @@
     border-color: #387FEB;
 }
 
-/*//////검색//////*/
+/* ===== 검색 영역 ===== */
 .friend_input {
     display: flex;
     justify-content: flex-end;
@@ -126,7 +118,7 @@
     box-shadow: 0 0 0 2px rgba(56, 127, 235, 0.1);
 }
 
-/*//////content//////*/
+/* ===== 컨텐츠 영역 ===== */
 .friend_content {
     width: 100%;
     min-height: 900px;
@@ -136,7 +128,7 @@
     box-sizing: border-box;
 }
 
-/* ===== ✅ 친구가 없을 때 스타일 ===== */
+/* ===== 친구가 없을 때 메시지 ===== */
 .no-friends-message {
     display: flex;
     flex-direction: column;
@@ -185,35 +177,20 @@
     box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
 }
 
-/* 그리드 컨테이너 기본 스타일 */
+/* ===== 그리드 컨테이너 ===== */
 .dog-grid-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     padding: 10px;
     width: 100%;
-}
-
-/* 검색 결과일 때 (왼쪽 정렬) */
-.dog-grid-container.search-results {
     justify-content: flex-start;
 }
 
-/* 모든 결과 표시일 때 (간격 균등) */
-.dog-grid-container.all-results {
-    justify-content: center;
-}
-
-/* 카드 래퍼 스타일 */
-.card-wrapper {
-    flex: 0 0 300px; /* 고정 너비 300px, 플렉스 아이템 크기 고정 */
-    margin-bottom: 20px;
-}
-
-/*//////친구 강아지 카드//////*/
+/* ===== 친구 강아지 카드 ===== */
 .friend_dog_card {
     width: 300px;
-    height: 450px; /* 액션 버튼 공간 추가로 높이 증가 */
+    height: 450px;
     border-radius: 30px;
     background-color: #ffffff;
     padding: 30px;
@@ -247,12 +224,11 @@
     opacity: 0.8;
 }
 
-/* ===== 개선된 이미지 스타일 (이름 첫 글자 표시) ===== */
+/* ===== 강아지 이미지 (이름 첫 글자 포함) ===== */
 .f_dog_img {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    background-color: #387FEB;
     background-size: cover;
     background-position: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -267,13 +243,12 @@
 
 /* 실제 이미지가 있을 때 */
 .f_dog_img:not(.default-img) {
-    font-size: 0; /* 텍스트 숨기기 */
+    font-size: 0;
 }
 
 /* 기본 이미지 (이름 첫 글자) */
 .f_dog_img.default-img {
     background: linear-gradient(135deg, #387FEB, #6FA4FF);
-    background-size: 100% 100%;
 }
 
 .f_dog_name {
@@ -281,15 +256,6 @@
     margin: 0;
     font-weight: 600;
     color: #2c3e50;
-}
-
-.f_dog_group {
-    border: 1px solid #387FEB;
-    color: #387FEB;
-    font-size: 15px;
-    padding: 7px 25px;
-    border-radius: 35px;
-    background: #f8f9ff;
 }
 
 .dog_keyword_row {
@@ -315,7 +281,7 @@
     color: #387FEB;
 }
 
-/* ===== ✅ 친구 액션 버튼들 ===== */
+/* ===== 친구 액션 버튼들 ===== */
 .friend_actions {
     display: flex;
     gap: 10px;
@@ -344,7 +310,8 @@
     box-shadow: 0 4px 12px rgba(56, 127, 235, 0.2);
 }
 
-.friend_action_btn:disabled {
+.friend_action_btn:disabled,
+.friend_action_btn.disabled {
     opacity: 0.5;
     cursor: not-allowed;
     border-color: #e9ecef;
@@ -435,14 +402,8 @@
     background: #17a2b8;
 }
 
-/* 반응형 디자인 */
+/* ===== 반응형 디자인 ===== */
 @media (max-width: 1024px) {
-    .friend_wrap {
-        margin-left: 0;
-        margin-right: 25px;
-        padding: 20px;
-    }
-
     .friend_profile_selector {
         flex-direction: column;
         text-align: center;
