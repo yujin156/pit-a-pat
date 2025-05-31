@@ -92,7 +92,7 @@
     width: 70%;
     height: 100vh;
     background-color: #F5F6F8;
-    padding: 5% 8% 3% 8%;
+    padding: 2% 8%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -283,9 +283,6 @@
 /* 약관 체크박스 영역 */
 .terms_agreement_section {
     flex-shrink: 0;
-    padding: 15px;
-    background-color: #fafafa;
-    border: 2px solid #e0e0e0;
     border-radius: 12px;
     max-height: 160px;
 }
@@ -471,7 +468,7 @@ iframe {
 }
 
 .signUp_next {
-    background: linear-gradient(135deg, #387FEB, #4db8aa);
+    background-color: #387FEB;
     border: none;
     color: white;
 }
@@ -579,7 +576,6 @@ iframe {
     }
 
     .terms_agreement_section {
-        padding: 12px;
         max-height: 140px;
     }
 }
