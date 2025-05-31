@@ -214,6 +214,39 @@ public class MatchingService {
     }
 
     // === 기존 매칭 메서드들 (검색 관련) ===
+    /**
+     * 다중 키워드 기반 랜덤 강아지 검색 (비회원)
+     */
+    public List<Dog> findRandomDogsByMultipleKeywords(List<String> keywords, int limit) {
+        try {
+            return dogRepository.findRandomByAnyKeywords(keywords)
+                    .stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("다중 키워드 검색 실패 (비회원): {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 다중 키워드 기반 랜덤 강아지 검색 (로그인 사용자)
+     */
+    public List<Dog> findRandomDogsByMultipleKeywordsForUser(List<String> keywords, String userEmail, int limit) {
+        try {
+            User currentUser = userRepository.findByUemail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            return dogRepository.findRandomByAnyKeywordsExcludingUser(keywords, currentUser.getUemail())
+                    .stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("다중 키워드 검색 실패 (로그인): {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 
     /**
      * 로그인 사용자용 강아지 검색 (자신의 강아지 제외)
