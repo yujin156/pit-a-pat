@@ -1,7 +1,15 @@
-
+// 전역 변수
 let currentStep = 1;
 const totalSteps = 5;
 let dogImageIndex = 0;
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Register 시스템 초기화');
+    initializeTermsCheckboxes();
+    updateStep();
+    startDogImageRotation();
+});
 
 // 강아지 이미지 자동 변경
 function rotateDogImages() {
@@ -12,9 +20,66 @@ function rotateDogImages() {
         images[dogImageIndex].classList.add('active');
     }
 }
-// 강아지 슬라이드 자동
-setInterval(rotateDogImages, 3000);
 
+// 강아지 슬라이드 자동 시작
+function startDogImageRotation() {
+    setInterval(rotateDogImages, 3000);
+}
+
+// 약관 체크박스 초기화
+function initializeTermsCheckboxes() {
+    const allTerms = document.getElementById('terms_all');
+    const individualTerms = ['terms_service', 'terms_privacy', 'terms_marketing'];
+
+    // 전체 동의 체크박스 이벤트
+    if (allTerms) {
+        allTerms.addEventListener('change', function() {
+            const isChecked = this.checked;
+
+            individualTerms.forEach(termId => {
+                const checkbox = document.getElementById(termId);
+                if (checkbox) {
+                    checkbox.checked = isChecked;
+                }
+            });
+
+            updateButtonStates();
+        });
+    }
+
+    // 개별 약관 체크박스 이벤트
+    individualTerms.forEach(termId => {
+        const checkbox = document.getElementById(termId);
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                // 전체 동의 상태 확인
+                const allChecked = individualTerms.every(id => {
+                    const cb = document.getElementById(id);
+                    return cb && cb.checked;
+                });
+
+                if (allTerms) {
+                    allTerms.checked = allChecked;
+                }
+
+                updateButtonStates();
+            });
+        }
+    });
+}
+
+// 필수 약관 체크 확인
+function validateRequiredTerms() {
+    const requiredTerms = ['terms_service', 'terms_privacy'];
+
+    for (let termId of requiredTerms) {
+        const checkbox = document.getElementById(termId);
+        if (!checkbox || !checkbox.checked) {
+            return false;
+        }
+    }
+    return true;
+}
 
 // 스텝 업데이트
 function updateStep() {
@@ -47,31 +112,67 @@ function updateStep() {
     document.getElementById(`step${currentStep}_text`).classList.add('sub_title_bold');
 
     // 버튼 상태 업데이트
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    updateButtonStates();
+}
 
+// 버튼 상태 업데이트
+function updateButtonStates() {
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+
+    // 이전 버튼은 첫 번째 스텝에서만 비활성화
     prevBtn.disabled = currentStep === 1;
 
+    // Step 1에서는 필수 약관 체크 여부에 따라 다음 버튼 활성화
+    if (currentStep === 1) {
+        const isValid = validateRequiredTerms();
+        nextBtn.disabled = !isValid;
+
+        if (!isValid) {
+            nextBtn.style.backgroundColor = '#ccc';
+            nextBtn.style.background = '#ccc';
+            nextBtn.style.cursor = 'not-allowed';
+            nextBtn.style.opacity = '0.6';
+        } else {
+            nextBtn.style.backgroundColor = '';
+            nextBtn.style.background = '';
+            nextBtn.style.cursor = '';
+            nextBtn.style.opacity = '';
+        }
+    } else {
+        nextBtn.disabled = false;
+        nextBtn.style.backgroundColor = '';
+        nextBtn.style.background = '';
+        nextBtn.style.cursor = '';
+        nextBtn.style.opacity = '';
+    }
+
+    // 마지막 스텝에서 버튼 텍스트 변경
     if (currentStep === totalSteps) {
-        nextBtn.textContent = '완료';
+        nextBtn.textContent = '가입완료';
     } else {
         nextBtn.textContent = '다음';
     }
 }
 
-// 다음 스텝
+// 다음 스텝으로 이동
 function nextStep() {
+    // Step 1에서 필수 약관 체크 확인
+    if (currentStep === 1 && !validateRequiredTerms()) {
+        alert('필수 약관에 동의해주세요.\n- 개인정보 수집 및 이용 동의\n- 개인정보 제3자 제공 동의');
+        return;
+    }
+
     if (currentStep < totalSteps) {
         currentStep++;
         updateStep();
     } else {
-        // 완료 처리
-        alert('회원가입이 완료되었습니다!');
-        goHome();
+        // 회원가입 완료 처리
+        completeRegistration();
     }
 }
 
-// 이전 스텝
+// 이전 스텝으로 이동
 function prevStep() {
     if (currentStep > 1) {
         currentStep--;
@@ -81,11 +182,23 @@ function prevStep() {
 
 // 홈으로 이동
 function goHome() {
-    window.location.href = '/';
+    if (confirm('회원가입을 중단하고 홈으로 이동하시겠습니까?')) {
+        window.location.href = '/';
+    }
 }
 
-// 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Register 시스템 초기화');
-    updateStep();
-});
+// 회원가입 완료 처리
+function completeRegistration() {
+    alert('회원가입이 완료되었습니다!');
+    window.location.href = '/login';
+}
+
+// 약관 동의 상태 확인 함수 (다른 스크립트에서 사용 가능)
+function getTermsStatus() {
+    return {
+        all: document.getElementById('terms_all')?.checked || false,
+        service: document.getElementById('terms_service')?.checked || false,
+        privacy: document.getElementById('terms_privacy')?.checked || false,
+        marketing: document.getElementById('terms_marketing')?.checked || false
+    };
+}

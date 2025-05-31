@@ -1,13 +1,5 @@
-/*강아지 사이즈 선택할때 옆에 스크롤이 있는거같음*/
-#content_step3 > iframe{
-    -ms-overflow-style: none;
-}
-#content_step3::-webkit-scrollbar{
-    display:none;
-}
-
-/*********************************/
-.RegisterWrap{
+/* 기본 레이아웃 */
+.RegisterWrap {
     display: flex;
 }
 
@@ -31,7 +23,6 @@
     height: 100%;
     object-fit: cover;
     position: absolute;
-
     opacity: 0;
     transition: opacity 1s ease-in-out;
 }
@@ -40,6 +31,7 @@
     opacity: 1;
 }
 
+/* 왼쪽 페이지네이션 */
 .left_pagination {
     position: absolute;
     right: 20px;
@@ -63,7 +55,7 @@
     justify-content: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    flex-shrink: 0; /* 크기 고정 */
+    flex-shrink: 0;
 }
 
 .register_indication.indication_active {
@@ -95,34 +87,6 @@
     background-color: #387FEB;
 }
 
-
-
-/*아이프레임 스타일*/
-.iframe_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-iframe {
-    width: 100%;
-    border: none;
-    background: white;
-    min-height: 450px;
-}
-
-/* 스텝 콘텐츠 */
-.content_step {
-    height: 100%;
-    display: none;
-}
-
-.content_step.active {
-    display: block;
-}
-
 /* 오른쪽 폼 영역 */
 .right_background_form {
     width: 70%;
@@ -130,28 +94,16 @@ iframe {
     background-color: #F5F6F8;
     padding: 5% 8% 3% 8%;
     box-sizing: border-box;
-
     display: flex;
     flex-direction: column;
 }
 
+/* 제목 영역 */
 .signUp_title_contain {
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.content_txt > h2 {
-    font-weight: normal;
-    margin: 0 0 15px 0;
-    color: #0B0B0B;
-}
-.content_txt > p {
-    font-weight: lighter;
-    margin: 0;
-    color: #B7B7B7;
-
 }
 
 .signUp_title_left {
@@ -187,6 +139,8 @@ iframe {
     align-items: center;
     justify-content: center;
 }
+
+/* 메인 컨테이너 */
 .signUp_contain {
     flex: 1;
     border-radius: 20px;
@@ -200,39 +154,252 @@ iframe {
 .signUp_content {
     height: 100%;
     max-height: 600px;
-
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 20px;
+    overflow: hidden;
 }
 
+/* 스텝 콘텐츠 */
 .content_step {
     display: none;
-}
-
-.content_step.active {
-    display: flex;
+    height: 100%;
     flex-direction: column;
     width: 100%;
     gap: 20px;
 }
 
-.step_title {
-    font-size: 32px;
-    font-weight: bold;
-    color: #0B0B0B;
-    margin-bottom: 10px;
+.content_step.active {
+    display: flex;
 }
 
-.step_description {
-    font-size: 18px;
+.content_txt > h2 {
+    font-weight: normal;
+    margin: 0 0 15px 0;
+    color: #0B0B0B;
+}
+
+.content_txt > p {
+    font-weight: lighter;
+    margin: 0;
     color: #B7B7B7;
+}
+
+/* Step 1 약관 동의 스타일 */
+.step1_terms_container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 480px;
+    gap: 15px;
+}
+
+.terms_scroll_container {
+    flex: 1;
+    overflow-y: auto;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #fafafa;
+    max-height: 280px;
+    min-height: 200px;
+}
+
+.terms_content_wrapper {
+    padding: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.terms_main_title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #387FEB;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.terms_intro {
+    background-color: #FFFFFF;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.terms_section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.terms_section:last-child {
+    border-bottom: none;
+}
+
+.terms_section h3 {
+    color: #387FEB;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-left: 8px;
+    border-left: 3px solid #387FEB;
+}
+
+.terms_section p {
+    margin-bottom: 8px;
+    color: #555;
     line-height: 1.6;
 }
 
+.terms_section ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.terms_section li {
+    margin-bottom: 6px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.terms_section li strong {
+    color: #387FEB;
+    font-weight: 600;
+}
+
+.contact_info {
+    background-color: #FFFFFF;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.contact_info strong {
+    color: #387FEB;
+}
+
+/* 약관 체크박스 영역 */
+.terms_agreement_section {
+    flex-shrink: 0;
+    padding: 15px;
+    background-color: #fafafa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    max-height: 160px;
+}
+
+.checkbox_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.checkbox_group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #387FEB;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox_group label {
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.checkbox_group.required label::before {
+    content: '[필수] ';
+    color: #e74c3c;
+    font-weight: normal;
+    margin-right: 5px;
+}
+
+.checkbox_group:not(.required):not(.all-terms) label::before {
+    content: '[선택] ';
+    color: #666;
+    font-weight: normal;
+    margin-right: 5px;
+}
+
+.checkbox_group.all-terms {
+    background-color: #387FEB;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 14px;
+    box-shadow: 0 2px 8px rgba(56, 127, 235, 0.2);
+    margin-bottom: 12px;
+}
+
+.checkbox_group.all-terms input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: white;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox_group.all-terms label {
+    font-size: 14px;
+    color: white;
+}
+
+.checkbox_group input[type="checkbox"]:focus {
+    outline: 2px solid #387FEB;
+    outline-offset: 2px;
+}
+
+/* 스크롤바 커스텀 */
+.terms_scroll_container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terms_scroll_container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.terms_scroll_container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.terms_scroll_container::-webkit-scrollbar-thumb:hover {
+    background: #387FEB;
+}
+
+/* iframe 스타일 */
+.iframe_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+iframe {
+    width: 100%;
+    border: none;
+    background: white;
+    min-height: 450px;
+}
+
+/* Step 3 스크롤바 숨김 */
+#content_step3 > iframe {
+    -ms-overflow-style: none;
+}
+
+#content_step3::-webkit-scrollbar {
+    display: none;
+}
+
+/* 폼 요소들 */
 .form_group {
     display: flex;
     flex-direction: column;
@@ -255,19 +422,7 @@ iframe {
     border-color: #387FEB;
 }
 
-.checkbox_group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-align: left;
-}
-
-.checkbox_group input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #387FEB;
-}
-
+/* 버튼 영역 */
 .signUp_button_row {
     display: flex;
     justify-content: space-between;
@@ -336,6 +491,14 @@ iframe {
     box-shadow: none;
 }
 
+.signUp_next:disabled {
+    background-color: #ccc !important;
+    background: #ccc !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 아이콘 */
 .welcome_icon {
     width: 80px;
     height: 80px;
@@ -347,6 +510,7 @@ iframe {
     margin: 0 auto;
 }
 
+/* 반응형 디자인 */
 @media (max-width: 1024px) {
     .left_background_slid_dog {
         width: 35%;
@@ -360,14 +524,17 @@ iframe {
     .RegisterWrap {
         flex-direction: column;
     }
+
     .left_background_slid_dog {
         width: 100%;
         height: 30vh;
     }
+
     .right_background_form {
         width: 100%;
         height: 70vh;
     }
+
     .left_pagination {
         flex-direction: row;
         bottom: 20px;
@@ -375,8 +542,44 @@ iframe {
         left: 50%;
         transform: translateX(-50%);
     }
+
     .indication_line {
         width: 30px;
         height: 2px;
+    }
+
+    .step1_terms_container {
+        max-height: 400px;
+    }
+
+    .terms_scroll_container {
+        max-height: 220px;
+    }
+
+    .terms_content_wrapper {
+        padding: 12px;
+        font-size: 12px;
+    }
+
+    .terms_main_title {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .terms_section h3 {
+        font-size: 13px;
+    }
+
+    .checkbox_group label {
+        font-size: 12px;
+    }
+
+    .checkbox_group.all-terms label {
+        font-size: 13px;
+    }
+
+    .terms_agreement_section {
+        padding: 12px;
+        max-height: 140px;
     }
 }
