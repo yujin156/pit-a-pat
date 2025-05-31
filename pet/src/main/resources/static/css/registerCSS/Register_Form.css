@@ -170,6 +170,7 @@
     flex-direction: column;
     width: 100%;
     gap: 20px;
+    position: relative;
 }
 
 .content_step.active {

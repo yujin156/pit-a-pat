@@ -5,9 +5,9 @@
     <title>Register</title>
 
   <!-- 기본 회원가입 폼 -->
-  <link rel="stylesheet" href="/../static/css/registerCSS/Register_Form.css">
-  <link rel="stylesheet" href="/../static/css/Content.css">
-
+  <link rel="stylesheet" href="/css/registerCSS/Register_Form.css">
+  <link rel="stylesheet" href="/css/Content.css">
+  <script src="/js/registerJS/Register.js"></script>
 </head>
 <body>
 <div class="RegisterWrap">
@@ -211,7 +211,7 @@
             <p>회원가입을 위한 기본 정보를 입력해주세요.</p>
           </div>
           <div class="iframe_container">
-            <iframe src="Register_Step2_UserInfo.html"></iframe>
+            <iframe src="/user/register/step2"></iframe>
           </div>
         </div>
 
@@ -222,7 +222,7 @@
             <p>강아지 키와 몸무게에 따라 대형견, 중형견, 소형견을 선택</p>
           </div>
           <div class="iframe_container">
-            <iframe src="Register_Step3_DogSize.html"></iframe>
+            <iframe src="/dog/register/step3"></iframe>
           </div>
         </div>
 
@@ -233,7 +233,7 @@
             <p>키우는 강아지의 견적 사항을 입력해주세요.</p>
           </div>
           <div class="iframe_container">
-            <iframe src="Register_Step4_DogInfo.html"></iframe>
+            <iframe src="/dog/register/step4"></iframe>
           </div>
         </div>
 
@@ -244,7 +244,7 @@
             <p>중복 선택 가능</p>
           </div>
           <div class="iframe_container">
-            <iframe src="Register_Step5_DogKeyword.html"></iframe>
+            <iframe src="/dog/register/step5"></iframe>
           </div>
         </div>
       </div>
@@ -253,14 +253,12 @@
       <div class="signUp_button_row">
         <button class="signUp_Home_btn" onclick="goHome()">HOME</button>
         <div class="signUp_btn">
-          <button class="signUp_before" onclick="prevStep()" id="prevBtn" disabled>이전</button>
-          <button class="signUp_next" onclick="nextStep()" id="nextBtn" disabled>다음</button>
+          <button class="signUp_before" onclick="prevStep()" id="prevBtn">이전</button>
+          <button class="signUp_next" onclick="nextStep()" id="nextBtn">다음</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-<script src="/static/js/registerJS/Register.js"></script>
-
 </body>
 </html>
