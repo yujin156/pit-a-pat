@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Friend</title>
@@ -14,18 +15,42 @@
     <div class="side-menu" th:insert="~{Side_menu :: sidebar}" ></div>
     <div class="friend_wrap">
         <h2 class="friend_title">Friend</h2>
+
+        <!-- ✅ 프로필 선택 드롭다운 (로그인 + 강아지 2마리 이상일 때만 표시) -->
+        <div class="friend_profile_selector"
+             th:if="${isLoggedIn != null and isLoggedIn and showProfileSelector != null and showProfileSelector}"
+             sec:authorize="isAuthenticated()">
+            <label for="friendDogSelect">내 강아지 선택:</label>
+            <select id="friendDogSelect" class="friend-profile-select">
+                <option value="">어떤 강아지의 친구를 볼까요?</option>
+                <option th:each="dog : ${userDogs}"
+                        th:if="${dog != null and dog.dno != null and dog.dname != null}"
+                        th:value="${dog.dno}"
+                        th:selected="${dog.dno == selectedDogId}"
+                        th:text="${dog.dname + (dog.speciesName != null ? ' (' + dog.speciesName + ')' : '')}"></option>
+            </select>
+        </div>
+
         <p class="friend_sub_title">좋아하는 강아지 친구들</p>
+
         <!--    강아지 검색  -->
         <div class="friend_input">
             <input type="search" class="search_type" placeholder="견종 검색하기">
             <input type="search" class="search_friend" placeholder="강아지 친구 검색하기">
         </div>
+
         <div class="friend_content">
-            <div th:if="${#lists.isEmpty(friends)}">
-                친구가 없습니다.
+            <!-- ✅ 친구가 없을 때 메시지 -->
+            <div th:if="${friends == null or #lists.isEmpty(friends)}" class="no-friends-message">
+                <div class="no-friends-icon">🐕</div>
+                <h3>아직 친구가 없어요</h3>
+                <p>매칭 페이지에서 새로운 친구를 만들어보세요!</p>
+                <button onclick="window.location.href='/matching'" class="goto-matching-btn">매칭하러 가기</button>
             </div>
-            <div class="dog-grid-container">
-                <div th:each="friend : ${friends}" class="friend_dog_card">
+
+            <!-- ✅ 친구 목록 표시 -->
+            <div th:if="${friends != null and !#lists.isEmpty(friends)}" class="dog-grid-container">
+                <div th:each="friend : ${friends}" class="friend_dog_card" th:data-dog-id="${friend.dno}">
                     <div class="f_dog_hbtn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="5" height="25" viewBox="0 0 5 25">
                             <g id="그룹_162482" data-name="그룹 162482" transform="translate(-7432 -1784)">
@@ -36,18 +61,66 @@
                         </svg>
                     </div>
                     <div class="f_dog_card_cont">
-                        <!-- 친구 정보 표시 -->
-                        <img class="f_dog_img"
-                             th:if="${friend.image != null}"
-                             th:src="@{${friend.image.diurl}}"
-                             th:alt="|${friend.dname} 사진|" />
-                        <span th:if="${friend.image == null}">이미지 없음</span>
-                        <p class="f_dog_name" th:text="${friend.dname}">이름</p>
+                        <!-- ✅ 친구 이미지 처리 개선 -->
+                        <div th:if="${friend.image != null and friend.image.diurl != null and !#strings.isEmpty(friend.image.diurl)}">
+                            <img class="f_dog_img"
+                                 th:src="@{${friend.image.diurl}}"
+                                 th:alt="|${friend.dname} 사진|"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="f_dog_img default-img" style="display: none; background: linear-gradient(135deg, #387FEB, #6FA4FF); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: bold;"
+                                 th:text="${!#strings.isEmpty(friend.dname) ? #strings.substring(friend.dname, 0, 1) : '🐕'}">🐕</div>
+                        </div>
+
+                        <div th:if="${friend.image == null or friend.image.diurl == null or #strings.isEmpty(friend.image.diurl)}"
+                             class="f_dog_img default-img"
+                             style="background: linear-gradient(135deg, #387FEB, #6FA4FF); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: bold;"
+                             th:text="${!#strings.isEmpty(friend.dname) ? #strings.substring(friend.dname, 0, 1) : '🐕'}">🐕</div>
+
+                        <!-- ✅ 친구 이름 -->
+                        <p class="f_dog_name" th:text="${friend.dname != null ? friend.dname : '이름 미공개'}">이름</p>
+
+                        <!-- ✅ 친구 정보 키워드 -->
                         <div class="dog_keyword_row">
+                            <!-- 주소 정보 -->
                             <label class="dog_keyword"
-                                   th:text="${friendAddressMap[friend.dno]}">주소</label>
-                            <label class="dog_keyword" th:text="${friend.ugender.Doglabel()}">성별</label>
-                            <label class="dog_keyword" th:text="${friend.species.name}">종류</label>
+                                   th:text="${friendAddressMap != null and friendAddressMap[friend.dno] != null ? friendAddressMap[friend.dno] : '위치 미공개'}">
+                                위치 미공개
+                            </label>
+
+                            <!-- 성별 정보 -->
+                            <label class="dog_keyword"
+                                   th:text="${friend.ugender != null ? friend.ugender.Doglabel() : '성별 미공개'}">
+                                성별 미공개
+                            </label>
+
+                            <!-- 견종 정보 -->
+                            <label class="dog_keyword"
+                                   th:text="${friend.species != null and friend.species.name != null ? friend.species.name : '견종 미공개'}">
+                                견종 미공개
+                            </label>
+                        </div>
+
+                        <!-- ✅ 친구 액션 버튼들 -->
+                        <div class="friend_actions">
+                            <button class="friend_action_btn profile_btn"
+                                    th:data-dog-id="${friend.dno}"
+                                    title="프로필 보기">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </button>
+
+                            <!-- ✅ 채팅 버튼 개선 -->
+                            <button class="friend_action_btn chat_btn"
+                                    th:data-friend-request-id="${friendRequestIds != null and friendRequestIds[friend.dno] != null ? friendRequestIds[friend.dno] : ''}"
+                                    th:classappend="${friendRequestIds == null or friendRequestIds[friend.dno] == null} ? 'disabled' : ''"
+                                    th:disabled="${friendRequestIds == null or friendRequestIds[friend.dno] == null}"
+                                    th:title="${friendRequestIds != null and friendRequestIds[friend.dno] != null ? '채팅하기' : '채팅 불가능'}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -56,6 +129,69 @@
     </div>
     <div class="login-panel" th:insert="~{Login_center :: login }" ></div>
 </div>
+
+<!-- 로딩 스피너 -->
+<div class="loading-spinner hidden" id="friendLoadingSpinner">
+    <div class="spinner"></div>
+    <p>친구 목록을 불러오는 중...</p>
+</div>
+
+<!-- 알림 토스트 -->
+<div class="friend-notification" id="friendNotification"></div>
+
+<!-- ✅ 디버깅 정보 추가 -->
+<script th:inline="javascript">
+    console.log('=== Friend.html 데이터 로드 시작 ===');
+
+    // 서버에서 전달받은 데이터
+    const rawUserDogs = /*[[${userDogs}]]*/ [];
+    const rawIsLoggedIn = /*[[${isLoggedIn}]]*/ false;
+    const rawShowProfileSelector = /*[[${showProfileSelector}]]*/ false;
+    const rawSelectedDogId = /*[[${selectedDogId}]]*/ null;
+    const rawFriends = /*[[${friends}]]*/ [];
+    const rawFriendAddressMap = /*[[${friendAddressMap}]]*/ {};
+    const rawFriendRequestIds = /*[[${friendRequestIds}]]*/ {};
+
+    console.log('Raw 데이터 확인:');
+    console.log('- userDogs:', rawUserDogs);
+    console.log('- isLoggedIn:', rawIsLoggedIn);
+    console.log('- showProfileSelector:', rawShowProfileSelector);
+    console.log('- selectedDogId:', rawSelectedDogId);
+    console.log('- friends:', rawFriends);
+    console.log('- friendAddressMap:', rawFriendAddressMap);
+    console.log('- friendRequestIds:', rawFriendRequestIds);
+
+    // ✅ 친구 데이터 상세 로그
+    if (rawFriends && rawFriends.length > 0) {
+        console.log('친구 데이터 상세:');
+        rawFriends.forEach((friend, index) => {
+            console.log(`친구 ${index + 1}:`, {
+                id: friend.dno,
+                name: friend.dname,
+                gender: friend.ugender,
+                species: friend.species,
+                image: friend.image,
+                addressInMap: rawFriendAddressMap[friend.dno],
+                requestIdInMap: rawFriendRequestIds[friend.dno]
+            });
+        });
+    }
+
+    // 전역 변수로 설정
+    window.friendData = {
+        userDogs: Array.isArray(rawUserDogs) ? rawUserDogs : [],
+        isLoggedIn: Boolean(rawIsLoggedIn),
+        showProfileSelector: Boolean(rawShowProfileSelector),
+        selectedDogId: rawSelectedDogId,
+        friends: Array.isArray(rawFriends) ? rawFriends : [],
+        friendAddressMap: rawFriendAddressMap || {},
+        friendRequestIds: rawFriendRequestIds || {}
+    };
+
+    console.log('최종 friendData:', window.friendData);
+    console.log('=== Friend.html 데이터 로드 완료 ===');
+</script>
+
 <script defer th:src="@{/js/Friend.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
