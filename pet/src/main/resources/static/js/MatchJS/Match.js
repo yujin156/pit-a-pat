@@ -100,27 +100,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 프로필 변경 처리 (개선된 버전)
+    // 프로필 변경 처리
     function handleProfileChange(e) {
         const selectedDogId = parseInt(e.target.value);
-        if (selectedDogId) {
-            const selectedDog = window.matchData.userDogs.find(dog => dog.dno === selectedDogId);
-            if (selectedDog) {
-                // 이전 강아지 ID와 새로운 강아지 ID가 다를 때만 처리
-                const previousDogId = getSelectedMainDogId();
+        if (!selectedDogId || isNaN(selectedDogId)) return;
 
-                if (previousDogId !== selectedDogId) {
-                    localStorage.setItem('selectedMainDogId', selectedDogId);
-                    window.selectedMainDogId = selectedDogId;
+        localStorage.setItem('selectedMainDogId', selectedDogId);
+        window.selectedMainDogId = selectedDogId;
 
-                    console.log('프로필 변경됨:', selectedDog.dname, selectedDogId);
-                    showNotification(`${selectedDog.dname} 프로필로 매칭을 시작합니다!`, 'success');
+        showNotification('선택한 강아지 기준으로 새로 불러오는 중입니다...', 'info');
 
-                    // 강아지 목록을 서버에서 다시 가져오기
-                    reloadDogsForNewProfile();
-                }
-            }
-        }
+        currentDogs = [];
+        currentCardIndex = 0;
+        if (cardStack) cardStack.innerHTML = '';
+
+        showLoading();
+
+        fetch(`/matching/search/all?limit=20&t=${Date.now()}`)
+            .then(res => res.json())
+            .then(dogs => {
+                currentDogs = dogs || [];
+                filterDogsForCurrentProfile(); // 현재 선택한 강아지 기준 필터
+                renderCards();
+            })
+            .catch(err => {
+                console.error('강아지 불러오기 실패', err);
+                showNotification('강아지 목록을 불러오는데 실패했어요.', 'error');
+            })
+            .finally(() => {
+                hideLoading();
+            });
     }
 
     // 새로운 프로필에 맞는 강아지 목록 다시 로드
@@ -130,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 현재 선택된 키워드가 있으면 키워드 검색, 없으면 전체 검색
         if (selectedKeywords.length > 0) {
-            const keyword = selectedKeywords[0];
-            fetch(`/matching/search/keyword?keyword=${encodeURIComponent(keyword)}&limit=20`)
+            const keywordParams = selectedKeywords.map(k => `keywords=${encodeURIComponent(k)}`).join('&');
+            fetch(`/matching/search/keywords?${keywordParams}&limit=20`)
                 .then(response => response.json())
                 .then(dogs => {
                     console.log('키워드 기반 새 프로필 강아지 로드:', dogs.length);
@@ -291,29 +300,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        console.log('키워드 자동 필터링 시작:', selectedKeywords[0]);
-        showLoading();
-        const keyword = selectedKeywords[0];
+        console.log('키워드 자동 필터링 시작:', selectedKeywords);
 
-        fetch(`/matching/search/keyword?keyword=${encodeURIComponent(keyword)}&limit=20`)
+        showLoading();
+
+        // 여러 키워드를 query string으로 전송
+        const keywordParams = selectedKeywords.map(k => `keywords=${encodeURIComponent(k)}`).join('&');
+        fetch(`/matching/search/keywords?${keywordParams}&limit=20`)
             .then(response => response.json())
             .then(dogs => {
-                console.log('키워드 자동 검색 결과:', dogs.length);
                 currentDogs = Array.isArray(dogs) ? dogs : [];
                 currentCardIndex = 0;
 
-                // 현재 프로필에 맞게 필터링
                 filterDogsForCurrentProfile();
                 renderCards();
                 hideLoading();
 
                 if (currentDogs.length === 0) {
-                    showNotification(`"${keyword}" 키워드의 강아지를 찾을 수 없습니다.`, 'info');
+                    showNotification('해당 키워드를 가진 친구가 없습니다.', 'info');
                 }
             })
             .catch(error => {
-                console.error('키워드 자동 검색 오류:', error);
-                showNotification('검색 중 오류가 발생했습니다.', 'error');
+                console.error('키워드 검색 실패:', error);
+                showNotification('검색 오류가 발생했습니다.', 'error');
                 hideLoading();
             });
     }
@@ -637,44 +646,52 @@ document.addEventListener('DOMContentLoaded', function() {
     // 카드 렌더링 함수
     function renderCards() {
         console.log('=== 카드 렌더링 시작 ===');
-        console.log('현재 강아지 수:', currentDogs.length, '현재 인덱스:', currentCardIndex);
+        console.log('currentDogs:', currentDogs.map(d => d.dname));
+        console.log('카드 수:', currentDogs.length, '현재 인덱스:', currentCardIndex);
 
         if (!cardStack) {
             console.error('cardStack 엘리먼트를 찾을 수 없습니다.');
             return;
         }
 
+        cardStack.innerHTML = '';
+
         if (currentDogs.length === 0) {
             showEmptyState();
             return;
         }
 
-        cardStack.innerHTML = '';
-
-        // 3개 카드 생성 (무한 순환)
         const positions = ['left', 'center', 'right'];
 
-        for (let i = 0; i < Math.min(3, currentDogs.length); i++) {
-            let dogIndex;
-
-            if (currentDogs.length === 1) {
-                dogIndex = 0;
-                if (i !== 1) continue; // 중앙에만 표시
-            } else if (currentDogs.length === 2) {
-                dogIndex = (currentCardIndex + i) % currentDogs.length;
-                if (i === 2) continue; // 오른쪽 카드 건너뛰기
+        // 카드가 1마리일 경우 → 무조건 중앙 카드로 1개만 렌더링
+        if (currentDogs.length === 1) {
+            const dog = currentDogs[0];
+            const card = createDogCard(dog, 'center');
+            if (card) {
+                cardStack.appendChild(card);
             } else {
-                dogIndex = (currentCardIndex + i) % currentDogs.length;
+                console.warn('카드 생성 실패:', dog);
             }
+            return;
+        }
 
+        // 카드가 2마리 이상일 경우
+        for (let i = 0; i < Math.min(3, currentDogs.length); i++) {
+            if (currentDogs.length === 2 && i === 2) continue;
+
+            const dogIndex = (currentCardIndex + i) % currentDogs.length;
             const dog = currentDogs[dogIndex];
 
-            if (dog) {
-                console.log(`카드 ${i} 생성:`, dog.dname, `위치: ${positions[i]}`, `인덱스: ${dogIndex}`);
-                const card = createDogCard(dog, positions[i]);
-                if (card) {
-                    cardStack.appendChild(card);
-                }
+            if (!dog) {
+                console.warn('강아지 데이터 없음 at index:', dogIndex);
+                continue;
+            }
+
+            const card = createDogCard(dog, positions[i]);
+            if (card) {
+                cardStack.appendChild(card);
+            } else {
+                console.warn('카드 생성 실패:', dog);
             }
         }
 
@@ -682,13 +699,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('=== 카드 렌더링 완료 ===');
     }
 
-    // 카드 생성 함수 (주소 표시 개선)
+    // 카드 생성 함수
     function createDogCard(dog, position) {
         const card = document.createElement('div');
         card.className = `dog-card ${position}`;
         card.dataset.dogId = dog.dno;
         card.dataset.position = position;
 
+        // 키워드 뱃지 처리
         let keywordTags = '';
         if (dog.keywords1 && dog.keywords1.length > 0) {
             keywordTags = dog.keywords1.map(keyword =>
@@ -696,74 +714,54 @@ document.addEventListener('DOMContentLoaded', function() {
             ).join('');
         }
 
-        const imageUrl = dog.image?.diurl || '/img/default-dog.png';
-
-        // 주소 정보 안전하게 처리
-        let location = '위치 미공개';
-        if (dog.owner?.address) {
-            if (dog.owner.address.fullAddress) {
-                location = dog.owner.address.fullAddress;
-            } else {
-                const city = dog.owner.address.city || '';
-                const county = dog.owner.address.county || '';
-                location = `${city} ${county}`.trim() || '위치 미공개';
-            }
+        // ✅ 이미지 URL 안전 처리
+        let imageUrl = '/img/default-dog.png';
+        if (dog.image && typeof dog.image.diurl === 'string' && dog.image.diurl.trim() !== '') {
+            imageUrl = dog.image.diurl;
         }
 
+        // 주소 표시
+        const location = dog.owner?.address?.fullAddress || '위치 미공개';
+
+        // 로그인 여부
         const isLoggedIn = window.matchData && window.matchData.isLoggedIn;
 
-        // 현재 강아지의 좋아요 상태 확인
+        // 좋아요 상태 확인
         const myDogId = getSelectedMainDogId();
         const liked = myDogId ? JSON.parse(localStorage.getItem(`likedByDog_${myDogId}`) || '[]') : [];
         const isAlreadyLiked = liked.includes(dog.dno);
 
         card.innerHTML = `
-           <div class="card-image" style="background-image: url('${imageUrl}')">
-               <div class="card-content">
-                   <div class="card-header">
-                       <h3 class="dog-name">${dog.dname}</h3>
-                       ${isLoggedIn ? `
-                       <button class="heart-btn ${isAlreadyLiked ? 'liked disabled' : ''}" data-dog-id="${dog.dno}">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
-                                     stroke-width="2" 
-                                     fill="${isAlreadyLiked ? '#EDA9DD' : 'none'}"
-                                     stroke="${isAlreadyLiked ? '#EDA9DD' : 'currentColor'}"/>
-                           </svg>
-                       </button>
-                       ` : `
-                       <button class="heart-btn disabled" title="좋아요는 회원만 가능합니다">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#B7B7B7" stroke-width="2" fill="none"/>
-                           </svg>
-                       </button>
-                       `}
-                   </div>
-                   <div class="dog-info">
-                       ${location} · ${dog.ugender?.doglabel || '성별 미공개'} · ${dog.species?.name || '견종 미공개'}
-                   </div>
-                   <div class="dog-keywords">
-                       ${keywordTags}
-                   </div>
-               </div>
-           </div>
-       `;
-
-        const heartBtn = card.querySelector('.heart-btn');
-        if (heartBtn) {
-            heartBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (heartBtn.classList.contains('disabled')) {
-                    if (isLoggedIn && isAlreadyLiked) {
-                        showNotification('이미 좋아요를 누른 친구입니다!', 'info');
-                    } else {
-                        showGuestLikePrompt();
-                    }
-                } else {
-                    handleHeartClick(e);
-                }
-            });
-        }
+        <div class="card-image" style="background-image: url('${imageUrl}')">
+            <div class="card-content">
+                <div class="card-header">
+                    <h3 class="dog-name">${dog.dname}</h3>
+                    ${isLoggedIn ? `
+                    <button class="heart-btn ${isAlreadyLiked ? 'liked disabled' : ''}" data-dog-id="${dog.dno}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                                  stroke-width="2"
+                                  fill="${isAlreadyLiked ? '#EDA9DD' : 'none'}"
+                                  stroke="${isAlreadyLiked ? '#EDA9DD' : 'currentColor'}"/>
+                        </svg>
+                    </button>
+                    ` : `
+                    <button class="heart-btn disabled" title="좋아요는 회원만 가능합니다">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#B7B7B7" stroke-width="2" fill="none"/>
+                        </svg>
+                    </button>
+                    `}
+                </div>
+                <div class="dog-info">
+                    ${location} · ${dog.ugender?.doglabel || '성별 미공개'} · ${dog.species?.name || '견종 미공개'}
+                </div>
+                <div class="dog-keywords">
+                    ${keywordTags}
+                </div>
+            </div>
+        </div>
+    `;
 
         return card;
     }
@@ -937,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loginModal.innerHTML = `
            <div class="login-prompt-content">
                <h3>🐕 더 많은 키워드 선택을 원하신다면?</h3>
-               <p>비회원은 최대 2개의 키워드만 선택 가능합니다.<br>로그인하시면 무제한으로 키워드를 선택할 수 있어요!</p>
+               <p>로그인하시면 무제한으로 키워드를 선택할 수 있어요!</p>
                <div class="login-prompt-buttons">
                    <button class="login-prompt-btn secondary" onclick="this.closest('.login-prompt-modal').remove()">나중에</button>
                    <button class="login-prompt-btn primary" onclick="window.location.href='/login'">로그인하기</button>

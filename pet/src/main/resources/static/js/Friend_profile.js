@@ -1,34 +1,34 @@
-// 강아지 프로필 데이터
-const dogProfiles = [
-    {
-        id: 1,
-        name: "구름",
-        group: "내향적 강아지 모임",
-        location: "수유3동",
-        gender: "수컷 (중성화O)",
-        breed: "비숑",
-        size: "소형견",
-        birthday: "2018년 7월 7일",
-        keywords: ["내향적", "엄마 껌딱지 겁쟁이", "주변에 관심없는 나혼자 산다형"],
-        intro: "닭고기 알러지가 있어요.\n산책은 주기적으로 하고 풍성한 머리가 포인트에요.\n옷 입는걸 싫어하고 대형견을 보면 짖어요.\n활발한 강아지나 아기 강아지는 조금 힘들어해요.",
-        image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 비숑 이미지
-        isFavorite: false
-    },
-    {
-        id: 2,
-        name: "월이",
-        group: "사자가 되지 못한 라이언",
-        location: "서교동",
-        gender: "수컷 (중성화X)",
-        breed: "포메라니안",
-        size: "소형견",
-        birthday: "2020년 3월 15일",
-        keywords: ["활발함", "사교적", "장난꾸러기"],
-        intro: "항상 밝고 활발해요.\n사람을 좋아하고 다른 강아지와 잘 어울립니다.\n간식을 좋아하고 놀이를 무척 좋아합니다.\n배변 훈련이 잘 되어있어요.",
-        image: "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 포메라니안 이미지
-        isFavorite: true
-    }
-];
+// // 강아지 프로필 데이터
+// const dogProfiles = [
+//     {
+//         id: 1,
+//         name: "구름",
+//         group: "내향적 강아지 모임",
+//         location: "수유3동",
+//         gender: "수컷 (중성화O)",
+//         breed: "비숑",
+//         size: "소형견",
+//         birthday: "2018년 7월 7일",
+//         keywords: ["내향적", "엄마 껌딱지 겁쟁이", "주변에 관심없는 나혼자 산다형"],
+//         intro: "닭고기 알러지가 있어요.\n산책은 주기적으로 하고 풍성한 머리가 포인트에요.\n옷 입는걸 싫어하고 대형견을 보면 짖어요.\n활발한 강아지나 아기 강아지는 조금 힘들어해요.",
+//         image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 비숑 이미지
+//         isFavorite: false
+//     },
+//     {
+//         id: 2,
+//         name: "월이",
+//         group: "사자가 되지 못한 라이언",
+//         location: "서교동",
+//         gender: "수컷 (중성화X)",
+//         breed: "포메라니안",
+//         size: "소형견",
+//         birthday: "2020년 3월 15일",
+//         keywords: ["활발함", "사교적", "장난꾸러기"],
+//         intro: "항상 밝고 활발해요.\n사람을 좋아하고 다른 강아지와 잘 어울립니다.\n간식을 좋아하고 놀이를 무척 좋아합니다.\n배변 훈련이 잘 되어있어요.",
+//         image: "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 포메라니안 이미지
+//         isFavorite: true
+//     }
+// ];
 
 // 현재 표시 중인 강아지 인덱스
 let currentDogIndex = 0;
