@@ -15,6 +15,7 @@ import java.util.List;
 public class DogRegisterRequest {
     private String name;
     private String gender;
+    private String neutering;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthday;

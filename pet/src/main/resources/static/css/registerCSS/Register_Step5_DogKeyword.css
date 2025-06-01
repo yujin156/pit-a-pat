@@ -1,3 +1,11 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* 화면 세로 가운데 */
+}
+
 .Big-form {
     border-radius: 20px;
     font-family: "Gmarket Sans", 'Noto Sans KR', sans-serif;
@@ -23,6 +31,9 @@
     margin-left: auto; /* 가운데 정렬 */
     margin-right: auto;
     margin-bottom: 100px;
+
+    position: relative; /* 부모 위치 기준으로 */
+    z-index: 1000;      /* 강제로 맨 위로 */
 }
 
 .keyword {

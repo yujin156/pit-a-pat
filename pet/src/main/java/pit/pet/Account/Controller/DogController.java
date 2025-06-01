@@ -10,21 +10,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogKeyword1Repository;
-import pit.pet.Account.Repository.DogRepository;
+import pit.pet.Account.Repository.SpeciesRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
-import pit.pet.Account.User.Dog;
-import pit.pet.Account.User.DogKeywordDto;
 import pit.pet.Account.User.DogSize;
+import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
-import pit.pet.Spec.SpecRepository;
 
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,42 +30,45 @@ import java.util.stream.Collectors;
 public class DogController {
 
     private final DogService dogService;
-    private final SpecRepository speciesRepository;
+    private final SpeciesRepository speciesRepository;
     private final DogKeyword1Repository keyword1Repository;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
 
     // 1️⃣ 강아지 크기 선택 (Register2)
-    @GetMapping("/register/step2")
+    @GetMapping("/register/step3")
     public String showDogSizeForm(@RequestParam int currentDogIndex,
                                   @RequestParam int totalDogs,
                                   Model model) {
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-        return "Register/Register2";
+        return "Register/Register_Step3_DogSize";
     }
 
     @PostMapping("/register/step2")
-    public String handleDogSize(@RequestParam("size") String sizeStr, // 여기를 dogSize → size로
+    public String handleDogSize(@RequestParam("size") String sizeStr,
                                 @RequestParam("currentDogIndex") int currentDogIndex,
                                 @RequestParam("totalDogs") int totalDogs) {
+        // DogSize Enum으로 변환 (검증용)
         DogSize dogSize = DogSize.valueOf(sizeStr);
         return "redirect:/dog/register/step3?currentDogIndex=" + currentDogIndex
                 + "&totalDogs=" + totalDogs
-                + "&dogSize=" + dogSize;
+                + "&size=" + dogSize; // 🔥 dogSize → size 이름으로 통일
     }
 
     // 2️⃣ 강아지 프로필 입력 (Register3)
-    @GetMapping("/register/step3")
+    @GetMapping("/register/step4")
     public String showDogProfileForm(@RequestParam int currentDogIndex,
                                      @RequestParam int totalDogs,
-                                     @RequestParam String dogSize,
+                                     @RequestParam("size") String size,
+                                     @RequestParam(required = false) Long dogId,
                                      Model model) {
-        model.addAttribute("dogSize", DogSize.valueOf(dogSize));
+        model.addAttribute("dogSize", DogSize.valueOf(size));
         model.addAttribute("speciesList", speciesRepository.findAll());
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-        return "Register/Register3";
+        model.addAttribute("dogId", dogId);
+        return "Register/Register_Step4_DogInfo";
     }
 
     @PostMapping("/register/step3")
@@ -76,33 +77,38 @@ public class DogController {
                                    @RequestParam int currentDogIndex,
                                    @RequestParam int totalDogs,
                                    @RequestParam("size") String size,
-                                   HttpSession session) { // 새로 추가!
+                                   HttpSession session) {
 
-        Long userId = (Long) session.getAttribute("userId");  // ⭐ userId 꺼내오기
-        Long dogId = dogService.registerDog(request, userId);  // ⭐ owner 설정된 강아지 등록
-
-        request.setSize(size); //
+        Long userId = (Long) session.getAttribute("userId");
+        // 강아지 저장 및 dogId 생성
+        request.setSize(size);
         request.setImageFile(imageFile);
-
+        Long dogId = dogService.registerDog(request, userId);
 
         return "redirect:/dog/register/step4?currentDogIndex=" + currentDogIndex
                 + "&totalDogs=" + totalDogs
+                + "&size=" + size
                 + "&dogId=" + dogId;
     }
 
     // 3️⃣ 강아지 키워드 선택 (Register4)
-    @GetMapping("/register/step4")
+    @GetMapping("/register/step5")
     public String showDogKeywordForm(@RequestParam int currentDogIndex,
                                      @RequestParam int totalDogs,
                                      @RequestParam Long dogId,
-                                     Model model) {  // 🔥 Principal 제거!
+                                     Model model) {
 
-        model.addAttribute("keyword1List", keyword1Repository.findAll());
+        List<DogKeyword1> keywords = keyword1Repository.findAll();
+        System.out.println("🔍 Step5 키워드 목록: " + keywords.size() + "개");
+        for (DogKeyword1 keyword1 : keywords) {
+            System.out.println("  👉 " + keyword1.getDktag());
+        }
+
+        model.addAttribute("keyword1List", keywords);
         model.addAttribute("dogId", dogId);
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-
-        return "Register/Register4";
+        return "Register/Register_Step5_DogKeyword";
     }
 
     @PostMapping("/register/step4")
@@ -114,16 +120,18 @@ public class DogController {
         dogService.updateDogKeywordsDirectly(dogId, keywordIds);
 
         if (currentDogIndex < totalDogs) {
+            // 다음 강아지 등록으로 돌아가기
             return "redirect:/dog/register/step2?currentDogIndex=" + (currentDogIndex + 1) + "&totalDogs=" + totalDogs;
         } else {
+            // 모든 강아지 등록 완료
             return "redirect:/register/complete";
         }
     }
 
     // 🔹 강아지 상태 업데이트 API
     @PostMapping("/update-status")
-        @ResponseBody
-        public ResponseEntity<Map<String, Object>> updateDogStatus(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateDogStatus(
             @RequestParam Long dogId,
             @RequestParam String status,
             @AuthenticationPrincipal UserDetails principal) {
@@ -182,6 +190,4 @@ public class DogController {
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
                 .getUno();
     }
-
-
 }
