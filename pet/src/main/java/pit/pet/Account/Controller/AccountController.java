@@ -9,9 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pit.pet.Account.Repository.TOSTableRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Service.UserService;
 import pit.pet.Account.User.Address;
+import pit.pet.Account.User.TOSTable;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
 import pit.pet.Account.User.Role;
@@ -29,34 +31,68 @@ public class AccountController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TOSTableRepository tosTableRepository;
 
-    @GetMapping("/signup")
+    @GetMapping("/register")
+    public String showRegisterForm() {
+        return "Register/Register_Form";  // Register 폴더 안의 Register_Form.html
+    }
+
+    // ✅ Step1 - 약관동의 저장 후 회원정보 입력창으로 이동
+    @PostMapping("/consent")
+    public String saveConsent(@RequestParam("privacyAgree") Boolean privacyAgree,
+                              @RequestParam(value = "marketingAgree", required = false) Boolean marketingAgree) {
+
+        TOSTable tosTable = new TOSTable();
+        tosTable.setPrivacyAgree(privacyAgree);
+        tosTable.setMarketingAgree(marketingAgree);
+
+        tosTableRepository.save(tosTable);
+
+        // 동의서 저장 후 회원정보 입력창으로 리다이렉트
+        return "redirect:/user/signup";
+    }
+
+    // ✅ Step2 - 회원가입 입력창
+    @GetMapping("/register/step2")
     public String showSignupForm(Model model) {
-        // User 안에 Address 객체를 넣어둡니다.
         User user = new User();
         user.setAddress(new Address());
         model.addAttribute("user", user);
-        return "Register/Register1";
+        return "Register/Register_Step2_UserInfo"; // 회원정보 입력창
     }
 
+    // ✅ Step2 - 회원가입 처리
     @PostMapping("/signup")
     public String registerUser(@ModelAttribute("user") User user,
                                @RequestParam("dogCount") int dogCount,
+                               @RequestParam("privacyAgree") Boolean privacyAgree,
+                               @RequestParam(value = "marketingAgree", required = false) Boolean marketingAgree,
                                HttpSession session,
                                HttpServletResponse response) {
-        // 1️⃣ 회원가입: DB 저장
-        Long userId = userService.registerUser(user, user.getAddress());
+        System.out.println(dogCount);
 
-        // 2️⃣ 로그인 로직: JWT 토큰 발급 및 세션/쿠키 저장
+        // ✅ TOSTable 인스턴스 생성 및 동의서 정보 세팅
+        TOSTable tosTable = new TOSTable();
+        tosTable.setPrivacyAgree(privacyAgree);
+        tosTable.setMarketingAgree(marketingAgree);
+        tosTable.setAssent(privacyAgree);
+
+        // 기본권한 설정 및 비밀번호 암호화
+        user.setUpwd(bCryptPasswordEncoder.encode(user.getUpwd()));
+        user.setRole(Role.USER);
+
+        // 회원가입 DB 저장 (Address와 함께 저장)
+        Long userId = userService.registerUser(user, user.getAddress(), tosTable);
+
+        // JWT 토큰 발급 및 쿠키/세션 저장
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User savedUser = optionalUser.get();
 
-            // JWT 발급
             String accessToken = jwtTokenProvider.createAccessToken(savedUser.getUemail(), savedUser.getRole());
             String refreshToken = jwtTokenProvider.createRefreshToken(savedUser.getUemail(), savedUser.getRole());
 
-            // 쿠키에 저장
             Cookie accessCookie = new Cookie("accessToken", accessToken);
             accessCookie.setHttpOnly(true);
             accessCookie.setPath("/");
@@ -69,12 +105,13 @@ public class AccountController {
             refreshCookie.setMaxAge(60 * 60 * 24);
             response.addCookie(refreshCookie);
 
-            // 세션에도 user 저장
             session.setAttribute("user", savedUser);
-            session.setAttribute("userId", userId);  // ⭐ userId를 세션에 저장!
+            session.setAttribute("userId", userId);
             session.setMaxInactiveInterval(60 * 60 * 24);
         }
-        return "redirect:/dog/register/step2?currentDogIndex=1&totalDogs=" + dogCount;
+
+        // 다음 단계: 강아지 등록으로 리다이렉트
+        return "redirect:/dog/register/step3?currentDogIndex=1&totalDogs=" + dogCount;
     }
 
 

@@ -1,17 +1,15 @@
 package pit.pet.Board.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Board.Entity.BoardBookmarkTable;
 import pit.pet.Board.Entity.BoardLikeTable;
-import pit.pet.Board.Entity.BoardListTable;
 import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Repository.BoardBookmarkRepository;
 import pit.pet.Board.Repository.BoardLikeRepository;
-import pit.pet.Board.Repository.BoardListRepository;
 import pit.pet.Board.Repository.BoardRepository;
 import pit.pet.Group.entity.GroupTable;
 
@@ -25,8 +23,12 @@ public class BoardManageService {
     private final DogRepository dogRepository;
     private final BoardLikeRepository likeRepository;
     private final BoardBookmarkRepository bookmarkRepository;
-    private final BoardListRepository boardListRepository;
 
+
+    @Transactional(readOnly = true)
+    public List<BoardTable> getPostsByGroup(Long gno) {
+        return boardRepository.findByGroup_Gno(gno);
+    }
 
     // ✅ 좋아요 토글
     @Transactional
@@ -77,10 +79,7 @@ public class BoardManageService {
     }
 
     public List<BoardTable> getBoardListByGroup(GroupTable group) {
-        BoardListTable boardList = boardListRepository.findByGroupTableGno(group.getGno())
-                .orElseThrow(() -> new IllegalArgumentException("게시판 카테고리 없음"));
-
-        return boardRepository.findByBoardListTable(boardList);
+        return boardRepository.findByGroup(group);
     }
 
     @Transactional

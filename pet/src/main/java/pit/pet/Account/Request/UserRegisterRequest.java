@@ -47,5 +47,16 @@ public class UserRegisterRequest {
     @NotBlank
     private String town;
 
+    // ✅ 약관 동의 정보 추가
+    @NotNull
+    private Boolean termsAgree;
+
+    @NotNull
+    private Boolean privacyAgree;
+
+    private Boolean marketingAgree; // 선택 항목
+
+    // 강아지 등록 리스트
+
     private List<DogRegisterRequest> dogs = new ArrayList<>();
 }

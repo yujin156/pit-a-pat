@@ -54,6 +54,10 @@ public class User {
     @JsonManagedReference("user-address")
     private Address address;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("user-tosTable")
+    private TOSTable tosTable;
+
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 }
