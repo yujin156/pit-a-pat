@@ -159,43 +159,42 @@ function createProfileModalHTML() {
                     <h2>강아지 키워드를 선택해주세요!</h2>
                     <p class="step_subtitle">중복 선택 가능</p>
 
-                    <div class="keyword_grid">
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="외향">외향</button>
-                            <button class="keyword_btn" data-keyword="내향">내향</button>
-                            <button class="keyword_btn" data-keyword="활발한">활발한</button>
-                            <button class="keyword_btn" data-keyword="친화력">친화력</button>
-                            <button class="keyword_btn" data-keyword="순둥이">순둥이</button>
-                            <button class="keyword_btn" data-keyword="짖어요">짖어요</button>
-                        </div>
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="입질 있어요">입질 있어요</button>
-                            <button class="keyword_btn" data-keyword="엄마 껌딱지 겁쟁이">엄마 껌딱지 겁쟁이</button>
-                            <button class="keyword_btn" data-keyword="조심스러운 관찰형">조심스러운 관찰형</button>
-                            <button class="keyword_btn" data-keyword="선긋는 외톨이 아생견">선긋는 외톨이 아생견</button>
-                        </div>
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="초면에 신중, 구면엔 친근">초면에 신중, 구면엔 친근</button>
-                            <button class="keyword_btn" data-keyword="동네 대장 일진형">동네 대장 일진형</button>
-                            <button class="keyword_btn" data-keyword="까칠한 지킬 앤 하이드형">까칠한 지킬 앤 하이드형</button>
-                            <button class="keyword_btn" data-keyword="신이 내린 반려 특화형">신이 내린 반려 특화형</button>
-                        </div>
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="패닉에 빠진 극소심형">패닉에 빠진 극소심형</button>
-                            <button class="keyword_btn" data-keyword="곱게자란 막둥이형">곱게자란 막둥이형</button>
-                            <button class="keyword_btn" data-keyword="놀줄 아는 모범생형">놀줄 아는 모범생형</button>
-                        </div>
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="모범견계의 엄친아형">모범견계의 엄친아형</button>
-                            <button class="keyword_btn" data-keyword="쾌활한 만능엔터테이너형">쾌활한 만능엔터테이너형</button>
-                        </div>
-                        <div class="keyword_category">
-                            <button class="keyword_btn" data-keyword="주인에 관심없는 나홀로 산다형">주인에 관심없는 나홀로 산다형</button>
-                            <button class="keyword_btn" data-keyword="치고 빠지는 밀당 전재형">치고 빠지는 밀당 전재형</button>
-                            <button class="keyword_btn" data-keyword="똥꼬발랄 핵인싸형">똥꼬발랄 핵인싸형</button>
-                        </div>
-                    </div>
-
+                    <div class="keyword_grid"></div>
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="외향">외향</button>-->
+<!--                            <button class="keyword_btn" data-keyword="내향">내향</button>-->
+<!--                            <button class="keyword_btn" data-keyword="활발한">활발한</button>-->
+<!--                            <button class="keyword_btn" data-keyword="친화력">친화력</button>-->
+<!--                            <button class="keyword_btn" data-keyword="순둥이">순둥이</button>-->
+<!--                            <button class="keyword_btn" data-keyword="짖어요">짖어요</button>-->
+<!--                        </div>-->
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="입질 있어요">입질 있어요</button>-->
+<!--                            <button class="keyword_btn" data-keyword="엄마 껌딱지 겁쟁이">엄마 껌딱지 겁쟁이</button>-->
+<!--                            <button class="keyword_btn" data-keyword="조심스러운 관찰형">조심스러운 관찰형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="선긋는 외톨이 아생견">선긋는 외톨이 아생견</button>-->
+<!--                        </div>-->
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="초면에 신중, 구면엔 친근">초면에 신중, 구면엔 친근</button>-->
+<!--                            <button class="keyword_btn" data-keyword="동네 대장 일진형">동네 대장 일진형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="까칠한 지킬 앤 하이드형">까칠한 지킬 앤 하이드형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="신이 내린 반려 특화형">신이 내린 반려 특화형</button>-->
+<!--                        </div>-->
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="패닉에 빠진 극소심형">패닉에 빠진 극소심형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="곱게자란 막둥이형">곱게자란 막둥이형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="놀줄 아는 모범생형">놀줄 아는 모범생형</button>-->
+<!--                        </div>-->
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="모범견계의 엄친아형">모범견계의 엄친아형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="쾌활한 만능엔터테이너형">쾌활한 만능엔터테이너형</button>-->
+<!--                        </div>-->
+<!--                        <div class="keyword_category">-->
+<!--                            <button class="keyword_btn" data-keyword="주인에 관심없는 나홀로 산다형">주인에 관심없는 나홀로 산다형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="치고 빠지는 밀당 전재형">치고 빠지는 밀당 전재형</button>-->
+<!--                            <button class="keyword_btn" data-keyword="똥꼬발랄 핵인싸형">똥꼬발랄 핵인싸형</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="modal_buttons">
                         <button class="modal_btn secondary" id="prevStep3">이전</button>
                         <button class="modal_btn primary" id="completeProfile">완료</button>
@@ -222,6 +221,9 @@ function showAddFamilyModal() {
 
         // 생년월일 옵션 초기화
         initializeDateOptions();
+
+        loadKeywordsFromServer();
+
     }
 
     // 모달 표시
@@ -301,6 +303,48 @@ function initializeDateOptions() {
 
 // 이벤트 리스너 설정
 function setupProfileModalEvents() {
+
+    // ✅ 견종 검색 버튼 클릭 이벤트 연결
+    const breedInput = document.getElementById('dogBreed');
+    const searchBtn = document.querySelector('.search_btn');
+
+    if (searchBtn && breedInput) {
+        console.log("🔗 검색 이벤트 연결됨");
+        searchBtn.addEventListener('click', () => {
+            const keyword = breedInput.value.trim();
+            console.log("🔍 검색어:", keyword);
+
+            if (!keyword) {
+                alert("검색어를 입력하세요.");
+                return;
+            }
+
+            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('서버 오류: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        alert("일치하는 견종이 없습니다.");
+                        breedInput.dataset.speciesId = "";
+                        return;
+                    }
+
+                    const matched = data[0];
+                    breedInput.value = matched.name;
+                    breedInput.dataset.speciesId = matched.id;
+                    alert(`✅ 견종 선택됨: ${matched.name}`);
+                })
+                .catch(err => {
+                    console.error("견종 검색 실패:", err);
+                    alert("견종 검색 중 오류가 발생했습니다.");
+                });
+        });
+    } else {
+        console.warn("🚫 breedInput 또는 searchBtn이 존재하지 않습니다.");
+    }
+
     // 크기 카드 선택
     document.querySelectorAll('.size_card').forEach(card => {
         card.addEventListener('click', function() {
@@ -452,49 +496,191 @@ function resetProfileModalData() {
     updateProfileButtonStates();
 }
 
-// 완료 처리
 function handleProfileComplete() {
-    const formData = {
-        size: selectedSize,
-        name: document.getElementById('dogName').value,
-        gender: document.getElementById('dogGender').value,
-        surgery: document.getElementById('dogSurgery').value,
-        breed: document.getElementById('dogBreed').value,
-        birthYear: document.getElementById('birthYear').value,
-        birthMonth: document.getElementById('birthMonth').value,
-        birthDay: document.getElementById('birthDay').value,
-        introduction: document.getElementById('dogIntroduction').value,
-        keywords: selectedKeywords,
-        image: uploadedImage
-    };
-
-    console.log('완료된 데이터:', formData);
-
-    // 새 프로필 데이터 생성
-    const newProfile = {
-        dno: Date.now(),
-        dname: formData.name,
-        dgender: formData.gender,
-        dtype: formData.breed,
-        dintro: formData.introduction,
-        keywords: formData.keywords,
-        image: formData.image ? { diurl: formData.image } : null
-    };
-
-    // Login_center.js의 함수 호출
-    if (typeof window.handleNewProfileAdded === 'function') {
-        window.handleNewProfileAdded(newProfile);
+    function padZero(n) {
+        return n < 10 ? '0' + n : n;
     }
 
-    closeAddFamilyModal();
+    const year = document.getElementById('birthYear').value;
+    const month = padZero(document.getElementById('birthMonth').value);
+    const day = padZero(document.getElementById('birthDay').value);
 
-    // 성공 알림 (전역 함수 확인)
-    if (typeof showStatusNotification === 'function') {
-        showStatusNotification('새로운 가족이 추가되었습니다! 🎉', 'success');
+    const birthday = `${year}-${month}-${day}`;
+    const neuterValue = document.getElementById('dogSurgery').value;
+    let neuterStatus = null;
+    if (neuterValue === 'yes') {
+        neuterStatus = 'NEUTERED';
+    } else if (neuterValue === 'no') {
+        neuterStatus = 'NOT_NEUTERED';
     } else {
-        alert('새로운 가족이 추가되었습니다! 🎉');
+        alert("❗ 중성화 여부를 선택해주세요.");
+        return;
     }
+
+    const dogRequest = {
+        name: document.getElementById('dogName').value,
+        gender: document.getElementById('dogGender').value.toUpperCase(),
+        neuterStatus: neuterStatus,
+        speciesId: document.getElementById('dogBreed').dataset.speciesId || '',
+        birthday: birthday,
+        intro: document.getElementById('dogIntroduction').value,
+        size: selectedSize.toUpperCase(),
+        keyword1Ids: selectedKeywords
+    };
+
+    const formData = new FormData();
+    formData.append("dog", JSON.stringify(dogRequest));
+
+    const imageInput = document.getElementById('dogImageInput');
+    let imageUrl = "/img/default-dog-bg.svg";
+
+    if (imageInput && imageInput.files[0]) {
+        const filename = imageInput.files[0].name;
+        formData.append("imageFile", imageInput.files[0]);
+        imageUrl = "/img/uploads/" + filename;
+    }
+
+    fetch("/user/mypage/dog/register", {
+        method: "POST",
+        body: formData
+    })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(text || "등록 실패");
+                });
+            }
+            return res.text();
+        })
+        .then(message => {
+            const newDog = {
+                dname: dogRequest.name,
+                size: dogRequest.size,
+                diurl: imageUrl
+            };
+
+            if (typeof window.addDogProfile === 'function') {
+                window.addDogProfile(newDog);
+            }
+
+            if (typeof showStatusNotification === "function") {
+                showStatusNotification(message, 'success');
+            } else {
+                alert(message);
+            }
+
+            closeAddFamilyModal();
+        })
+        .catch(err => {
+            const message = err.message || "알 수 없는 오류가 발생했습니다.";
+            if (typeof showStatusNotification === "function") {
+                showStatusNotification("❌ 등록 실패: " + message, 'error');
+            } else {
+                alert("❌ 등록 실패: " + message);
+            }
+        });
 }
+
+function loadKeywordsFromServer() {
+    fetch('/dog/keyword')  // 🔥 컨트롤러 경로에 맞게 수정
+        .then(res => res.json())
+        .then(data => {
+            const grid = document.querySelector('.keyword_grid');
+            if (!grid || !data) return;
+
+            grid.innerHTML = '';  // 기존 내용 제거
+
+            const keywordsPerRow = 4;
+            for (let i = 0; i < data.length; i += keywordsPerRow) {
+                const rowDiv = document.createElement('div');
+                rowDiv.classList.add('keyword_category');
+
+                const rowItems = data.slice(i, i + keywordsPerRow);
+                rowItems.forEach(keyword => {
+                    const btn = document.createElement('button');
+                    btn.classList.add('keyword_btn');
+                    btn.setAttribute('data-keyword-id', keyword.id);
+                    btn.textContent = keyword.name;
+
+                    btn.addEventListener('click', function () {
+                        const id = keyword.id;
+                        if (this.classList.contains('selected')) {
+                            this.classList.remove('selected');
+                            selectedKeywords = selectedKeywords.filter(k => k !== id);
+                        } else {
+                            this.classList.add('selected');
+                            selectedKeywords.push(id);
+                        }
+                        console.log('✅ 선택된 키워드 ID들:', selectedKeywords);
+                    });
+
+                    rowDiv.appendChild(btn);
+                });
+
+                grid.appendChild(rowDiv);
+            }
+        })
+        .catch(err => {
+            console.error("❌ 키워드 불러오기 실패:", err);
+        });
+}
+
+// 견종 검색 기능 (컨트롤러 호출)
+window.addEventListener('DOMContentLoaded', () => {
+    const breedInput = document.getElementById('dogBreed');
+    const searchBtn = document.querySelector('.search_btn');
+    console.log("🐶 breedInput:", breedInput);
+    console.log("🔍 searchBtn:", searchBtn);
+    if (searchBtn && breedInput) {
+        searchBtn.addEventListener('click', () => {
+            const keyword = breedInput.value.trim();
+
+            console.log("✅ [디버깅] 입력된 키워드:", keyword);
+
+            if (!keyword) {
+                alert("검색어를 입력하세요.");
+                return;
+            }
+
+            const encodedKeyword = encodeURIComponent(keyword);
+            console.log("✅ [디버깅] 인코딩된 키워드:", encodedKeyword);
+
+            fetch(`/api/search?keyword=${encodedKeyword}`)
+                .then(res => {
+                    console.log("✅ [디버깅] fetch 응답 상태코드:", res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log("✅ [디버깅] 응답 데이터:", data);
+
+                    if (!data || data.length === 0) {
+                        alert("일치하는 견종이 없습니다.");
+                        breedInput.dataset.speciesId = "";
+                        return;
+                    }
+
+                    const matched = data[0];
+                    console.log("✅ [디버깅] 첫 번째 매칭된 견종:", matched);
+
+                    breedInput.value = matched.name;
+                    breedInput.dataset.speciesId = matched.id;
+
+                    alert(`✅ 견종 선택됨: ${matched.name}`);
+                })
+                .catch(err => {
+                    console.error("❌ [에러] 견종 검색 실패:", err);
+                    alert("견종 검색 중 오류가 발생했습니다.");
+                });
+        });
+
+
+    }
+});
+
+
+
+
+
 
 // ✅ 전역 함수로 노출 (올바른 함수명으로 수정)
 window.showAddFamilyModal = showAddFamilyModal;           // ✅ 이 함수가 Login_center.js에서 호출됨
@@ -506,3 +692,6 @@ console.log('✅ AddFamily_Modal.js 초기화 완료 - 노출된 함수들:');
 console.log('- window.showAddFamilyModal:', typeof window.showAddFamilyModal);
 console.log('- window.closeAddFamilyModal:', typeof window.closeAddFamilyModal);
 console.log('- window.createProfileModalHTML:', typeof window.createProfileModalHTML);
+if (typeof addDogProfile === 'function') {
+    window.handleNewProfileAdded = addDogProfile;
+}

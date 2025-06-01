@@ -216,9 +216,11 @@ function createBookmarkPost(item) {
 }
 
 function createDogProfileCard(profile) {
+    const imageUrl = profile.image?.diurl || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop&crop=face';
+
     return `
         <div class="myPage_dog_card" data-profile-id="${profile.id}">
-            <img src="${profile.image || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop&crop=face'}" 
+            <img src="${imageUrl}" 
                  alt="${profile.name}" class="dog-image">
             <div class="myPage_dog_info">
                 <h4>${profile.name}</h4>

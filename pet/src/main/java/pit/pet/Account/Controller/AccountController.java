@@ -1,22 +1,31 @@
 package pit.pet.Account.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.TOSTableRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Request.DogRegisterRequest;
+import pit.pet.Account.Service.CustomUserDetails;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.Service.UserService;
 import pit.pet.Account.User.Address;
+import pit.pet.Account.User.Role;
 import pit.pet.Account.User.TOSTable;
 import pit.pet.Account.User.User;
 import pit.pet.Security.JWT.JwtTokenProvider;
-import pit.pet.Account.User.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +41,12 @@ public class AccountController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final TOSTableRepository tosTableRepository;
+    private final ObjectMapper objectMapper;
+    private final DogService dogService;
 
     @GetMapping("/register")
     public String showRegisterPage() {
-        return "Register"; // ✅ templates/Register.html 반환 (확장자는 Thymeleaf 설정에 따라 생략 가능)
+        return "Register/Register_Step1_ConsentForm"; // ✅ templates/Register.html 반환 (확장자는 Thymeleaf 설정에 따라 생략 가능)
     }
 
     // ✅ Step1 - 약관동의 저장 후 회원정보 입력창으로 이동
@@ -59,7 +70,7 @@ public class AccountController {
         User user = new User();
         user.setAddress(new Address());
         model.addAttribute("user", user);
-        return "Register/Register_Step2_UserInfo"; // 회원정보 입력창
+        return "Register/Register1"; // 회원정보 입력창
     }
 
     // ✅ Step2 - 회원가입 처리
@@ -204,6 +215,51 @@ public class AccountController {
         // 3. 로그아웃 후 이동할 경로
         return "redirect:/";
     }
+
+
+    @GetMapping("/mypage")
+    public String mypage(Model model,
+                         @AuthenticationPrincipal CustomUserDetails principal) {
+
+        // 로그인한 사용자 정보 가져오기
+        User user = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 모델에 사용자 정보와 강아지 목록 추가
+        model.addAttribute("user", user);
+        model.addAttribute("dogList", dogService.getDogsByUser(user.getUno()));
+
+        return "Mypage"; // 템플릿 경로 맞게 수정 (ex: templates/Account/mypage.html)
+    }
+
+    @PostMapping(value = "/mypage/dog/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> registerDogFromMyPage(
+            @RequestPart("dog") String dogJson,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @AuthenticationPrincipal CustomUserDetails principal) {
+
+        try {
+            DogRegisterRequest request = objectMapper.readValue(dogJson, DogRegisterRequest.class);
+            request.setImageFile(imageFile);
+
+            Long userId = userRepository.findByUemail(principal.getUsername())
+                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
+                    .getUno();
+
+            Long dogId = dogService.registerDog(request, userId);
+
+            if (request.getKeyword1Ids() != null && !request.getKeyword1Ids().isEmpty()) {
+                dogService.updateDogKeywordsDirectly(dogId, request.getKeyword1Ids());
+            }
+
+            return ResponseEntity.ok("강아지 등록 완료");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록 실패: " + e.getMessage());
+        }
+    }
+
 
     private void deleteCookie(String name, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, null);

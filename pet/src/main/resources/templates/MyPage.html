@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <title>Group_board</title>
 
-    <link rel="stylesheet" href="/static/css/Content.css">
-    <link rel="stylesheet" href="/static/css/MyPage.css">
-
-    <link rel="stylesheet" href="/static/css/AddFamily_Modal.css">
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/MyPage.css}">
+    <link rel="stylesheet" th:href="@{/css/AddFamily_Modal.css}">
 </head>
 <body>
 <div class="myPage_wrap">
@@ -38,24 +37,20 @@
                 <h3>사용중인 프로필</h3>
 
                 <div class="myPage_dog_profiles">
-                    <div class="myPage_dog_card">
-                        <img src="/../static/img/쪼꼬.png" alt="초코" class="dog-image">
+                    <div th:each="dog : ${dogList}" class="myPage_dog_card">
+                        <img th:src="@{${dog.imageUrl}}" alt="[[${dog.name}]]" class="dog-image">
                         <div class="myPage_dog_info">
-                            <h4>초코</h4>
-                            <p>소형견 무럭 수컷</p>
+                            <h4 th:text="${dog.name}">강아지이름</h4>
+                            <p>
+                                <span th:text="${dog.size}">크기</span>
+                                <span th:text="${dog.breed}">견종</span>
+                                <span th:text="${dog.gender == 'MALE' ? '수컷' : '암컷'}">성별</span>
+                            </p>
                         </div>
                         <button class="myPage_dog_more_btn">⋯</button>
                     </div>
 
-                    <div class="myPage_dog_card">
-                        <img src="/../static/img/강군.png" alt="강군" class="dog-image">
-                        <div class="myPage_dog_info">
-                            <h4>강군</h4>
-                            <p>유치원의 악동</p>
-                        </div>
-                        <button class="myPage_dog_more_btn">⋯</button>
-                    </div>
-
+                    <!-- 기존처럼 프로필 추가 버튼은 유지 -->
                     <div class="myPage_add_profile">
                         <button class="myPage_add_btn" id="addProfileBtn">
                             <span class="myPage_plus_icon">+</span>
@@ -72,12 +67,16 @@
                     <div class="myPage_info_group">
                         <div class="myPage_info_item">
                             <span class="myPage_field">생일</span>
-                            <span class="myPage_value">2001년 12월 5일</span>
+                            <span class="myPage_value"
+                                  th:text="${user.uBday != null ? #dates.format(user.uBday, 'yyyy년 MM월 dd일') : '생일 미입력'}">
+                2001년 12월 5일
+            </span>
                             <button class="myPage_edit_btn">변경</button>
                         </div>
                         <div class="myPage_info_item">
                             <span class="myPage_field">성별</span>
-                            <span class="myPage_value">여성</span>
+                            <span class="myPage_value"
+                                  th:text="${user.ugender.name() == 'MALE' ? '남성' : '여성'}">여성</span>
                             <button class="myPage_edit_btn">변경</button>
                         </div>
                     </div>
@@ -88,7 +87,7 @@
                     <div class="myPage_info_group">
                         <div class="myPage_info_item">
                             <span class="myPage_field">휴대폰 번호</span>
-                            <span class="myPage_value">010 - 1234 - 1234</span>
+                            <span class="myPage_value" th:text="${user.upno}">010 - 1234 - 1234</span>
                             <button class="myPage_edit_btn">변경</button>
                         </div>
                         <div class="myPage_info_item">
@@ -185,8 +184,7 @@
     });
 </script>
 
-<script src="/static/js/AddFamily_Modal.js"></script>
-
-<script  defer src="/static/js/MyPage.js"></script>
+<script defer th:src="@{/js/MyPage.js}"></script>
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
 </body>
 </html>

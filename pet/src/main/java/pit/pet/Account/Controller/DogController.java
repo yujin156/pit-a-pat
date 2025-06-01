@@ -10,19 +10,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogKeyword1Repository;
-import pit.pet.Account.Repository.SpeciesRepository;
-import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Repository.DogRepository;
+import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
-import pit.pet.Account.User.DogSize;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.DogKeywordDto;
+import pit.pet.Account.User.DogSize;
 import pit.pet.Account.User.User;
+import pit.pet.Spec.SpecRepository;
 
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ import java.util.Map;
 public class DogController {
 
     private final DogService dogService;
-    private final SpeciesRepository speciesRepository;
+    private final SpecRepository speciesRepository;
     private final DogKeyword1Repository keyword1Repository;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
@@ -120,8 +122,8 @@ public class DogController {
 
     // 🔹 강아지 상태 업데이트 API
     @PostMapping("/update-status")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateDogStatus(
+        @ResponseBody
+        public ResponseEntity<Map<String, Object>> updateDogStatus(
             @RequestParam Long dogId,
             @RequestParam String status,
             @AuthenticationPrincipal UserDetails principal) {
@@ -164,6 +166,15 @@ public class DogController {
         }
     }
 
+    @GetMapping("/keyword")
+    @ResponseBody
+    public List<DogKeywordDto> getAllKeywords() {
+        return keyword1Repository.findAll().stream()
+                .map(k -> new DogKeywordDto(k.getDkno(), k.getDktag()))
+                .collect(Collectors.toList());
+    }
+
+
     // 🔸 중복 제거한 유저ID 조회 메서드
     private Long getUserIdFromPrincipal(Principal principal) {
         String email = principal.getName();
@@ -171,4 +182,6 @@ public class DogController {
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
                 .getUno();
     }
+
+
 }
