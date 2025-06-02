@@ -20,6 +20,7 @@ let posts = []
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
     const gno = window.location.pathname.split("/").pop();
+    console.log('✅ gno:', gno);
 
     fetch(`/board/api/groups/${gno}/posts`)
         .then(response => response.json())
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 페이지 로드 완료 - 초기화 시작');
 
     function loadMyGroupDogs(gno) {
+        console.log('✅ loadMyGroupDogs - gno:', gno);
         fetch(`/board/api/my-group-dogs?gno=${gno}`)
             .then(response => response.json())
             .then(data => {
@@ -228,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function createPostElement(post, index) {
         const postDiv = document.createElement('div');
         postDiv.className = 'group_board';
-        postDiv.setAttribute('data-post-id', post.id);
+        postDiv.setAttribute('data-post-id', post.bno);
 
         // const imageUrl = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
 
@@ -306,9 +308,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 모달 생성 함수
-    function createModal(post, index) {
+    function createModal(post, index, comments) {
         const modal = document.createElement('div');
         const imagesHtml = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
+        const comment = comments[index];
+
+        const profileUrl = comment?.profileUrl || '/images/default_profile.jpg';
+        const dogName = comment?.dogName || '알 수 없음';
+
         modal.className = 'post_modal';
         modal.innerHTML = `
             <div class="modal_overlay">
@@ -323,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="modal_header">
                             <div class="modal_user_info">
                                 <div class="modal_profile">
-                                    <!-- <img src="${post.userProfile}" alt="${post.username}""> -->
+                                    <img src="${profileUrl}" alt="${dogName}">
                                 </div>
                                 <div class="modal_user_details">
                                     <div class="modal_username">${post.writerDogName}</div>
@@ -335,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="modal_content_area">
                             <div class="modal_post_content">
                                 <div class="modal_profile_small">
-                                    <!-- <img src="${post.userProfile}" alt="${post.username}"> -->
+                                    <img src="${profileUrl}" alt="${dogName}">
                                 </div>
                                 <div class="modal_text">
                                     <span class="modal_post_username">${post.writerDogName}</span>
@@ -362,110 +369,140 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 열기 함수
     function openModal(postIndex) {
         const post = posts[postIndex];
-        const modal = createModal(post, postIndex);
-        modal.setAttribute('data-bno', post.bno);
-        document.body.appendChild(modal);
 
-        // 댓글 불러오기
+        // ✅ 1️⃣ 먼저 댓글을 fetch로 가져옴
         fetch(`/board/api/comments/${post.bno}`)
             .then(response => response.json())
             .then(comments => {
                 console.log('받아온 댓글:', comments);
 
-                // 1️⃣ 댓글 개수 동적으로 업데이트
+                // ✅ 2️⃣ 댓글을 받아온 다음에 createModal 호출 (🔥 여기만 수정됨!)
+                const modal = createModal(post, postIndex, comments);
+                modal.setAttribute('data-bno', post.bno);
+                document.body.appendChild(modal);
+
+                // ✅ 3️⃣ 댓글 개수 동적으로 업데이트
                 const commentCountElement = document.querySelector(`.post_comment_count[data-post-id="${post.bno}"]`);
                 if (commentCountElement) {
                     commentCountElement.textContent = `댓글 ${comments.length}개 모두 보기`;
                 }
 
-                // 2️⃣ 모달 내 댓글 목록 초기화 및 추가
+                // ✅ 4️⃣ 모달 내 댓글 목록 초기화 및 추가
                 const commentContainer = modal.querySelector('.modal_comments');
                 commentContainer.innerHTML = '';
                 comments.forEach(comment => {
                     const commentItem = document.createElement('div');
                     commentItem.classList.add('comment_item');
                     commentItem.innerHTML = `
-        <div class="comment_profile">
-          <img src="https://via.placeholder.com/28x28/fd79a8/ffffff?text=🐕" alt="user">
-        </div>
-        <div class="comment_text">
-          <span class="comment_username">${comment.dogName}</span>
-          <span>${comment.bccomment}</span>
-        </div>
-      `;
+                    <div class="comment_profile">
+                        <img src="${comment.profileUrl}" alt="user">
+                    </div>
+                    <div class="comment_text">
+                        <span class="comment_username">${comment.dogName}</span>
+                        <span>${comment.bccomment}</span>
+                    </div>
+                `;
                     commentContainer.appendChild(commentItem);
                 });
+
+                // ✅ 나머지 기존 모달 처리 로직 (댓글 이후에 실행)
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+
+                const closeBtn = modal.querySelector('.modal_close');
+                const overlay = modal.querySelector('.modal_overlay');
+
+                const closeModal = () => {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        if (modal.parentNode) {
+                            modal.parentNode.removeChild(modal);
+                        }
+                        document.body.style.overflow = 'auto';
+                    }, 300);
+                };
+
+                closeBtn.addEventListener('click', closeModal);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeModal();
+                    }
+                });
+
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+
+                const modalHeartIcon = modal.querySelector('.modal_heart_icon');
+                const modalBookmarkIcon = modal.querySelector('.modal_bookmark_icon');
+
+                if (modalHeartIcon) {
+                    modalHeartIcon.addEventListener('click', function() {
+                        const index = this.getAttribute('data-post-index');
+                        toggleLike(index);
+                        updateModalLikeState(modal, index);
+                    });
+                }
+
+                if (modalBookmarkIcon) {
+                    modalBookmarkIcon.addEventListener('click', function() {
+                        const index = this.getAttribute('data-post-index');
+                        toggleBookmark(index);
+                        updateModalBookmarkState(modal, index);
+                    });
+                }
             })
             .catch(err => console.error('❌ 댓글 로드 실패:', err));
-        // 모달 애니메이션
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 10);
-
-        // 배경 스크롤 방지
-        document.body.style.overflow = 'hidden';
-
-        // 모달 닫기 이벤트
-        const closeBtn = modal.querySelector('.modal_close');
-        const overlay = modal.querySelector('.modal_overlay');
-
-        const closeModal = () => {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                if (modal.parentNode) {
-                    modal.parentNode.removeChild(modal);
-                }
-                document.body.style.overflow = 'auto';
-            }, 300);
-        };
-
-        closeBtn.addEventListener('click', closeModal);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                closeModal();
-            }
-        });
-
-        // ESC 키로 모달 닫기
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                document.removeEventListener('keydown', escHandler);
-            }
-        };
-        document.addEventListener('keydown', escHandler);
-
-        // 모달 내 좋아요/북마크 이벤트
-        const modalHeartIcon = modal.querySelector('.modal_heart_icon');
-        const modalBookmarkIcon = modal.querySelector('.modal_bookmark_icon');
-
-        if (modalHeartIcon) {
-            modalHeartIcon.addEventListener('click', function() {
-                const index = this.getAttribute('data-post-index');
-                toggleLike(index);
-                updateModalLikeState(modal, index);
-            });
-        }
-
-        if (modalBookmarkIcon) {
-            modalBookmarkIcon.addEventListener('click', function() {
-                const index = this.getAttribute('data-post-index');
-                toggleBookmark(index);
-                updateModalBookmarkState(modal, index);
-            });
-        }
     }
 
     // 좋아요 토글 함수
     function toggleLike(index) {
-        posts[index].liked = !posts[index].liked;
-        updatePostLikeState(index);
+        const post = posts[index];
+        const bno = post.bno;
+
+        fetch(`/board/${bno}/like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `dno=${post.dno || ''}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    post.liked = data.isLiked;
+                    updatePostLikeState(index);
+                } else {
+                    alert(data.message || '좋아요 실패');
+                }
+            })
+            .catch(err => console.error('❌ 좋아요 요청 실패:', err));
     }
 
-    // 북마크 토글 함수
+    //북마크
     function toggleBookmark(index) {
-        posts[index].bookmarked = !posts[index].bookmarked;
-        updatePostBookmarkState(index);
+        const post = posts[index];
+        const bno = post.bno;
+
+        fetch(`/board/${bno}/bookmark`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `dno=${post.dno || ''}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    post.bookmarked = data.isBookmarked;
+                    updatePostBookmarkState(index);
+                } else {
+                    alert(data.message || '북마크 실패');
+                }
+            })
+            .catch(err => console.error('❌ 북마크 요청 실패:', err));
     }
 
     // 게시물 좋아요 상태 업데이트

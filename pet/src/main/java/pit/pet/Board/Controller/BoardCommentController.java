@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardCommentTable;
@@ -29,6 +30,7 @@ public class BoardCommentController {
     private final BoardCommentService boardCommentService;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
+    private final DogService dogService;
 
     // ✅ 댓글 등록
 //    @PostMapping("/comment/create")
@@ -123,6 +125,9 @@ public class BoardCommentController {
             map.put("bccomment", comment.getBccomment());
             map.put("dogName", comment.getDog().getDname());
             map.put("createdDate", comment.getCreatedAt());
+            String profileUrl = dogService.getProfileImageUrl(comment.getDog().getDno());
+            map.put("profileUrl", profileUrl);
+
             return map;
         }).collect(Collectors.toList());
     }
