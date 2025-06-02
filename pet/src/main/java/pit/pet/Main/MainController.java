@@ -83,13 +83,21 @@ public class MainController {
             RedirectAttributes redirectAttrs
     ) {
         Optional<User> optionalUser = userRepository.findByUemail(email);
+        System.out.println("🔍 사용자가 입력한 이메일: " + email);
+        System.out.println("🔍 사용자가 입력한 패스워드: " + password);
+
+
         if (optionalUser.isEmpty()
                 || !bCryptPasswordEncoder.matches(password, optionalUser.get().getUpwd())) {
+            System.out.println("🔍 로그인 실패: 비밀번호 불일치");
             redirectAttrs.addAttribute("error", "true");
             return "redirect:/";
         }
 
         User user = optionalUser.get();
+        System.out.println("🔍 DB 암호화된 패스워드: " + user.getUpwd());
+        System.out.println("🔍 매칭 결과: " + bCryptPasswordEncoder.matches(password, user.getUpwd()));
+
         // JWT 발급
         String accessToken  = jwtTokenProvider.createAccessToken(user.getUemail(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUemail(), user.getRole());

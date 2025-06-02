@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register3</title>
-    <link rel="stylesheet" href="/../static/css/registerCSS/Register_Step4_DogInfo.css">
+    <link rel="stylesheet" href="/css/registerCSS/Register_Step4_DogInfo.css">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
 
                 <div class="form-group half3">
                     <label for="dogSurgery">Surgery</label>
-                    <select id="dogSurgery" name="gender">
+                    <select id="dogSurgery" name="neutering">
                         <option value="dogSurgery">중성화</option>
                         <option value="yes">중성화 O</option>
                         <option value="no">중성화 X</option>
@@ -68,9 +68,10 @@
 
     <input type="hidden" name="currentDogIndex" th:value="${currentDogIndex}"/>
     <input type="hidden" name="totalDogs" th:value="${totalDogs}"/>
+    <input type="hidden" name="dogId" th:value="${dogId}" />
 
 
 </form>
-<script src="/static/js/registerJS/register3.js"></script>
+<script src="/js/registerJS/register3.js"></script>
 </body>
 </html>

@@ -24,9 +24,9 @@
     <div class="header_section">
         <div class="tab_navigation">
             <!-- 🔥 비로그인: 내 그룹, 가입 현황 안보임 -->
-            <div class="tab_item active" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
-            <div class="tab_item" onclick="switchTab('all')">전체 그룹</div>
-            <div class="tab_item" th:if="${isAuthenticated}" onclick="switchTab('application')">가입 현황</div>
+            <div class="tab_item active" data-tab="my" th:if="${isAuthenticated}" onclick="switchTab('my')">내 그룹</div>
+            <div class="tab_item" data-tab="all" onclick="switchTab('all')">전체 그룹</div>
+            <div class="tab_item" data-tab="application" th:if="${isAuthenticated}" onclick="switchTab('application')">가입 현황</div>
         </div>
         <div class="search_section">
             <select class="keyword_select" onchange="filterByKeyword(this.value)">
@@ -71,6 +71,7 @@
 
         <!-- 첫 번째 단계: 관심사 선택 -->
         <div class="modal_step" id="step1">
+            <input type="hidden" id="interestHiddenInput">
             <div class="modal_header">
                 <h2 class="modal_title">어떤 관심사로 시작할까요?</h2>
                 <p class="modal_subtitle">관심사를 하나 선택해주세요</p>
@@ -171,7 +172,7 @@
 
             <div class="modal_buttons">
                 <button class="btn_secondary" onclick="prevStep(2)">이전</button>
-                <button class="btn_primary" id="completeBtn" onclick="createNewGroup()" disabled>완료</button>
+                <button class="btn_primary" id="completeBtn" onclick="createNewGroup(event)" disabled>완료</button>
             </div>
         </div>
     </div>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trail 상세</title>
+</head>
+<body>
+
+<h2 th:text="${trail.name} + ' 상세'"></h2>
+<span th:text="${#numbers.formatDecimal(trail.lengthKm, 1, 2)} + 'km'"></span>
+<p>난이도: <span th:text="${trail.difficulty}"></span></p>
+
+<hr>
+<h3>리뷰 작성</h3>
+<form th:action="@{/reviews/create}" method="post">
+    <input type="hidden" name="trailId" th:value="${trail.id}" />
+    <label>내 강아지:
+        <select name="dogId">
+            <option th:each="d : ${myDogs}" th:value="${d.dno}" th:text="${d.dname}"></option>
+        </select>
+    </label><br/>
+    <label>별점: <input type="number" name="rating" min="1" max="5"></label><br/>
+    <label>리뷰 내용: <textarea name="comment"></textarea></label><br/>
+    <button type="submit">등록</button>
+</form>
+
+<hr>
+<h3>리뷰 목록</h3>
+<ul>
+    <li th:each="review : ${reviews}">
+        <strong th:text="${review.rating} + '점'"></strong>
+        <span th:text="'(' + ${review.timeAgo} + ')'"></span><br/>
+        <span th:text="${review.comment}"></span>
+    </li>
+</ul>
+
+</body>
+</html>

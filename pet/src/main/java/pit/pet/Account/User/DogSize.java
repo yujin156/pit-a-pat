@@ -15,6 +15,13 @@ public enum DogSize {
         return label;
     }
 
+    public double[] recommendLengthRange() {
+        return switch (this) {
+            case SMALL  -> new double[]{0.0, 3.0};
+            case MEDIUM -> new double[]{3.0, 6.0};
+            case LARGE  -> new double[]{6.0, 10.0};
+        };
+    }
     @Override
     public String toString() {
         return this.name(); // DB에 저장될 값

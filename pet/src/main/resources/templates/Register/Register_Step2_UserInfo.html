@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>회원정보 입력</title>
-    <link rel="stylesheet" href="/../static/css/registerCSS/Register_Step2_UserInfo.css">
+    <link rel="stylesheet" th:href="@{/css/registerCSS/Register_Step2_UserInfo.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 <form class="Big-form" th:object="${user}" action="/user/signup" method="post">
@@ -88,6 +89,6 @@
         </div>
     </div>
 </form>
-<script src="/static/js/registerJS/register1.js"></script>
+<script th:src="@{/js/registerJS/register1.js}"></script>
 </body>
 </html>

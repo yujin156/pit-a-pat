@@ -35,6 +35,9 @@ public class CustomUserDetails implements UserDetails {
         return user.getUname();
     }
 
+    public User getUser() {
+        return user;
+    }
 
     @Override
     public String getUsername() {

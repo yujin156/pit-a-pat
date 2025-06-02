@@ -36,36 +36,39 @@ public class DogController {
     private final DogRepository dogRepository;
 
     // 1️⃣ 강아지 크기 선택 (Register2)
-    @GetMapping("/register/step2")
+    @GetMapping("/register/step3")
     public String showDogSizeForm(@RequestParam int currentDogIndex,
                                   @RequestParam int totalDogs,
                                   Model model) {
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-        return "Register/Register2";
+        return "Register/Register_Step3_DogSize";
     }
 
     @PostMapping("/register/step2")
-    public String handleDogSize(@RequestParam("size") String sizeStr, // 여기를 dogSize → size로
+    public String handleDogSize(@RequestParam("size") String sizeStr,
                                 @RequestParam("currentDogIndex") int currentDogIndex,
                                 @RequestParam("totalDogs") int totalDogs) {
+        // DogSize Enum으로 변환 (검증용)
         DogSize dogSize = DogSize.valueOf(sizeStr);
         return "redirect:/dog/register/step3?currentDogIndex=" + currentDogIndex
                 + "&totalDogs=" + totalDogs
-                + "&dogSize=" + dogSize;
+                + "&size=" + dogSize; // 🔥 dogSize → size 이름으로 통일
     }
 
     // 2️⃣ 강아지 프로필 입력 (Register3)
-    @GetMapping("/register/step3")
+    @GetMapping("/register/step4")
     public String showDogProfileForm(@RequestParam int currentDogIndex,
                                      @RequestParam int totalDogs,
-                                     @RequestParam String dogSize,
+                                     @RequestParam("size") String size,
+                                     @RequestParam(required = false) Long dogId,
                                      Model model) {
-        model.addAttribute("dogSize", DogSize.valueOf(dogSize));
+        model.addAttribute("dogSize", DogSize.valueOf(size));
         model.addAttribute("speciesList", speciesRepository.findAll());
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-        return "Register/Register3";
+        model.addAttribute("dogId", dogId);
+        return "Register/Register_Step4_DogInfo";
     }
 
     @PostMapping("/register/step3")
@@ -74,33 +77,38 @@ public class DogController {
                                    @RequestParam int currentDogIndex,
                                    @RequestParam int totalDogs,
                                    @RequestParam("size") String size,
-                                   HttpSession session) { // 새로 추가!
+                                   HttpSession session) {
 
-        Long userId = (Long) session.getAttribute("userId");  // ⭐ userId 꺼내오기
-        Long dogId = dogService.registerDog(request, userId);  // ⭐ owner 설정된 강아지 등록
-
-        request.setSize(size); //
+        Long userId = (Long) session.getAttribute("userId");
+        // 강아지 저장 및 dogId 생성
+        request.setSize(size);
         request.setImageFile(imageFile);
-
+        Long dogId = dogService.registerDog(request, userId);
 
         return "redirect:/dog/register/step4?currentDogIndex=" + currentDogIndex
                 + "&totalDogs=" + totalDogs
+                + "&size=" + size
                 + "&dogId=" + dogId;
     }
 
     // 3️⃣ 강아지 키워드 선택 (Register4)
-    @GetMapping("/register/step4")
+    @GetMapping("/register/step5")
     public String showDogKeywordForm(@RequestParam int currentDogIndex,
                                      @RequestParam int totalDogs,
                                      @RequestParam Long dogId,
-                                     Model model) {  // 🔥 Principal 제거!
+                                     Model model) {
 
-        model.addAttribute("keyword1List", keyword1Repository.findAll());
+        List<DogKeyword1> keywords = keyword1Repository.findAll();
+        System.out.println("🔍 Step5 키워드 목록: " + keywords.size() + "개");
+        for (DogKeyword1 keyword1 : keywords) {
+            System.out.println("  👉 " + keyword1.getDktag());
+        }
+
+        model.addAttribute("keyword1List", keywords);
         model.addAttribute("dogId", dogId);
         model.addAttribute("currentDogIndex", currentDogIndex);
         model.addAttribute("totalDogs", totalDogs);
-
-        return "Register/Register4";
+        return "Register/Register_Step5_DogKeyword";
     }
 
     @PostMapping("/register/step4")
@@ -112,8 +120,10 @@ public class DogController {
         dogService.updateDogKeywordsDirectly(dogId, keywordIds);
 
         if (currentDogIndex < totalDogs) {
+            // 다음 강아지 등록으로 돌아가기
             return "redirect:/dog/register/step2?currentDogIndex=" + (currentDogIndex + 1) + "&totalDogs=" + totalDogs;
         } else {
+            // 모든 강아지 등록 완료
             return "redirect:/register/complete";
         }
     }
@@ -163,6 +173,15 @@ public class DogController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/keyword")
+    @ResponseBody
+    public List<DogKeywordDto> getAllKeywords() {
+        return keyword1Repository.findAll().stream()
+                .map(k -> new DogKeywordDto(k.getDkno(), k.getDktag()))
+                .collect(Collectors.toList());
+    }
+
 
     // 🔸 중복 제거한 유저ID 조회 메서드
     private Long getUserIdFromPrincipal(Principal principal) {

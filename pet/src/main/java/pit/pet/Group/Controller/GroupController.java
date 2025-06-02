@@ -52,6 +52,28 @@ public class GroupController {
         return "Group/Create";
     }
 
+    @GetMapping("/api/my-dogs")
+    @ResponseBody
+    public ResponseEntity<?> getMyDogs(@AuthenticationPrincipal UserDetails principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+
+        List<Map<String, Object>> dogDtos = myDogs.stream().map(dog -> {
+            Map<String, Object> dogMap = new HashMap<>();
+            dogMap.put("dno", dog.getDno());
+            dogMap.put("dname", dog.getDname());
+            dogMap.put("avatarUrl", dog.getImage() != null ? "/uploads/img/" + dog.getImage() : "/groups/images/default_avatar.jpg");
+            return dogMap;
+        }).toList();
+
+        return ResponseEntity.ok(dogDtos);
+    }
+
     // ✅ 1. Form submit 처리
     @PostMapping("/create")
     public String createGroup(@ModelAttribute @Valid CreateGroupRequest request,

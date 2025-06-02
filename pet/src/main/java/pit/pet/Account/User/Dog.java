@@ -60,7 +60,12 @@ public class Dog {
     @JsonIgnoreProperties({"dogs"})
     private List<DogKeyword1> keywords1 = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "d_neutered", nullable = false)
+    private NeuterStatus neuterStatus;
+
     @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("dog-image")
     private Dogimg image;
+
 }
