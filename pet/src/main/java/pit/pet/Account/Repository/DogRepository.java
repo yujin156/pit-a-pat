@@ -238,16 +238,6 @@ public interface DogRepository extends JpaRepository<Dog, Long> {
             "ORDER BY d.dno DESC")
     List<Dog> findDogsWithCommonKeywords(@Param("dogId") Long dogId);
 
-    // ===== 나이 기반 매칭 메서드들 =====
-
-    /**
-     * 특정 나이 범위의 강아지들 조회
-     */
-    @Query("SELECT d FROM Dog d " +
-            "WHERE YEAR(CURRENT_DATE) - YEAR(d.dBday) BETWEEN :minAge AND :maxAge " +
-            "ORDER BY d.dno DESC")
-    List<Dog> findByAgeRange(@Param("minAge") int minAge, @Param("maxAge") int maxAge);
-
     // ===== 유틸리티 메서드들 =====
 
     /**
@@ -274,4 +264,18 @@ public interface DogRepository extends JpaRepository<Dog, Long> {
             "GROUP BY s.name " +
             "ORDER BY dogCount DESC")
     List<Object[]> findPopularBreeds();
+
+    // ===== 🔥 매칭 시스템 전용 메서드들 (새로 추가) =====
+    /**
+     * 다중 키워드 검색 (비회원용)
+     */
+    @Query("SELECT DISTINCT d FROM Dog d JOIN d.keywords1 k WHERE k.dktag IN :keywords ORDER BY FUNCTION('RAND')")
+    List<Dog> findRandomByAnyKeywords(@Param("keywords") List<String> keywords);
+
+    /**
+     * 다중 키워드 검색 (로그인 사용자용 - 본인 제외)
+     */
+    @Query("SELECT DISTINCT d FROM Dog d JOIN d.keywords1 k WHERE k.dktag IN :keywords AND d.owner.uemail <> :email ORDER BY FUNCTION('RAND')")
+    List<Dog> findRandomByAnyKeywordsExcludingUser(@Param("keywords") List<String> keywords, @Param("email") String email);
+
 }
