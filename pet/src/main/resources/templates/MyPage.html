@@ -39,19 +39,6 @@
                 <h3>사용중인 프로필</h3>
 
                 <div class="myPage_dog_profiles">
-                    <div th:each="dog : ${dogList}" class="myPage_dog_card">
-                        <img th:src="@{${dog.imageUrl}}" alt="[[${dog.name}]]" class="dog-image">
-                        <div class="myPage_dog_info">
-                            <h4 th:text="${dog.name}">강아지이름</h4>
-                            <p>
-                                <span th:text="${dog.size}">크기</span>
-                                <span th:text="${dog.breed}">견종</span>
-                                <span th:text="${dog.gender == 'MALE' ? '수컷' : '암컷'}">성별</span>
-                            </p>
-                        </div>
-                        <button class="myPage_dog_more_btn">⋯</button>
-                    </div>
-
                     <!-- 기존처럼 프로필 추가 버튼은 유지 -->
                     <div class="myPage_add_profile">
                         <button class="myPage_add_btn" id="addProfileBtn">

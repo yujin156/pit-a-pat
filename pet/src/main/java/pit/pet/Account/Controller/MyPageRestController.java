@@ -1,13 +1,14 @@
 package pit.pet.Account.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Response.DogProfileResponse;
 import pit.pet.Account.Service.CustomUserDetails;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardCommentTable;
@@ -15,6 +16,7 @@ import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Repository.BoardCommentRepository;
 import pit.pet.Board.Repository.BoardRepository;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class MyPageRestController {
     private final DogRepository dogRepository;
     private final BoardRepository boardRepository;
     private final BoardCommentRepository boardCommentRepository;
+    private final DogService dogService;
 
     // 내가 쓴 게시글
     @GetMapping("/posts")
@@ -65,5 +68,20 @@ public class MyPageRestController {
                     )
             );
         }).toList();
+    }
+
+    @DeleteMapping("/{dno}")
+    public ResponseEntity<String> deleteDog(@PathVariable Long dno, Principal principal) {
+        dogService.deleteDogById(dno, principal); // 소유자 체크도 같이!
+        return ResponseEntity.ok("강아지 삭제 완료!");
+    }
+
+    @GetMapping("/dogs")
+    public List<DogProfileResponse> getMyDogs(@AuthenticationPrincipal CustomUserDetails principal) {
+        User user = userRepository.findByUemail(principal.getUsername()).orElseThrow();
+        List<Dog> dogs = dogRepository.findByOwner(user);
+        return dogs.stream()
+                .map(DogProfileResponse::fromEntity)
+                .toList();
     }
 }

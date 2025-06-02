@@ -234,7 +234,6 @@ public class AccountController {
 
         // 모델에 사용자 정보와 강아지 목록 추가
         model.addAttribute("user", user);
-        model.addAttribute("dogList", dogService.getDogsByUser(user.getUno()));
 
         return "Mypage"; // 템플릿 경로 맞게 수정 (ex: templates/Account/mypage.html)
     }

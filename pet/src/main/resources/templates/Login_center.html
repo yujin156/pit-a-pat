@@ -123,27 +123,23 @@
 
         <!-- 프로필 그리드 - 강아지별로 표시 -->
         <div class="profiles_grid">
-            <div th:each="dog : ${dogs}" class="profile_item">
-                <!-- 강아지 이미지 또는 이름 첫 글자 -->
+          <!--<div th:each="dog : ${dogs}" class="profile_item">
                 <div class="profile_image" th:if="${dog.image != null and dog.image.diurl != null}">
-                    <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
-                </div>
-                <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
-                    <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
-                </div>
-
-                <!-- 강아지 이름 -->
+                  <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
+              </div>
+              <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
+                  <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
+              </div>
                 <div class="profile_name" th:text="${dog.dname}">강아지 이름</div>
-            </div>
+            </div>-->
         </div>
-
         <div class="u_name" th:text="${uname} + '님'">UserName님</div>
 
         <div class="divider"></div>
 
-        <!-- 강아지별 상태 관리 -->
+<!--         강아지별 상태 관리-->
         <div class="pet_statuses">
-            <div th:each="dog : ${dogs}" class="pet_status">
+            <!--<div th:each="dog : ${dogs}" class="pet_status">
                 <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
                 <div class="status_select">
                     <select class="status_dropdown" th:data-dog-id="${dog.dno}">
@@ -154,7 +150,7 @@
                         <option value="으르렁" th:selected="${dog.status == '으르렁'}">으르렁</option>
                     </select>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="divider"></div>
@@ -237,6 +233,7 @@
 <!-- JavaScript 파일들 -->
 <script src="/js/AddFamily_Modal.js"></script>  <!-- 먼저 로드 -->
 <script src="/js/Login_center.js"></script>
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
 
 <script th:inline="javascript">
     // DB에서 가져온 강아지 데이터

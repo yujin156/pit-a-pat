@@ -15,6 +15,7 @@
 <!--<link rel="stylesheet" href="/static/css/Group.css">-->
 
 <body>
+<div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
 <div class="group_wrap">
     <!-- 메인 타이틀 -->
     <h2 class="group_title">GROUP</h2>
@@ -177,7 +178,7 @@
         </div>
     </div>
 </div>
-
+<div class="login-panel" th:insert="~{Login_center :: login}"></div>
 <!--<script src="/static/js/Group.js"></script>-->
 
 <script defer th:src="@{/js/Group.js}"></script>
