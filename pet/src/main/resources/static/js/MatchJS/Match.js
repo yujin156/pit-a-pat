@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setupKeywordEvents();
         setupEventListeners();
         setupMainDogSelection();
+        setupBreedAutocomplete();
+        setupBreedAutocomplete();
+        setupAddressDropdown();
 
         if (window.matchData && window.matchData.showProfileSelector) {
             setupProfileSelector();
@@ -238,7 +241,62 @@ document.addEventListener('DOMContentLoaded', function() {
             currentCardIndex = Math.max(0, currentDogs.length - 1);
         }
     }
+    function setupAddressDropdown() {
+        const sido = document.getElementById("cityFilter");
+        const sigungu = document.getElementById("countyFilter");
+        const dong = document.getElementById("townFilter");
 
+        if (!sido || !sigungu || !dong) return;
+
+        fetch("/api/regions/sido")
+            .then(res => res.json())
+            .then(list => {
+                list.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.code;
+                    option.textContent = item.name;
+                    sido.appendChild(option);
+                });
+            });
+
+        sido.addEventListener("change", () => {
+            const code = sido.value;
+            sigungu.disabled = !code;
+            sigungu.innerHTML = `<option value="">시/군/구 선택</option>`;
+            dong.disabled = true;
+            dong.innerHTML = `<option value="">읍/면/동 선택</option>`;
+            if (!code) return;
+
+            fetch(`/api/regions/sigungu?code=${encodeURIComponent(code)}`)
+                .then(res => res.json())
+                .then(list => {
+                    list.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.code;
+                        option.textContent = item.name;
+                        sigungu.appendChild(option);
+                    });
+                });
+        });
+
+        sigungu.addEventListener("change", () => {
+            const code = sigungu.value;
+            dong.disabled = !code;
+            dong.innerHTML = `<option value="">읍/면/동 선택</option>`;
+            if (!code) return;
+
+            fetch(`/api/regions/dong?code=${encodeURIComponent(code)}`)
+                .then(res => res.json())
+                .then(list => {
+                    list.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.code;
+                        option.textContent = item.name;
+                        dong.appendChild(option);
+                    });
+                });
+        });
+    }
     // 키워드 이벤트 설정
     function setupKeywordEvents() {
         const keywordBtns = document.querySelectorAll('.keyword-btn');
@@ -351,6 +409,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.addEventListener('keydown', handleKeyboardNav);
         setupNavigationButtons();
+    }
+    function setupBreedAutocomplete() {
+        const input = document.getElementById('breedInput');
+        const list = document.getElementById('breedAutocompleteList');
+        const hidden = document.getElementById('selectedBreedId');
+
+        if (!input || !list || !hidden) return;
+
+        input.addEventListener('input', () => {
+            const keyword = input.value.trim();
+            if (!keyword) {
+                list.innerHTML = '';
+                hidden.value = '';
+                return;
+            }
+
+            fetch(`/api/species/autocomplete?keyword=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = item.name;
+                        div.onclick = () => {
+                            input.value = item.name;
+                            hidden.value = item.id;
+                            list.innerHTML = '';
+                        };
+                        list.appendChild(div);
+                    });
+                });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!list.contains(e.target) && e.target !== input) {
+                list.innerHTML = '';
+            }
+        });
     }
 
     // ===== 핵심: 좋아요 처리 함수 (매칭 모달 개선) =====
