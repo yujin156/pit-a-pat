@@ -15,14 +15,13 @@ import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
-import pit.pet.Account.User.DogSize;
-import pit.pet.Account.User.Dog;
-import pit.pet.Account.User.User;
+import pit.pet.Account.User.*;
 
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor

@@ -8,6 +8,6 @@ import pit.pet.Board.Entity.BoardTable;
 import java.util.List;
 
 public interface BoardCommentRepository extends JpaRepository<BoardCommentTable, Long> {
-
+    List<BoardCommentTable> findByDogIn(List<Dog> dogs);
     List<BoardCommentTable> findByBoard(BoardTable board);
 }

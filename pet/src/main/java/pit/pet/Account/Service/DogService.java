@@ -31,7 +31,7 @@ public class DogService {
     private final UserRepository userRepository;
     // private final DogLikeRepository dogLikeRepository; // 좋아요 기능용 (필요시 추가)
 
-    private final String uploadDir = System.getProperty("user.dir") + "/pet/src/main/resources/static/img/uploads/";
+    private final String uploadDir = "/pet/src/main/resources/static/img/uploads/";
 
 
     // 🔥 1️⃣ 회원가입 중 (userId 없이)

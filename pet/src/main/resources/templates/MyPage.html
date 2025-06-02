@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Group_board</title>
-
+    <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
+    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/MyPage.css}">
     <link rel="stylesheet" th:href="@{/css/AddFamily_Modal.css}">
 </head>
 <body>
+<div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
 <div class="myPage_wrap">
     <div class="myPage_title">
         <h1 class="myPage_title">MY PAGE</h1>
@@ -166,7 +168,7 @@
         </div>
     </main>
 </div>
-
+<div class="login-panel" th:insert="~{Login_center :: login}"></div>
 <!-- 모달 JavaScript 추가 (HTML은 동적 생성) -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -186,5 +188,7 @@
 
 <script defer th:src="@{/js/MyPage.js}"></script>
 <script defer th:src="@{/js/AddFamily_Modal.js}"></script>
+<script th:src="@{/js/Side_menu.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
 </body>
 </html>

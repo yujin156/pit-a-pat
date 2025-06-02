@@ -1,4 +1,4 @@
-console.log('반려견 소셜 미팅 플랫폼 JavaScript 로드됨');
+
 
 // DOM 요소들
 const navButtons = document.querySelectorAll('.myPage_nav-btn');
@@ -10,73 +10,12 @@ const toggleContents = document.querySelectorAll('.myPage_toggle_content');
 let dogProfiles = []; // 저장된 프로필들
 
 // 데이터 템플릿들
-const postsData = [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
-        title: '한강공원 산책 모임',
-        description: '한강공원에서 강아지들과 함께 즐거운 산책을 해요! 사회성 기르기에 좋은 기회입니다. 매주 토요일 오후 2시에 만나요.',
-        participants: [
-            'https://images.unsplash.com/photo-1552053831-71594a27632d?w=30&h=30&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=30&h=30&fit=crop&crop=face'
-        ]
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=200&fit=crop',
-        title: '해변 산책 모임',
-        description: '바다에서 강아지들과 함께 즐거운 시간을 보내요! 파도 소리를 들으며 산책하면서 새로운 친구들을 만나봐요',
-        participants: [
-            'https://images.unsplash.com/photo-1552053831-71594a27632d?w=30&h=30&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=30&h=30&fit=crop&crop=face'
-        ]
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=200&fit=crop',
-        title: '강아지 놀이 모임',
-        description: '넓은 공원에서 강아지들이 마음껏 뛰어놀 수 있는 모임입니다. 사회성 기르기에 좋아요!',
-        participants: [
-            'https://images.unsplash.com/photo-1552053831-71594a27632d?w=30&h=30&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=30&h=30&fit=crop&crop=face'
-        ]
-    }
+let postsData = [
+
 ];
 
-const commentsData = [
-    {
-        id: 1,
-        username: 'DogUser',
-        text: '안녕하세요 :)',
-        description: '우리 강아지가 정말 즐거워했어요. 다음에도 참여하고 싶습니다!',
-        date: '2025년 5월 24일 오후 2시',
-        linkedPost: {
-            image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=40&h=40&fit=crop',
-            title: '한강공원 산책 모임'
-        }
-    },
-    {
-        id: 2,
-        username: 'PuppyLover',
-        text: '너무 좋은 모임이에요!',
-        description: '우리 강아지가 정말 즐거워했어요. 다음에도 꼭 참여하고 싶습니다',
-        date: '2025년 5월 23일 오후 5시',
-        linkedPost: {
-            image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=40&h=40&fit=crop',
-            title: '해변 산책 모임'
-        }
-    },
-    {
-        id: 3,
-        username: 'DogMom',
-        text: '추천해요!',
-        description: '새로운 친구들을 많이 만날 수 있어서 좋았어요. 강아지 사회성에도 도움이 되는 것 같아요',
-        date: '2025년 5월 22일 오전 10시',
-        linkedPost: {
-            image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=40&h=40&fit=crop',
-            title: '강아지 놀이 모임'
-        }
-    }
+let commentsData = [
+
 ];
 
 const bookmarksData = [
@@ -241,21 +180,52 @@ function getSizeLabel(size) {
     return sizeLabels[size] || size;
 }
 
+function fetchAndRenderPosts() {
+    fetch('/api/mypage/posts')
+        .then(res => res.json())
+        .then(data => {
+            postsData = data;
+            renderPosts();
+        })
+        .catch(err => {
+            console.error("게시글 불러오기 실패:", err);
+            document.getElementById('posts-container').innerHTML = '<span>게시글 불러오기 오류</span>';
+        });
+}
 // 콘텐츠 렌더링 함수들
 function renderPosts() {
     const container = document.getElementById('posts-container');
-    if (container) {
+    if (!container) return;
+    if (postsData.length === 0) {
+        container.innerHTML = '<span>게시글이 없습니다.</span>';
+    } else {
         container.innerHTML = postsData.map(post => createPostCard(post)).join('');
-        attachPostEventListeners();
     }
+    attachPostEventListeners();
+}
+
+function fetchAndRenderComments() {
+    fetch('/api/mypage/comments')
+        .then(res => res.json())
+        .then(data => {
+            commentsData = data;
+            renderComments();
+        })
+        .catch(err => {
+            console.error("댓글 불러오기 실패:", err);
+            document.getElementById('comments-container').innerHTML = '<span>댓글 불러오기 오류</span>';
+        });
 }
 
 function renderComments() {
     const container = document.getElementById('comments-container');
-    if (container) {
+    if (!container) return;
+    if (commentsData.length === 0) {
+        container.innerHTML = '<span>댓글이 없습니다.</span>';
+    } else {
         container.innerHTML = commentsData.map(comment => createCommentCard(comment)).join('');
-        attachCommentEventListeners();
     }
+    attachCommentEventListeners();
 }
 
 function renderBookmarks() {
@@ -623,6 +593,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     console.log('이벤트 리스너 초기화 완료');
+    fetchAndRenderPosts();
+    fetchAndRenderComments();
 });
 
 // 전역 함수로 노출 (HTML 및 모달에서 호출 가능)

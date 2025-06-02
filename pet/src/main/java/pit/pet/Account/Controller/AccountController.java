@@ -1,16 +1,25 @@
 package pit.pet.Account.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.TOSTableRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Request.DogRegisterRequest;
+import pit.pet.Account.Service.CustomUserDetails;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.Service.UserService;
 import pit.pet.Account.User.Address;
 import pit.pet.Account.User.TOSTable;
@@ -32,6 +41,8 @@ public class AccountController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final TOSTableRepository tosTableRepository;
+    private final DogService dogService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/register")
     public String showRegisterForm() {
