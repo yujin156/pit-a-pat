@@ -190,6 +190,29 @@ function nextStep() {
         };
     }
 
+    // Step5: 키워드 선택 form submit
+    if (currentStep === 5) {
+        const activeIframe = document.querySelector('.content_step#content_step5 iframe');
+        const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
+        const form = iframeDoc.querySelector('form');
+        if (form) {
+            form.submit();
+
+            // ⭐️ currentStep을 증가시키거나 updateStep을 호출하지 않는다.
+            // ⭐️ 바로 회원가입 완료 처리!
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.disabled = true;
+            }
+            completeRegistration();
+            alert('회원가입이 완료되었습니다!');
+            goHome();
+
+            return; // ⭐️ 여기서 끝!
+        } else {
+            console.warn('❌ Step5의 form을 찾을 수 없습니다!');
+        }
+    }
 
     // Step2~5: iframe 내부 form submit
     const activeIframe = document.querySelector('.content_step.active iframe');
@@ -198,14 +221,8 @@ function nextStep() {
         const form = iframeDoc.querySelector('form');
         if (form) {
             form.submit();
-            if (currentStep === totalSteps) {
-                completeRegistration();
-                alert('회원가입이 완료되었습니다!');
-                goHome();
-            } else {
-                currentStep++;
-                updateStep();
-            }
+            currentStep++;
+            updateStep();
             return;
         }
     }
@@ -215,12 +232,19 @@ function nextStep() {
         currentStep++;
         updateStep();
     } else {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) {
+            nextBtn.disabled = true;
+        }
+
         // 회원가입 완료 처리
         completeRegistration();
 
         // 마지막 단계 처리 (강아지 키워드까지 완료)
         alert('회원가입이 완료되었습니다!');
         goHome();
+
+        return; // ⭐️ 여기서 종료!
 
     }
 }

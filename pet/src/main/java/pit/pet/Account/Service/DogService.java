@@ -82,6 +82,7 @@ public class DogService {
 
     @Transactional
     public void updateDogKeywordsDirectly(Long dogId, List<Long> keywordIds) {
+        System.out.println("🐾 updateDogKeywordsDirectly: dogId=" + dogId + ", keywordIds=" + keywordIds);
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없습니다."));
 
@@ -97,6 +98,24 @@ public class DogService {
 
     // ===== 매칭 기능용 메서드들 추가 =====
 
+    // 강아지 프로필 이미지 url 조회
+    public String getProfileImageUrl(Long dno) {
+        Optional<Dogimg> dogimgOpt = dogimgRepository.findFirstByDog_Dno(dno);
+
+        if (dogimgOpt.isPresent()) {
+            String diurl = dogimgOpt.get().getDiurl();
+            // 🔥 파일 존재 여부 확인
+            Path path = Paths.get("src/main/resources/static" + diurl);
+            if (Files.exists(path)) {
+                return diurl;
+            } else {
+                // 파일이 없으면 기본 이미지로
+                return "/images/default-profile.png";
+            }
+        } else {
+            return "/images/default-profile.png";
+        }
+    }
     /**
      * 모든 강아지 목록 조회 (최신순)
      */
