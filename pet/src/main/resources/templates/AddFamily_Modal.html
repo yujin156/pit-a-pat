@@ -86,7 +86,7 @@
         <div id="step1" class="modal_step active">
             <h2>우리 강아지 <span class="highlight">크기</span> 선택하기</h2>
             <div class="dog_size_cards">
-                <div class="size_card" data-size="large">
+                <div class="size_card" data-size="LARGE">
                     <img src="/static/img/large.png" alt="대형견" class="size_image">
                     <div class="size_info">
                         <h3>대형견</h3>
@@ -94,7 +94,7 @@
                         <span class="size_breeds">리트리버, 셰퍼드, 도베르만 등등</span>
                     </div>
                 </div>
-                <div class="size_card" data-size="medium">
+                <div class="size_card" data-size="MEDIUM">
                     <img src="/static/img/medium.png" alt="중형견" class="size_image">
                     <div class="size_info">
                         <h3>중형견</h3>
@@ -102,7 +102,7 @@
                         <span class="size_breeds">시바견, 비글, 웰시코기 등</span>
                     </div>
                 </div>
-                <div class="size_card" data-size="small">
+                <div class="size_card" data-size="SMALL">
                     <img src="/static/img/small.png" alt="소형견" class="size_image">
                     <div class="size_info">
                         <h3>소형견</h3>
@@ -139,16 +139,16 @@
                             <label>Gender</label>
                             <select id="dogGender">
                                 <option value="">성별</option>
-                                <option value="male">수컷</option>
-                                <option value="female">암컷</option>
+                                <option value="MALE">수컷</option>
+                                <option value="FEMALE">암컷</option>
                             </select>
                         </div>
                         <div class="form_group">
                             <label for="dogSurgery">Surgery</label>
                             <select id="dogSurgery" class="form-control">
                                 <option value="dogSurgery" disabled selected>중성화</option>
-                                <option value="yes">중성화 O</option>
-                                <option value="no">중성화 X</option>
+                                <option value="YES">중성화 O</option>
+                                <option value="NO">중성화 X</option>
                             </select>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                         <div class="form_group full">
                             <label>Dog Type</label>
                             <div class="breed_search">
-                                <input type="text" id="dogBreed" placeholder="견종 검색 하기">
+                                <input type="text" id="dogBreed" placeholder="견종 검색 하기" />
                                 <button type="button" class="search_btn">검색</button>
                             </div>
                         </div>
@@ -237,6 +237,6 @@
     </div>
 </div>
 
-<script  defer src="/static/js/AddFamily_Modal.js"></script>
+<script  defer th:src="@{/js/AddFamily_Modal.js}"></script>
 </body>
 </html>

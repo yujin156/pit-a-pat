@@ -16,7 +16,7 @@ public interface BoardRepository extends JpaRepository<BoardTable, Long> {
 
     //특정 그룹에 있는 게시글 목록
     List<BoardTable> findByGroup(GroupTable group);
-
+    List<BoardTable> findByWriterdogIn(List<Dog> dogs);
     @Query("SELECT b FROM BoardTable b " +
             "LEFT JOIN FETCH b.writerdog " +
             "LEFT JOIN FETCH b.images " +

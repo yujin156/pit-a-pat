@@ -15,11 +15,9 @@ import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.DogService;
-import pit.pet.Account.User.DogKeyword1;
 import pit.pet.Account.User.DogSize;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
-import pit.pet.Group.entity.Keyword;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -133,11 +131,13 @@ public class DogController {
     // 🔹 강아지 상태 업데이트 API
     @PostMapping("/update-status")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateDogStatus(@RequestParam Long dogId,
-                                                               @RequestParam String status,
-                                                               @AuthenticationPrincipal UserDetails principal) {
+    public ResponseEntity<Map<String, Object>> updateDogStatus(
+            @RequestParam Long dogId,
+            @RequestParam String status,
+            @AuthenticationPrincipal UserDetails principal) {
 
         Map<String, Object> response = new HashMap<>();
+
         try {
             if (principal == null) {
                 response.put("success", false);
@@ -147,6 +147,7 @@ public class DogController {
 
             User user = userRepository.findByUemail(principal.getUsername())
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
             Dog dog = dogRepository.findById(dogId)
                     .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없습니다."));
 
@@ -163,6 +164,7 @@ public class DogController {
             response.put("message", "상태가 업데이트되었습니다.");
             response.put("dogId", dogId);
             response.put("newStatus", status);
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -171,6 +173,15 @@ public class DogController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/keyword")
+    @ResponseBody
+    public List<DogKeywordDto> getAllKeywords() {
+        return keyword1Repository.findAll().stream()
+                .map(k -> new DogKeywordDto(k.getDkno(), k.getDktag()))
+                .collect(Collectors.toList());
+    }
+
 
     // 🔸 중복 제거한 유저ID 조회 메서드
     private Long getUserIdFromPrincipal(Principal principal) {

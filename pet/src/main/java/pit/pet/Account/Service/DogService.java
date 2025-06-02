@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.*;
 import pit.pet.Account.Request.DogRegisterRequest;
+import pit.pet.Account.Response.DogProfileResponse;
 import pit.pet.Account.User.*;
 import pit.pet.Spec.Species;
 
@@ -14,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +31,8 @@ public class DogService {
     private final UserRepository userRepository;
     // private final DogLikeRepository dogLikeRepository; // 좋아요 기능용 (필요시 추가)
 
-    private final String uploadDir = "src/main/resources/static/uploads/";
+    private final String uploadDir = System.getProperty("user.dir") + "/pet/src/main/resources/static/img/uploads/";
+
 
     // 🔥 1️⃣ 회원가입 중 (userId 없이)
     @Transactional
@@ -44,7 +45,7 @@ public class DogService {
         dog.setSize(DogSize.valueOf(request.getSize()));
         dog.setDBday(request.getBirthday());
         dog.setDintro(request.getIntro());
-
+        dog.setNeuterStatus(request.getNeuterStatus());
         // owner 연결
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
@@ -69,7 +70,7 @@ public class DogService {
                 Dogimg dogimg = new Dogimg();
                 dogimg.setDog(dog);
                 dogimg.setDititle(image.getOriginalFilename());
-                dogimg.setDiurl("/uploads/" + filename);
+                dogimg.setDiurl("/img/uploads/" + filename);
                 dogimgRepository.save(dogimg);
 
             } catch (IOException e) {
@@ -213,6 +214,24 @@ public class DogService {
         /* 실제 구현 예시:
         return dogLikeRepository.findByMemberAndDog(member, dog).isPresent();
         */
+    }
+
+    @Transactional
+    public List<DogProfileResponse> getDogsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        return dogRepository.findByOwner(user).stream()
+                .map(dog -> new DogProfileResponse(
+                        dog.getDno(),
+                        dog.getDname(),
+                        dog.getUgender().name(),
+                        dog.getSize().name(),
+                        dog.getSpecies() != null ? dog.getSpecies().getName() : "기타",
+                        dog.getDintro(),
+                        dog.getImage() != null ? dog.getImage().getDiurl() : null
+                ))
+                .collect(Collectors.toList());
     }
 
     // ===== 유틸리티 메서드 =====

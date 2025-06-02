@@ -212,6 +212,51 @@ public class AccountController {
         return "redirect:/";
     }
 
+
+    @GetMapping("/mypage")
+    public String mypage(Model model,
+                         @AuthenticationPrincipal CustomUserDetails principal) {
+
+        // 로그인한 사용자 정보 가져오기
+        User user = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 모델에 사용자 정보와 강아지 목록 추가
+        model.addAttribute("user", user);
+        model.addAttribute("dogList", dogService.getDogsByUser(user.getUno()));
+
+        return "Mypage"; // 템플릿 경로 맞게 수정 (ex: templates/Account/mypage.html)
+    }
+
+    @PostMapping(value = "/mypage/dog/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> registerDogFromMyPage(
+            @RequestPart("dog") String dogJson,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @AuthenticationPrincipal CustomUserDetails principal) {
+
+        try {
+            DogRegisterRequest request = objectMapper.readValue(dogJson, DogRegisterRequest.class);
+            request.setImageFile(imageFile);
+
+            Long userId = userRepository.findByUemail(principal.getUsername())
+                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
+                    .getUno();
+
+            Long dogId = dogService.registerDog(request, userId);
+
+            if (request.getKeyword1Ids() != null && !request.getKeyword1Ids().isEmpty()) {
+                dogService.updateDogKeywordsDirectly(dogId, request.getKeyword1Ids());
+            }
+
+            return ResponseEntity.ok("강아지 등록 완료");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록 실패: " + e.getMessage());
+        }
+    }
+
+
     private void deleteCookie(String name, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, null);
         cookie.setMaxAge(0);

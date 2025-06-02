@@ -7,8 +7,10 @@
 
 .group_wrap {
     width: 1460px;
-    margin: 30px auto;
+    margin-top: 30px;
     padding: 0 20px;
+    margin-left: 120px;
+    margin-right: 325px;
 }
 
 /* 타이틀 섹션

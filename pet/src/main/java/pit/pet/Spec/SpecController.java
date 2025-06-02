@@ -1,12 +1,12 @@
 package pit.pet.Spec;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,14 @@ public class SpecController {
             return "에러: " + e.getMessage();
         }
     }
-
+    @GetMapping("/search")
+    @ResponseBody
+    public List<SpeciesDto> searchSpecies(@RequestParam("keyword") String keyword) {
+        return specRepository.findByNameContainingIgnoreCase(keyword)
+                .stream()
+                .map(species -> new SpeciesDto(species.getId(), species.getName()))
+                .toList();
+    }
 
     @GetMapping("/autocomplete")
     @ResponseBody

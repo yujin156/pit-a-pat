@@ -45,7 +45,12 @@
   <label>소개:
     <textarea th:field="*{intro}" /></textarea>
   </label><br/>
-
+  <label>
+    <select th:field="*{neuterStatus}" required>
+      <option value="NEUTERED">중성화O</option>
+      <option value="NOT_NEUTERED">중성화X</option>
+    </select>
+  </label>
   <label>종:
     <input type="text" id="breedInput" name="breed" placeholder="견종명 입력" autocomplete="off"/>
     <div id="autocompleteList"></div>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>둘레길 지도 보기</title>
+    <style>
+        body { margin:0; padding:0; display:flex; height:100vh; }
+        #sidebar { width:300px; overflow-y:auto; border-right:1px solid #ccc; padding:10px; }
+        #map { flex:1; }
+        #sidebar ul { list-style:none; padding:0; }
+        #sidebar li { margin:5px 0; cursor:pointer; }
+        #sidebar li:hover { background:#f0f0f0; }
+        #postModal {
+            display:none; position:fixed; top:20%; left:30%; width:400px;
+            background:white; border:1px solid #ccc; padding:20px; z-index:999;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8rmgkdfw2q"></script>
+</head>
+<body>
+
+<div id="sidebar">
+    <h3>AI 추천 둘레길</h3>
+    <label>강아지 선택:</label>
+    <select id="dogIdSelect">
+        <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+    </select>
+    <button id="loadRecommendBtn" style="margin-top:10px;">추천하기</button>
+
+    <div id="loadingSpinner" style="display:none; margin-top:10px;">
+        <img src="/images/loading-spinner.gif" alt="로딩중..." width="30" height="30">
+    </div>
+
+    <ul id="recommend-list" style="margin-top:15px;"></ul>
+
+    <button id="writeReviewBtn" style="margin-top:10px;">리뷰 작성</button> <!-- ✅ 추가된 버튼 -->
+
+    <button onclick="toggleAllTrails()" style="margin-top:10px;">전체 둘레길 보기</button>
+
+    <div id="allTrailsSection" style="display:none; margin-top:20px;">
+        <h4>전체 둘레길 목록</h4>
+        <ul id="trail-list"></ul>
+    </div>
+</div>
+
+<!-- 지도 영역 -->
+<div id="map"></div>
+
+<!-- 리뷰 작성 모달 -->
+<div id="postModal">
+    <h3 id="modalTrailName">리뷰 작성</h3>
+    <form id="postForm" enctype="multipart/form-data">
+        <input type="hidden" name="trailId" id="trailId">
+        <label>강아지 선택:</label>
+        <select name="dogId" id="modalDogSelect">
+            <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
+        </select><br><br>
+        <label>평점:</label>
+        <select name="rating">
+            <option value="5">⭐ 5</option>
+            <option value="4">⭐ 4</option>
+            <option value="3">⭐ 3</option>
+            <option value="2">⭐ 2</option>
+            <option value="1">⭐ 1</option>
+        </select><br><br>
+        <label>내용:</label><br>
+        <textarea name="content" rows="3" cols="40" maxlength="200"></textarea><br><br>
+        <label>사진:</label>
+        <input type="file" name="image" accept="image/*"><br><br>
+        <button type="submit">등록</button>
+        <button type="button" onclick="$('#postModal').hide()">취소</button>
+    </form>
+</div>
+
+<script>
+    const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 11
+    });
+
+    let allTrailsVisible = false;
+    let currentPolylines = [];
+
+    function toggleAllTrails() {
+        allTrailsVisible = !allTrailsVisible;
+
+        const allTrailsSection = document.getElementById("allTrailsSection");
+        const recommendList = document.getElementById("recommend-list");
+        const loadRecommendBtn = document.getElementById("loadRecommendBtn");
+        const dogIdSelect = document.getElementById("dogIdSelect");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+
+        const toggleBtn = document.querySelector("button[onclick='toggleAllTrails()']");
+        toggleBtn.textContent = allTrailsVisible ? "전체 둘레길 닫기" : "전체 둘레길 보기";
+
+        if (allTrailsVisible) {
+            allTrailsSection.style.display = 'block';
+            recommendList.style.display = 'none';
+            loadRecommendBtn.style.display = 'none';
+            dogIdSelect.style.display = 'none';
+            loadingSpinner.style.display = 'none';
+            loadTrailList();
+        } else {
+            allTrailsSection.style.display = 'none';
+            recommendList.style.display = 'block';
+            loadRecommendBtn.style.display = 'inline-block';
+            dogIdSelect.style.display = 'inline-block';
+        }
+    }
+
+    function drawTrailPath(trail) {
+        currentPolylines.forEach(line => line.setMap(null));
+        currentPolylines = [];
+
+        fetch(`/api/trails/${trail.id}/path`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(path => {
+                const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
+                const poly = new naver.maps.Polyline({
+                    map,
+                    path: coords,
+                    strokeWeight: 4,
+                    strokeColor: '#3366FF',
+                    strokeOpacity: 0.8
+                });
+                currentPolylines.push(poly);
+
+                const bounds = new naver.maps.LatLngBounds();
+                coords.forEach(c => bounds.extend(c));
+                map.fitBounds(bounds);
+            })
+            .catch(err => console.error('경로 실패:', err));
+    }
+
+    function openModalForTrail(trail) {
+        document.getElementById("trailId").value = trail.id;
+        document.getElementById("modalTrailName").textContent = trail.name + " 리뷰 작성";
+        $('#postModal').show();
+    }
+
+    document.getElementById('loadRecommendBtn').addEventListener('click', () => {
+        const dogId = $('#dogIdSelect').val();
+        if (!dogId) {
+            alert("강아지를 선택해주세요.");
+            return;
+        }
+
+        $('#loadingSpinner').show();
+        $('#recommend-list').empty();
+
+        fetch(`/api/recommend/by-review?dogId=${dogId}`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('recommend-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    li.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                        openModalForTrail(trail);
+                    });
+                    listEl.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error('AI 추천 실패:', err);
+                alert("추천 로딩 실패");
+            })
+            .finally(() => {
+                $('#loadingSpinner').hide();
+            });
+    });
+
+    function loadTrailList() {
+        fetch('/api/trails')
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('trail-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+
+                    new naver.maps.Marker({
+                        map,
+                        position: new naver.maps.LatLng(trail.startLat, trail.startLng),
+                        icon: {
+                            url: '/images/icons8-marker-a-32.png',
+                            size: new naver.maps.Size(24, 24),
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+
+                    new naver.maps.Marker({
+                        map,
+                        position: new naver.maps.LatLng(trail.endLat, trail.endLng),
+                        icon: {
+                            url: '/images/end-marker.png',
+                            size: new naver.maps.Size(24, 24),
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+                    li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    li.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                        openModalForTrail(trail);
+                    });
+                    listEl.appendChild(li);
+                });
+            })
+            .catch(err => console.error('전체 둘레길 실패:', err));
+    }
+
+    $('#dogIdSelect').on('change', function () {
+        const dogId = $(this).val();
+        loadAiRecommendations(dogId);
+    });
+
+    $('#postForm').on('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        $.ajax({
+            url: '/trail-posts',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert("등록 완료");
+                $('#postModal').hide();
+                $('#postForm')[0].reset();
+                if (allTrailsVisible) loadTrailList();
+                const dogId = $('#dogIdSelect').val();
+                loadAiRecommendations(dogId);
+            },
+            error: function () {
+                alert("등록 실패");
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        const dogId = $('#dogIdSelect').val();
+        if (dogId) {
+            loadAiRecommendations(dogId);
+        }
+    });
+    function loadAiRecommendations(dogId) {
+        $('#loadingSpinner').show();
+        $('#recommend-list').empty();
+
+        fetch(`/api/recommend/by-review?dogId=${dogId}`)
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(trails => {
+                const listEl = document.getElementById('recommend-list');
+                listEl.innerHTML = '';
+
+                trails.forEach(trail => {
+                    const li = document.createElement('li');
+
+                    const trailText = document.createElement('span');
+                    trailText.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+                    trailText.style.marginRight = '10px';
+                    trailText.style.cursor = 'pointer';
+                    trailText.addEventListener('click', () => {
+                        drawTrailPath(trail);
+                    });
+
+                    const reviewBtn = document.createElement('button');
+                    reviewBtn.textContent = '✍';
+                    reviewBtn.style.marginLeft = '5px';
+                    reviewBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openModalForTrail(trail);
+                    });
+
+                    li.appendChild(trailText);
+                    li.appendChild(reviewBtn);
+                    listEl.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error('AI 추천 실패:', err);
+                alert("추천 로딩 실패");
+            })
+            .finally(() => {
+                $('#loadingSpinner').hide();
+            });
+    }
+
+    // ✅ 리뷰 작성 버튼 이벤트 추가
+    $('#writeReviewBtn').on('click', function () {
+        const dogId = $('#dogIdSelect').val();
+        if (!dogId) {
+            alert("강아지를 먼저 선택해주세요.");
+            return;
+        }
+
+        $('#modalDogSelect').val(dogId);
+        $('#modalTrailName').text("리뷰 작성");
+        $('#trailId').val(""); // trailId 없음
+        $('#postModal').show();
+    });
+</script>
+
+</body>
+</html>
