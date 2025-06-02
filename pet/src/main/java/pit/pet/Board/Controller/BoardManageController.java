@@ -32,7 +32,6 @@ public class BoardManageController {
     public String showGroupPage(@PathVariable Long gno, Model model) {
         List<BoardTable> posts = boardManageService.getPostsByGroup(gno);
         model.addAttribute("posts", posts);
-        System.out.println("✅ posts.size(): " + posts.size());
         return "group/groupPage"; // 이 뷰 경로는 네가 실제로 사용하는 경로로 바꿔!
     }
 
@@ -42,7 +41,6 @@ public class BoardManageController {
         Long dno = resolveDnoOrNull(session); // ⭐️ null 가능! 에러 안 던짐
         List<BoardTable> posts = boardManageService.getPostsByGroup(gno);
 
-        System.out.println("🔍 posts.size(): " + posts.size());
         posts.forEach(p -> System.out.println("🔍 post: " + p.getBcontent()));
 
         return posts.stream().map(post -> {
@@ -139,16 +137,12 @@ public class BoardManageController {
 
     // ✅ dno 결정 메서드 (🔍 로그 추가됨)
     private Long resolveDno(Long dno, HttpSession session) {
-        System.out.println("🔍 [resolveDno] 전달된 dno: " + dno);
         if (dno != null) {
-            System.out.println("✅ [resolveDno] dno 직접 사용: " + dno);
             return dno;
         }
 
         Dog loginDog = (Dog) session.getAttribute("loginDog");
-        System.out.println("🔍 [resolveDno] 세션 loginDog: " + loginDog);
         if (loginDog != null) {
-            System.out.println("✅ [resolveDno] loginDog 사용: " + loginDog.getDno());
             return loginDog.getDno();
         }
 
