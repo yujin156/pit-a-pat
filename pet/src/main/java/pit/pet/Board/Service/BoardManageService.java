@@ -90,6 +90,7 @@ public class BoardManageService {
 
     // ✅ 좋아요 여부 확인 (게시글 상세 페이지 로드 시 사용)
     public boolean isBoardLiked(Long bno, Long dno) {
+        if (dno == null) return false; // ⭐️ null이면 false 즉시 반환
         BoardTable board = boardRepository.findById(bno)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
         Dog dog = dogRepository.findById(dno)
@@ -97,8 +98,8 @@ public class BoardManageService {
         return likeRepository.findByDogAndBoard(dog, board).isPresent();
     }
 
-    // ✅ 북마크 여부 확인 (게시글 상세 페이지 로드 시 사용)
     public boolean isBoardBookmarked(Long bno, Long dno) {
+        if (dno == null) return false; // ⭐️ null이면 false 즉시 반환
         BoardTable board = boardRepository.findById(bno)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
         Dog dog = dogRepository.findById(dno)

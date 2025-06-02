@@ -9,32 +9,44 @@ let creatingGroup = false;
 
 // ✅ 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    // ✅ 로그인 여부를 Thymeleaf에서 body data-*로 받기
     const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
 
-    fetch('/groups/api/my-groups')
-        .then(response => response.json())
-        .then(data => {
-            myGroups = data.map(group => ({
-                id: group.gno,
-                title: group.gname,
-                imageUrl: `/groups/images/${group.imageUrl || 'default.jpg'}`,
-                avatarUrl: `/groups/images/${group.avatarUrl || 'default_avatar.jpg'}`,
-                keyword: group.gkeyword
-            }));
-            // ✅ 내 그룹 데이터는 받아오지만, 기본 탭은 아래 조건에서 결정!
-        })
-        .catch(error => console.error('내 그룹 데이터 오류:', error));
+    // ✅ Promise.all로 fetch 모두 끝나고 나서 렌더링!
+    Promise.all([
+        fetch('/groups/api/my-groups')
+            .then(response => response.json())
+            .then(data => {
+                myGroups = data.map(group => ({
+                    id: group.gno,
+                    title: group.gname,
+                    imageUrl: `/groups/images/${group.imageUrl || 'default.jpg'}`,
+                    avatarUrl: `/groups/images/${group.avatarUrl || 'default_avatar.jpg'}`,
+                    keyword: group.gkeyword
+                }));
+            })
+            .catch(error => console.error('내 그룹 데이터 오류:', error)),
 
-    fetch('/groups/api/all')
-        .then(response => response.json())
-        .then(data => {
-            allGroups = data;
-            console.log('✅ 전체 그룹 데이터:', allGroups);
-            // ⭐️ fetch 끝나고 데이터 다 받았을 때 렌더링!
+        fetch('/groups/api/all')
+            .then(response => response.json())
+            .then(data => {
+                allGroups = data;
+                console.log('✅ 전체 그룹 데이터:', allGroups);
+            })
+            .catch(error => console.error('전체 그룹 데이터 오류:', error))
+    ]).then(() => {
+        // ⭐️ 모든 fetch가 끝나고 나서 탭 렌더링!
+        if (isAuthenticated) {
+            currentTab = 'my';
+            document.querySelectorAll('.tab_item').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('.tab_item[data-tab="my"]').classList.add('active');
+            updateTabContent('my');
+        } else {
+            currentTab = 'all';
+            document.querySelectorAll('.tab_item').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('.tab_item[data-tab="all"]').classList.add('active');
             updateTabContent('all');
-        })
-        .catch(error => console.error('전체 그룹 데이터 오류:', error));
+        }
+    });
 
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -52,12 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
         createGroupBtn.addEventListener('click', createNewGroup);
     }
 
-    // ✅ ⭐️ 로그인 여부에 따라 기본 탭 활성화 결정
-    if (isAuthenticated) {
-        updateTabContent('my');
-    } else {
-        updateTabContent('all');
-    }
+    // // ✅ ⭐️ 로그인 여부에 따라 기본 탭 활성화 결정
+    // if (isAuthenticated) {
+    //     currentTab = 'my';
+    //     updateTabContent('my');
+    // } else {
+    //     currentTab = 'all';
+    //     updateTabContent('all');
+    // }
 });
 
 // ✅ 탭 관리
@@ -240,6 +254,10 @@ function closeModal() {
 function showStep(stepNumber) {
     document.querySelectorAll('.modal_step').forEach(step => step.style.display = 'none');
     document.getElementById(`step${stepNumber}`).style.display = 'block';
+
+    if (stepNumber === 3) {
+        loadMyDogs();
+    }
 }
 function nextStep(stepNumber) { showStep(stepNumber); }
 function prevStep(stepNumber) { showStep(stepNumber); }
@@ -256,7 +274,7 @@ function selectInterest(interest) {
 }
 function updateNextButton() {
     const nextBtn = document.getElementById('nextStep1');
-    nextBtn.disabled = !selectedInterest;
+    nextBtn.disabled = !(selectedInterest && selectedInterest !== '');
 }
 
 function uploadImage() {
@@ -288,7 +306,7 @@ function createNewGroup(event) {
 
     const groupName = document.getElementById('groupName').value.trim();
     const groupInfo = document.getElementById('groupInfo').value.trim();
-    const selectedDogId = document.getElementById('dogId').value;
+    //const selectedDogId = document.getElementById('dogId').value;
 
     // ✅ 이미지 파일 input 가져오기
     const fileInput = document.querySelector('input[type="file"][name="gimg"]');
@@ -323,24 +341,52 @@ function createNewGroup(event) {
         });
 }
 
-function uploadImage() {
-    const fileInput = document.getElementById('gimgInput');
-    fileInput.click();
-    fileInput.onchange = function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const uploadArea = document.querySelector('.upload_placeholder');
-                uploadArea.innerHTML = `
-          <img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
-          <div style="margin-top: 8px; font-size: 12px; color: #666;">이미지가 업로드되었습니다</div>
-        `;
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+function loadMyDogs() {
+    fetch('/groups/api/my-dogs')
+        .then(response => response.json())
+        .then(dogs => {
+            const profileGrid = document.getElementById('profileGrid');
+            profileGrid.innerHTML = '';
+
+            dogs.forEach(dog => {
+                const card = document.createElement('div');
+                card.classList.add('profile_card');
+                card.innerHTML = `
+                    <img src="${dog.avatarUrl}" alt="${dog.dname}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+                    <div>${dog.dname}</div>
+                `;
+
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.profile_card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedDogId = dog.dno;
+                    document.getElementById('completeBtn').disabled = false;
+                });
+
+                profileGrid.appendChild(card);
+            });
+        })
+        .catch(error => console.error('내 강아지 불러오기 오류:', error));
 }
+
+// function uploadImage() {
+//     const fileInput = document.getElementById('gimgInput');
+//     fileInput.click();
+//     fileInput.onchange = function(e) {
+//         const file = e.target.files[0];
+//         if (file) {
+//             const reader = new FileReader();
+//             reader.onload = function(e) {
+//                 const uploadArea = document.querySelector('.upload_placeholder');
+//                 uploadArea.innerHTML = `
+//           <img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+//           <div style="margin-top: 8px; font-size: 12px; color: #666;">이미지가 업로드되었습니다</div>
+//         `;
+//             };
+//             reader.readAsDataURL(file);
+//         }
+//     };
+// }
 
 // ✅ 폼 초기화
 function resetForm() {

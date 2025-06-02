@@ -38,10 +38,13 @@ public class BoardManageController {
 
     @GetMapping("/api/groups/{gno}/posts")
     @ResponseBody
-    public List<Map<String, Object>> getPostsByGroup(@PathVariable Long gno) {
+    public List<Map<String, Object>> getPostsByGroup(@PathVariable Long gno, HttpSession session) {
+        Long dno = resolveDnoOrNull(session); // ⭐️ null 가능! 에러 안 던짐
         List<BoardTable> posts = boardManageService.getPostsByGroup(gno);
+
         System.out.println("🔍 posts.size(): " + posts.size());
         posts.forEach(p -> System.out.println("🔍 post: " + p.getBcontent()));
+
         return posts.stream().map(post -> {
             Map<String, Object> map = new HashMap<>();
             map.put("bno", post.getBno());
@@ -53,8 +56,11 @@ public class BoardManageController {
                     post.getImages().stream().map(BoardImgTable::getBiurl).collect(Collectors.toList()) :
                     new ArrayList<>()
             );
-            // ✅ 댓글 개수도 반환
             map.put("commentCount", post.getCommentCount());
+            // 좋아요/북마크: dno 없으면 false 반환됨
+            map.put("liked", boardManageService.isBoardLiked(post.getBno(), dno));
+            map.put("bookmarked", boardManageService.isBoardBookmarked(post.getBno(), dno));
+
             return map;
         }).collect(Collectors.toList());
     }
@@ -160,4 +166,27 @@ public class BoardManageController {
         System.out.println("⛔ [resolveDno] dno를 결정할 수 없음");
         throw new IllegalStateException("dno를 결정할 수 없습니다. 로그인 강아지 또는 유저 정보가 세션에 없습니다.");
     }
+
+    // ✅ dno를 찾되, 없으면 null 반환 (에러 던지지 않음)
+    private Long resolveDnoOrNull(HttpSession session) {
+        System.out.println("🔍 [resolveDnoOrNull] 시도 시작!");
+        Dog loginDog = (Dog) session.getAttribute("loginDog");
+        if (loginDog != null) {
+            System.out.println("✅ [resolveDnoOrNull] loginDog 사용: " + loginDog.getDno());
+            return loginDog.getDno();
+        }
+
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            List<Dog> dogs = dogRepository.findByOwner(loginUser);
+            if (!dogs.isEmpty()) {
+                System.out.println("✅ [resolveDnoOrNull] 첫 번째 강아지 사용: " + dogs.get(0).getDno());
+                return dogs.get(0).getDno();
+            }
+        }
+
+        System.out.println("⚠️ [resolveDnoOrNull] dno를 찾을 수 없음. null 반환");
+        return null;
+    }
 }
+

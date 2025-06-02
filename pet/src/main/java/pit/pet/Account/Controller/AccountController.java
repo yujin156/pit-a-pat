@@ -79,7 +79,6 @@ public class AccountController {
         tosTable.setAssent(privacyAgree);
 
         // 기본권한 설정 및 비밀번호 암호화
-        user.setUpwd(bCryptPasswordEncoder.encode(user.getUpwd()));
         user.setRole(Role.USER);
 
         // 회원가입 DB 저장 (Address와 함께 저장)
@@ -156,6 +155,11 @@ public class AccountController {
         }
 
         User user = optionalUser.get();
+
+        System.out.println("🔍 DB 암호화된 패스워드: " + user.getUpwd());
+        System.out.println("🔍 사용자가 입력한 패스워드: " + password);
+        System.out.println("🔍 매칭 결과: " + bCryptPasswordEncoder.matches(password, user.getUpwd()));
+
         if (!bCryptPasswordEncoder.matches(password, user.getUpwd())) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return "Account/Login_center";

@@ -97,77 +97,77 @@ public class BoardWriteService {
     }
 
     // ✅ 게시글 내용 수정
-    @Transactional
-    public void updateBoard(BoardUpdateRequest request,
-                            List<MultipartFile> newImages,
-                            List<Integer> deleteImgIds,
-                            Long dno) {
+        @Transactional
+        public void updateBoard(BoardUpdateRequest request,
+                                List<MultipartFile> newImages,
+                                List<Integer> deleteImgIds,
+                                Long dno) {
 
-        BoardTable board = boardRepository.findById(request.getBno())
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글 없음"));
+            BoardTable board = boardRepository.findById(request.getBno())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 게시글 없음"));
 
-        if (!board.getWriterdog().getDno().equals(dno)) {
-            throw new SecurityException("수정 권한 없음");
-        }
+            if (!board.getWriterdog().getDno().equals(dno)) {
+                throw new SecurityException("수정 권한 없음");
+            }
 
-        // ✅ 삭제 대상 이미지 제거
-        if (deleteImgIds != null && !deleteImgIds.isEmpty()) {
-            board.getImages().removeIf(img -> {
-                if (deleteImgIds.contains(img.getBino())) {
+            // ✅ 삭제 대상 이미지 제거
+            if (deleteImgIds != null && !deleteImgIds.isEmpty()) {
+                board.getImages().removeIf(img -> {
+                    if (deleteImgIds.contains(img.getBino())) {
+                        try {
+                            String realPath = new File("src/main/resources/static" + img.getBiurl()).getAbsolutePath();
+                            Files.deleteIfExists(Path.of(realPath));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+            }
+
+            // ✅ 내용 수정
+            board.setBcontent(request.getNewContent());
+
+            // ✅ 새 이미지 업로드 추가
+            if (newImages != null && !newImages.isEmpty()) {
+                for (MultipartFile image : newImages) {
+                    if (image.isEmpty()) continue;
+
                     try {
-                        String realPath = new File("src/main/resources/static" + img.getBiurl()).getAbsolutePath();
-                        Files.deleteIfExists(Path.of(realPath));
+                        String uploadDir = new File("src/main/resources/static/uploads/img").getAbsolutePath();
+                        String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                        Path filepath = Paths.get(uploadDir, filename);
+                        Files.createDirectories(filepath.getParent());
+                        Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+
+                        BoardImgTable img = new BoardImgTable();
+                        img.setBoard(board);
+                        // ✅ /uploads/img로 경로 통일!
+                        img.setBiurl("/uploads/img/" + filename);
+                        img.setBititle("첨부 이미지");
+                        img.setBiuploadedat(LocalDateTime.now());
+
+                        board.getImages().add(img);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        // ✅ 내용 수정
-        board.setBcontent(request.getNewContent());
-
-        // ✅ 새 이미지 업로드 추가
-        if (newImages != null && !newImages.isEmpty()) {
-            for (MultipartFile image : newImages) {
-                if (image.isEmpty()) continue;
-
-                try {
-                    String uploadDir = new File("src/main/resources/static/uploads/img").getAbsolutePath();
-                    String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                    Path filepath = Paths.get(uploadDir, filename);
-                    Files.createDirectories(filepath.getParent());
-                    Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
-
-                    BoardImgTable img = new BoardImgTable();
-                    img.setBoard(board);
-                    // ✅ /uploads/img로 경로 통일!
-                    img.setBiurl("/uploads/img/" + filename);
-                    img.setBititle("첨부 이미지");
-                    img.setBiuploadedat(LocalDateTime.now());
-
-                    board.getImages().add(img);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }
-    }
 
-    // ✅ 게시글 삭제
-    @Transactional
-    public void deletePost(Long bno, Long dno) {
-        BoardTable board = boardRepository.findById(bno)
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 게시글 없음"));
+        // ✅ 게시글 삭제
+        @Transactional
+        public void deletePost(Long bno, Long dno) {
+            BoardTable board = boardRepository.findById(bno)
+                    .orElseThrow(() -> new IllegalArgumentException("삭제할 게시글 없음"));
 
-        if (!board.getWriterdog().getDno().equals(dno)) {
-            throw new SecurityException("삭제 권한이 없습니다.");
+            if (!board.getWriterdog().getDno().equals(dno)) {
+                throw new SecurityException("삭제 권한이 없습니다.");
+            }
+
+            boardRepository.delete(board);
         }
-
-        boardRepository.delete(board);
-    }
 
 }
