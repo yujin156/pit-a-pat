@@ -53,15 +53,9 @@ public class BoardController {
     public String createPost(@ModelAttribute BoardCreateRequest request,
                              @ModelAttribute BoardImgUploadRequest imgRequest) {
 
-        System.out.println("===== 📩 게시글 생성 요청 =====");
-        System.out.println("받은 dno = " + request.getDno());
-        System.out.println("받은 gno = " + request.getGno()); // ✅ 수정
-        System.out.println("받은 content = " + request.getContent());
-        System.out.println("받은 이미지 수 = " + (imgRequest.getImageFiles() != null ? imgRequest.getImageFiles().size() : 0));
 
         BoardTable saved = boardWriteService.createPost(request, imgRequest);
 
-        System.out.println("✅ 저장된 게시글 bno = " + saved.getBno());
 
         return "redirect:/board/view/" + saved.getBno();
     }
@@ -281,8 +275,6 @@ public class BoardController {
         model.addAttribute("myGroupDogs", myGroupDogs);
         model.addAttribute("boardImages", boardImages); // ✅ 이미지 리스트도 모델로 내려줌!
 
-        System.out.println("✅ group = " + group);
-        System.out.println("✅ boardImages = " + boardImages);
 
         return "board/detail";
     }

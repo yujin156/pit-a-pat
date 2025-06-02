@@ -83,7 +83,7 @@ public class DogService {
 
     @Transactional
     public void updateDogKeywordsDirectly(Long dogId, List<Long> keywordIds) {
-        System.out.println("🐾 updateDogKeywordsDirectly: dogId=" + dogId + ", keywordIds=" + keywordIds);
+
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없습니다."));
 
