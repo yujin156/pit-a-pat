@@ -1,7 +1,8 @@
 /* Main Container */
 .myPage_wrap {
     max-width: 1460px;
-    margin: 0 auto;
+    margin-left: 120px;
+    margin-right: 325px;
     padding: 20px;
     display: grid;
     grid-template-columns: 200px 1fr;
