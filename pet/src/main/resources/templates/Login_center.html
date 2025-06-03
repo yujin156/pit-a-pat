@@ -37,28 +37,29 @@ d
             <span> 또는 간편 로그인</span>
             <div class="vl"></div>
         </div>
-
-        <div class="google">
-            <div class="G_icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="19.827" height="19.827" viewBox="0 0 19.827 19.827">
-                    <g id="icons8-구글-로고" transform="translate(-4 -4)">
-                        <path id="패스_83353" data-name="패스 83353"
-                              d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z"
-                              fill="#ffc107"/>
-                        <path id="패스_83354" data-name="패스 83354"
-                              d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z"
-                              transform="translate(-1.163)" fill="#ff3d00"/>
-                        <path id="패스_83355" data-name="패스 83355"
-                              d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z"
-                              transform="translate(-1.107 -12.131)" fill="#4caf50"/>
-                        <path id="패스_83356" data-name="패스 83356"
-                              d="M33.721,20.041h-.8V20H24v3.965h5.6a5.968,5.968,0,0,1-2.026,2.761h0l3.068,2.6a9.59,9.59,0,0,0,3.267-7.34A9.981,9.981,0,0,0,33.721,20.041Z"
-                              transform="translate(-10.086 -8.069)" fill="#1976d2"/>
-                    </g>
-                </svg>
+        <a href="/oauth2/authorization/google" style="text-decoration: none;">
+            <div class="google">
+                <div class="G_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19.827" height="19.827" viewBox="0 0 19.827 19.827">
+                        <g id="icons8-구글-로고" transform="translate(-4 -4)">
+                            <path id="패스_83353" data-name="패스 83353"
+                                  d="M23.635,11.972h-.8v-.041H13.914V15.9h5.6A5.953,5.953,0,1,1,17.86,9.472l2.8-2.8a9.9,9.9,0,1,0,3.163,7.246A9.981,9.981,0,0,0,23.635,11.972Z"
+                                  fill="#ffc107"/>
+                            <path id="패스_83354" data-name="패스 83354"
+                                  d="M6.306,9.3l3.257,2.389a5.936,5.936,0,0,1,9.46-2.216l2.8-2.8A9.894,9.894,0,0,0,6.306,9.3Z"
+                                  transform="translate(-1.163)" fill="#ff3d00"/>
+                            <path id="패스_83355" data-name="패스 83355"
+                                  d="M15.021,35.958a9.867,9.867,0,0,0,6.647-2.574l-3.068-2.6a5.933,5.933,0,0,1-9.171-2.734L6.195,30.545A9.906,9.906,0,0,0,15.021,35.958Z"
+                                  transform="translate(-1.107 -12.131)" fill="#4caf50"/>
+                            <path id="패스_83356" data-name="패스 83356"
+                                  d="M33.721,20.041h-.8V20H24v3.965h5.6a5.968,5.968,0,0,1-2.026,2.761h0l3.068,2.6a9.59,9.59,0,0,0,3.267-7.34A9.981,9.981,0,0,0,33.721,20.041Z"
+                                  transform="translate(-10.086 -8.069)" fill="#1976d2"/>
+                        </g>
+                    </svg>
+                </div>
+                <span>Google로 시작하기</span>
             </div>
-            <span>Google로 시작하기</span>
-        </div>
+        </a>
     </div>
     <div class="find_friend" sec:authorize="!isAuthenticated()">
         <a href="/matching" class="find_friend_a">
@@ -123,27 +124,23 @@ d
 
         <!-- 프로필 그리드 - 강아지별로 표시 -->
         <div class="profiles_grid">
-            <div th:each="dog : ${dogs}" class="profile_item">
-                <!-- 강아지 이미지 또는 이름 첫 글자 -->
+          <!--<div th:each="dog : ${dogs}" class="profile_item">
                 <div class="profile_image" th:if="${dog.image != null and dog.image.diurl != null}">
-                    <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
-                </div>
-                <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
-                    <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
-                </div>
-
-                <!-- 강아지 이름 -->
+                  <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
+              </div>
+              <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
+                  <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
+              </div>
                 <div class="profile_name" th:text="${dog.dname}">강아지 이름</div>
-            </div>
+            </div>-->
         </div>
-
         <div class="u_name" th:text="${uname} + '님'">UserName님</div>
 
         <div class="divider"></div>
 
-        <!-- 강아지별 상태 관리 -->
+<!--         강아지별 상태 관리-->
         <div class="pet_statuses">
-            <div th:each="dog : ${dogs}" class="pet_status">
+            <!--<div th:each="dog : ${dogs}" class="pet_status">
                 <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
                 <div class="status_select">
                     <select class="status_dropdown" th:data-dog-id="${dog.dno}">
@@ -154,7 +151,7 @@ d
                         <option value="으르렁" th:selected="${dog.status == '으르렁'}">으르렁</option>
                     </select>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="divider"></div>
@@ -237,6 +234,7 @@ d
 <!-- JavaScript 파일들 -->
 <script src="/js/AddFamily_Modal.js"></script>  <!-- 먼저 로드 -->
 <script src="/js/Login_center.js"></script>
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
 
 <script th:inline="javascript">
     // DB에서 가져온 강아지 데이터

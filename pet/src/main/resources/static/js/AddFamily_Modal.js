@@ -553,14 +553,9 @@ function handleProfileComplete() {
             return res.text();
         })
         .then(message => {
-            const newDog = {
-                dname: dogRequest.name,
-                size: dogRequest.size,
-                diurl: imageUrl
-            };
-
-            if (typeof window.addDogProfile === 'function') {
-                window.addDogProfile(newDog);
+            // 기존 로컬 배열 추가 대신 서버 목록 새로고침!
+            if (typeof window.fetchAndRenderDogProfiles === 'function') {
+                window.fetchAndRenderDogProfiles();
             }
 
             if (typeof showStatusNotification === "function") {

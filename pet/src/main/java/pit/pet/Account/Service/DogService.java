@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class DogService {
     private final UserRepository userRepository;
     // private final DogLikeRepository dogLikeRepository; // 좋아요 기능용 (필요시 추가)
 
-    private final String uploadDir = "/pet/src/main/resources/static/img/uploads/";
+    private String uploadDir = "pet/src/main/resources/static/uploads/dog/";
 
 
     // 🔥 1️⃣ 회원가입 중 (userId 없이)
@@ -70,7 +71,7 @@ public class DogService {
                 Dogimg dogimg = new Dogimg();
                 dogimg.setDog(dog);
                 dogimg.setDititle(image.getOriginalFilename());
-                dogimg.setDiurl("/img/uploads/" + filename);
+                dogimg.setDiurl("/uploads/dog/" + filename);
                 dogimgRepository.save(dogimg);
 
             } catch (IOException e) {
@@ -236,7 +237,13 @@ public class DogService {
                 ))
                 .collect(Collectors.toList());
     }
-
+    public void deleteDogById(Long dno, Principal principal) {
+        User user = userRepository.findByUemail(principal.getName()).orElseThrow();
+        Dog dog = dogRepository.findById(dno)
+                .filter(d -> d.getOwner().getUno().equals(user.getUno()))
+                .orElseThrow(() -> new RuntimeException("강아지를 찾을 수 없거나 권한 없음"));
+        dogRepository.delete(dog);
+    }
     // ===== 유틸리티 메서드 =====
 
     private boolean isEmptyString(String str) {

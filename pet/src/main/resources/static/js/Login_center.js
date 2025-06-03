@@ -14,7 +14,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
     waitForAddFamilyModal();
 });
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAndRenderDogProfiles();
+});
 
+function renderDogsGrid(dogs) {
+    const grid = document.querySelector('.profiles_grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    dogs.forEach(dog => {
+        const item = document.createElement('div');
+        item.className = 'profile_item';
+        let imgDiv = '';
+        if (dog.image && dog.image.diurl) {
+            imgDiv = `
+                <div class="profile_image">
+                    <img src="${dog.image.diurl}" alt="${dog.dname} 프로필 이미지">
+                </div>
+            `;
+        } else {
+            imgDiv = `
+                <div class="profile_image profile_initial">
+                    <span>${dog.dname.charAt(0)}</span>
+                </div>
+            `;
+        }
+        item.innerHTML = `
+            ${imgDiv}
+            <div class="profile_name">${dog.dname}</div>
+        `;
+        grid.appendChild(item);
+    });
+}
+
+// 전체 강아지 목록 가져오기 함수
+function fetchAndRenderDogProfiles() {
+    fetch('/api/mypage/dogs')
+        .then(res => res.json())
+        .then(apiDogs => {
+            const dogsData = apiDogs.map(dog => ({
+                dno: dog.id,
+                dname: dog.name,
+                image: dog.imageUrl ? { diurl: dog.imageUrl } : null,
+                // status 필드는 logincenter 전용에서만 관리 (DB X)
+                status: dog.status || '온라인'  // 서버에 없으면 기본값(임시)
+            }));
+            // window.dogsData에 저장(공통)
+            window.dogsData = dogsData;
+
+            // 강아지 목록 그리기
+            renderDogsGrid(dogsData);
+
+            // logincenter면 status select도 그리기
+            if (document.querySelector('.pet_statuses')) {
+                renderStatusSelects(dogsData);
+            }
+        });
+}
+function renderStatusSelects(dogs) {
+    const statuses = document.querySelector('.pet_statuses');
+    if (!statuses) return;
+    statuses.innerHTML = '';
+    dogs.forEach(dog => {
+        const sDiv = document.createElement('div');
+        sDiv.className = 'pet_status';
+        sDiv.innerHTML = `
+            <span class="status_label">${dog.dname}</span>
+            <div class="status_select">
+                <select class="status_dropdown" data-dog-id="${dog.dno}">
+                    <option value="온라인" ${dog.status === '온라인' ? 'selected' : ''}>온라인</option>
+                    <option value="밥 먹는 중" ${dog.status === '밥 먹는 중' ? 'selected' : ''}>밥 먹는 중</option>
+                    <option value="산책 중" ${dog.status === '산책 중' ? 'selected' : ''}>산책 중</option>
+                    <option value="잠자는 중" ${dog.status === '잠자는 중' ? 'selected' : ''}>잠자는 중</option>
+                    <option value="으르렁" ${dog.status === '으르렁' ? 'selected' : ''}>으르렁</option>
+                </select>
+            </div>
+        `;
+        statuses.appendChild(sDiv);
+    });
+    setupStatusChangeEvents(); // 상태 변경 이벤트 연결!
+}
 // 메인 초기화 함수
 function initializeLoginCenter() {
     console.log('Login_center.js 초기화 시작');
@@ -502,7 +581,7 @@ function initializeLoginCenter() {
 
     // 새 프로필 추가 함수를 전역으로 노출
     window.handleNewProfileAdded = handleNewProfileAdded;
-
+    window.fetchAndRenderDogProfiles = fetchAndRenderDogProfiles;
     // ===== 초기화 실행 =====
 
     // 모든 이벤트 리스너 및 초기화 실행

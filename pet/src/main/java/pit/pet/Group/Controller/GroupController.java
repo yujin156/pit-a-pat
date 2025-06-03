@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
@@ -102,6 +103,7 @@ public class GroupController {
     @PostMapping("/api/create")
     @ResponseBody
     public ResponseEntity<?> createGroupViaApi(@ModelAttribute @Valid CreateGroupRequest request,
+                                               @RequestParam(value = "gimg", required = false) MultipartFile gimg,
                                                @AuthenticationPrincipal UserDetails principal) {
 
         if (principal == null) {
@@ -117,6 +119,8 @@ public class GroupController {
             return ResponseEntity.badRequest().body("관심사(키워드)를 선택하지 않았습니다.");
         }
 
+        // ✅ 서비스로 이미지까지 같이 넘기기
+        request.setGimg(gimg);
         groupService.createGroup(request, dog);
 
         return ResponseEntity.ok("그룹 생성 완료!");

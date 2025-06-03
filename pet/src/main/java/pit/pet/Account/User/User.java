@@ -49,9 +49,7 @@ public class User {
     @JsonManagedReference("user-dogs")
     private List<Dog> dogs = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "uno")
-    @JsonManagedReference("user-address")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Address address;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -60,4 +58,18 @@ public class User {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    public boolean isCompleted() {
+        return ugender != null
+                && uBday != null
+                && upno != null
+                && address != null
+                && address.getCity() != null
+                && address.getCounty() != null
+                && address.getTown() != null
+                && tosTable != null
+                && Boolean.TRUE.equals(tosTable.getAssent())
+                && Boolean.TRUE.equals(tosTable.getPrivacyAgree());
+    }
 }
+

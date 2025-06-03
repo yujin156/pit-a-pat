@@ -22,8 +22,7 @@ public class Address {
     @Column(name = "town", nullable = false)
     private String town;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uno")
-    @JsonBackReference("user-address")
+    @OneToOne
+    @JoinColumn(name = "uno", unique = true)
     private User user;
 }
