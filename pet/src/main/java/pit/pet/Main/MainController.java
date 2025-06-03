@@ -43,23 +43,19 @@ public class MainController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
-        // 1) principal이 null이 아닐 때만
         if (principal != null) {
-            // 2) 로그인한 유저 엔티티 조회
             String email = principal.getUsername();
             User me = userRepository.findByUemail(email)
-                    .orElseThrow(() ->
-                            new UsernameNotFoundException("User not found: " + email));
-
-            // 3) 그 유저의 강아지 리스트만 조회
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+            if (!me.isCompleted()) {
+                return "redirect:/user/missing-info";
+            }
             List<Dog> myDogs = dogRepository.findByOwner(me);
             model.addAttribute("dogs", myDogs);
-
-            // (선택) 사용자 이름도 넘겨주면 뷰에서 편하게 쓸 수 있습니다
             model.addAttribute("uname", me.getUname());
         } else {
-            // 비로그인 상태인 경우 빈 리스트라도 넘겨주면 Thymeleaf 오류 방지
             model.addAttribute("dogs", Collections.emptyList());
+            model.addAttribute("uname", ""); // 이 한 줄 추가!
         }
 
         if (error != null) {
@@ -67,6 +63,7 @@ public class MainController {
         }
         return "Home";
     }
+
 
 
     // ────────────────────────────────────────────────────────────

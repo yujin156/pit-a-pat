@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pit.pet.Account.Service.CustomUserDetailsService;
 import pit.pet.Security.JWT.JwtTokenFilter;
+import pit.pet.config.OAuth2LoginSuccessHandler;
 
 @Slf4j
 @Configuration
@@ -21,6 +22,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -47,6 +49,11 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login") // 또는 default
+                        .successHandler(oAuth2LoginSuccessHandler)
+
+                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 유지 허용
                 )

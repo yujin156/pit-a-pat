@@ -49,7 +49,8 @@ const SVG_ICONS = {
 
 // 템플릿 생성 함수들
 function createPostCard(post) {
-    const participantsHTML = post.participants.map(avatar =>
+    // participants 필드가 없거나 undefined/null이면 빈 배열로 대체
+    const participantsHTML = (post.participants || []).map(avatar =>
         `<img src="${avatar}" alt="참가자" class="myPage_participant_avatar">`
     ).join('');
 
@@ -155,17 +156,22 @@ function createBookmarkPost(item) {
 }
 
 function createDogProfileCard(profile) {
-    const imageUrl = profile.image?.diurl || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop&crop=face';
+    const profileId = profile.id;  // ← 이제 id 필드 사용!
+    const imageUrl = profile.imageUrl || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop&crop=face';
+    const genderText = profile.gender === 'MALE' ? '수컷' : '암컷';
 
     return `
-        <div class="myPage_dog_card" data-profile-id="${profile.id}">
-            <img src="${imageUrl}" 
-                 alt="${profile.name}" class="dog-image">
+        <div class="myPage_dog_card" data-profile-id="${profileId}">
+            <img src="${imageUrl}" alt="${profile.name}" class="dog-image">
             <div class="myPage_dog_info">
                 <h4>${profile.name}</h4>
-                <p>${getSizeLabel(profile.size)} ${profile.breed} ${profile.gender === 'male' ? '수컷' : '암컷'}</p>
+                <p>
+                    <span>${getSizeLabel(profile.size)}</span>
+                    <span>${profile.breed}</span>
+                    <span>${genderText}</span>
+                </p>
             </div>
-            <button class="myPage_dog_more_btn" onclick="showDogProfileMenu(event, ${profile.id})">⋯</button>
+            <button class="myPage_dog_more_btn">⋯</button>
         </div>
     `;
 }
@@ -179,7 +185,6 @@ function getSizeLabel(size) {
     };
     return sizeLabels[size] || size;
 }
-
 function fetchAndRenderPosts() {
     fetch('/api/mypage/posts')
         .then(res => res.json())
@@ -489,8 +494,48 @@ function showContextMenu(event, type = 'general', id = null) {
     }, 10);
 }
 
+// 실제 데이터 불러오기 (AJAX)
+function mypageFetchAndRenderDogProfiles() {
+    fetch('/api/mypage/dogs')
+        .then(res => res.json())
+        .then(data => {
+            dogProfiles = data;
+            renderDogProfiles();
+        })
+        .catch(err => {
+            console.error('강아지 목록 불러오기 실패:', err);
+        });
+}
+
+function deleteItem(type, id) {
+    if (type === 'profile' && id) {
+        if (!confirm('정말로 이 강아지 프로필을 삭제하시겠습니까?')) return;
+        // 실제 삭제 요청
+        fetch(`/api/mypage/${id}`, { method: 'DELETE' })
+            .then(res => {
+                if (!res.ok) throw new Error('삭제 실패');
+                return res.text();
+            })
+            .then(msg => {
+                alert(msg);
+                if (typeof window.mypageFetchAndRenderDogProfiles === 'function') {
+                    window.mypageFetchAndRenderDogProfiles(); // 목록 다시 불러오기
+                }
+            })
+            .catch(err => {
+                alert('❌ 삭제 실패: ' + err.message);
+            });
+    } else {
+        if (confirm('이 항목을 삭제하시겠습니까?')) {
+            alert('삭제 기능을 실행합니다.');
+        }
+    }
+
+    document.getElementById('contextMenu')?.remove();
+}
+
 function showDogProfileMenu(event, profileId) {
-    event.stopPropagation();
+    console.log('[DEBUG] showDogProfileMenu 호출됨:', profileId);
     showContextMenu(event, 'profile', profileId);
 }
 
@@ -508,22 +553,6 @@ function editItem(type, id) {
     document.getElementById('contextMenu')?.remove();
 }
 
-function deleteItem(type, id) {
-    if (type === 'profile' && id) {
-        const profile = dogProfiles.find(p => p.id == id);
-        if (profile && confirm(`${profile.name} 프로필을 삭제하시겠습니까?`)) {
-            dogProfiles = dogProfiles.filter(p => p.id != id);
-            renderDogProfiles();
-            alert('프로필이 삭제되었습니다.');
-        }
-    } else {
-        if (confirm('이 항목을 삭제하시겠습니까?')) {
-            alert('삭제 기능을 실행합니다.');
-        }
-    }
-
-    document.getElementById('contextMenu')?.remove();
-}
 
 function shareItem(type, id) {
     alert('공유 기능을 실행합니다.');
@@ -560,7 +589,7 @@ tabToggleButtons.forEach(button => {
 // 페이지 초기화
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM 로드 완료');
-
+    mypageFetchAndRenderDogProfiles();
     // 기본 탭 활성화
     switchTab('profile');
 
@@ -596,7 +625,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndRenderPosts();
     fetchAndRenderComments();
 });
-
+document.body.addEventListener('click', function(e) {
+    // 1) 로그 찍어서 진짜 버튼까지 오는지 확인
+    if (e.target.classList.contains('myPage_dog_more_btn')) {
+        const card = e.target.closest('.myPage_dog_card');
+        const profileId = card ? card.dataset.profileId : null;
+        console.log('[DEBUG] 더보기 버튼 클릭됨! profileId:', profileId); // 로그 추가!
+        if (profileId) {
+            showDogProfileMenu(e, profileId);
+        }
+    }
+});
 // 전역 함수로 노출 (HTML 및 모달에서 호출 가능)
 window.editItem = editItem;
 window.deleteItem = deleteItem;
@@ -604,5 +643,5 @@ window.shareItem = shareItem;
 window.showDogProfileMenu = showDogProfileMenu;
 window.addDogProfile = addDogProfile;
 window.renderDogProfiles = renderDogProfiles;
-
+window.fetchAndRenderPosts = fetchAndRenderPosts;
 console.log('MyPage JavaScript 파일 로드 완료');
