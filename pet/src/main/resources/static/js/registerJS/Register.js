@@ -3,6 +3,10 @@ let currentStep = 1;
 const totalSteps = 5;
 let dogImageIndex = 0;
 
+// ✅ 강아지 순서를 위한 전역 변수
+let currentDogIndex = 1;
+let totalDogs = 1;
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Register 시스템 로드됨');
     initializeTermsCheckboxes();
@@ -137,7 +141,10 @@ function nextStep() {
             alert('🐶 강아지 마리 수를 선택해주세요!');
             return;
         }
-        document.querySelector('.content_step#content_step3 iframe').src = `/dog/register/step3?currentDogIndex=1&totalDogs=${dogCount}`;
+        totalDogs = parseInt(dogCount, 10);
+        currentDogIndex = 1; // ✅ 초기화
+
+        document.querySelector('.content_step#content_step3 iframe').src = `/dog/register/step3?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}`;
     }
 
     // Step3 → Step4
@@ -161,36 +168,29 @@ function nextStep() {
     // Step4 → Step5
     if (currentStep === 4) {
         const activeIframe = document.querySelector('.content_step#content_step4 iframe');
+
+        // Step4 iframe이 로드되고 나서 dogId가 생성되는 시점에 아래 로직 실행
         activeIframe.onload = () => {
             console.log('✅ Step4 iframe onload 발생');
             const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
+
+            // Step4에서 dogId 생성
             const dogIdInput = iframeDoc.querySelector('input[name="dogId"]');
-            if (dogIdInput) {
-                const dogId = dogIdInput.value;
-                console.log('🐶 dogId 가져온 값:', dogId);
 
-                const urlParams = new URL(activeIframe.src).searchParams;
-                const currentDogIndex = urlParams.get('currentDogIndex');
-                const totalDogs = urlParams.get('totalDogs');
+            if (dogIdInput && dogIdInput.value) {
+                const dogId = dogIdInput.value; // dogId 값 가져오기
 
-                console.log('✅ Step5 iframe으로 넘기는 파라미터:', {
-                    currentDogIndex,
-                    totalDogs,
-                    dogId
-                });
-
-                document.querySelector('.content_step#content_step5 iframe').src =
-                    `/dog/register/step5?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}&dogId=${dogId}`;
-
-                document.querySelector('.content_step#content_step5').classList.add('active');
-
+                // 2. URL 파라미터로 currentDogIndex, totalDogs, dogId 세팅
+                const step5Iframe = document.querySelector('.content_step#content_step5 iframe');
+                step5Iframe.src = `/dog/register/step5?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}&dogId=${dogId}`;
             } else {
                 console.warn('⚠️ dogId를 못찾았음! 다시 시도 필요');
             }
         };
     }
 
-    // Step5: 키워드 선택 form submit
+
+    // Step5: 키워드 선택 form submit → 여기서만 최종 완료!
     if (currentStep === 5) {
         const activeIframe = document.querySelector('.content_step#content_step5 iframe');
         const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
@@ -198,23 +198,29 @@ function nextStep() {
         if (form) {
             form.submit();
 
-            // ⭐️ currentStep을 증가시키거나 updateStep을 호출하지 않는다.
-            // ⭐️ 바로 회원가입 완료 처리!
-            const nextBtn = document.getElementById('nextBtn');
-            if (nextBtn) {
-                nextBtn.disabled = true;
+            // ✅ 마지막 강아지가 아니면 다시 step3으로 루프
+            if (currentDogIndex < totalDogs) {
+                currentDogIndex++;
+                currentStep = 3; // 다시 step3부터 시작!
+                document.querySelector('.content_step#content_step3 iframe').src =
+                    `/dog/register/step3?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}`;
+                updateStep();
+                return;
+            } else {
+                // 마지막 강아지면 step5 iframe 요청 → 최종 완료!
+                // ✅ 마지막 강아지 dogId를 여기서 다시 요청!
+                const dogIdInput = iframeDoc.querySelector('input[name="dogId"]');
+                const dogId = dogIdInput ? dogIdInput.value : '';
+                document.querySelector('.content_step#content_step5 iframe').src =
+                    `/dog/register/step5?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}&dogId=${dogId}`;
+                updateStep();
+                completeRegistration();
+                return;
             }
-            completeRegistration();
-            alert('회원가입이 완료되었습니다!');
-            goHome();
-
-            return; // ⭐️ 여기서 끝!
-        } else {
-            console.warn('❌ Step5의 form을 찾을 수 없습니다!');
         }
     }
 
-    // Step2~5: iframe 내부 form submit
+    // Step2~4: iframe 내부 form submit 후 다음 스텝으로 이동
     const activeIframe = document.querySelector('.content_step.active iframe');
     if (activeIframe) {
         const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
@@ -231,21 +237,6 @@ function nextStep() {
     if (currentStep < totalSteps) {
         currentStep++;
         updateStep();
-    } else {
-        const nextBtn = document.getElementById('nextBtn');
-        if (nextBtn) {
-            nextBtn.disabled = true;
-        }
-
-        // 회원가입 완료 처리
-        completeRegistration();
-
-        // 마지막 단계 처리 (강아지 키워드까지 완료)
-        alert('회원가입이 완료되었습니다!');
-        goHome();
-
-        return; // ⭐️ 여기서 종료!
-
     }
 }
 
@@ -269,9 +260,3 @@ function completeRegistration() {
     alert('회원가입이 완료되었습니다!');
     window.location.href = '/';
 }
-
-
-// 전역 함수 유지!
-// window.nextStep = nextStep;
-// window.prevStep = prevStep;
-// window.goHome = goHome;

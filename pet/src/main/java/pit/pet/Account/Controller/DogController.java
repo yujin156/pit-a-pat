@@ -98,7 +98,6 @@ public class DogController {
                                      Model model) {
 
         List<DogKeyword1> keywords = keyword1Repository.findAll();
-        System.out.println("🔍 Step5 키워드 목록: " + keywords.size() + "개");
         for (DogKeyword1 keyword1 : keywords) {
             System.out.println("  👉 " + keyword1.getDktag());
         }

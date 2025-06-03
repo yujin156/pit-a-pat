@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<form th:action="@{/user/missing-info}" method="post">
+  <div class="mb-3">
+    <label>성별</label>
+    <select name="gender" class="form-select" required>
+      <option value="MALE">남자</option>
+      <option value="FEMALE">여자</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>생년월일</label>
+    <input type="date" name="bday" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>전화번호</label>
+    <input type="text" name="pno" class="form-control" placeholder="010-1234-5678" required>
+  </div>
+
+  <!-- 주소 3단 -->
+  <div class="mb-3">
+    <label>주소(시/도)</label>
+    <select class="form-select" name="city" id="sido" required>
+      <option value="">시/도 선택</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>주소(시/군/구)</label>
+    <select class="form-select" name="county" id="sigungu" required disabled>
+      <option value="">시/군/구 선택</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>주소(읍/면/동)</label>
+    <select class="form-select" name="town" id="dong" required disabled>
+      <option value="">읍/면/동 선택</option>
+    </select>
+  </div>
+
+  <!-- 약관동의 -->
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="assent" id="assent" required>
+    <label class="form-check-label" for="assent">이용약관에 동의합니다.</label>
+  </div>
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="privacyAgree" id="privacyAgree" required>
+    <label class="form-check-label" for="privacyAgree">개인정보 처리방침에 동의합니다.</label>
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" name="marketingAgree" id="marketingAgree">
+    <label class="form-check-label" for="marketingAgree">마케팅 수신에 동의합니다. (선택)</label>
+  </div>
+  <button type="submit" class="btn btn-primary w-100">저장</button>
+</form>
+
+<!-- 주소 드롭다운 연동 스크립트는 위 답변 참고(생략) -->
+
+<script>
+  $(function() {
+    // 1. 시/도 전체 로드
+    $.get("/api/regions/sido", function(data) {
+      console.log("실제 응답 데이터:", data);   // 여기서 반드시 배열이어야 함
+      data.forEach(region => {
+        $("#sido").append(`<option value="${region.code}">${region.name}</option>`);
+      });
+    });
+
+    // 2. 시/도 선택 시 시/군/구 로드
+    $("#sido").on("change", function() {
+      let sidoCode = $(this).val();
+      $("#sigungu").empty().append('<option value="">시/군/구 선택</option>');
+      $("#dong").empty().append('<option value="">읍/면/동 선택</option>').prop("disabled", true);
+
+      if (!sidoCode) {
+        $("#sigungu").prop("disabled", true);
+        return;
+      }
+      $("#sigungu").prop("disabled", false);
+
+      $.get("/api/regions/sigungu", { code: sidoCode }, function(data) {
+        console.log("✅ [DEBUG] sigungu data:", data);
+        data.forEach(region => {
+          $("#sigungu").append(`<option value="${region.code}">${region.name}</option>`);
+        });
+      });
+    });
+
+    // 3. 시/군/구 선택 시 읍/면/동 로드
+    $("#sigungu").on("change", function() {
+      let sigunguCode = $(this).val();
+      $("#dong").empty().append('<option value="">읍/면/동 선택</option>');
+
+      if (!sigunguCode) {
+        $("#dong").prop("disabled", true);
+        return;
+      }
+      $("#dong").prop("disabled", false);
+
+      $.get("/api/regions/dong", { code: sigunguCode }, function(data) {
+        console.log("✅ [DEBUG] dong data:", data);
+        data.forEach(region => {
+          $("#dong").append(`<option value="${region.code}">${region.name}</option>`);
+        });
+      });
+    });
+  });
+
+</script>
+</body>
+</html>

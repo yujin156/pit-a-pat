@@ -39,15 +39,25 @@ public class BoardWriteService {
     private final BoardImgRepository boardImgRepository;
     private final DogRepository dogRepository;
     private final GroupRepository groupRepository; // ✅ 그룹 리포지토리로 대체
-
-    private final String uploadDir = new File("pet/src/main/resources/static/uploads/img").getAbsolutePath();
+    private String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/uploads/img";
+            String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path filepath = Paths.get(uploadDir, filename);
+            Files.createDirectories(filepath.getParent());
+            Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/img/" + filename;
+        } catch (Exception e) {
+            throw new RuntimeException("이미지 저장 실패", e);
+        }
+    }
 
     @PersistenceContext
     private EntityManager entityManager;
 
     // ✅ 게시글 작성
     @Transactional
-    public BoardTable createPost(BoardCreateRequest request, BoardImgUploadRequest imgRequest) {
+    public BoardTable createPost(BoardCreateRequest request, List<MultipartFile> newImages, Long dno) {
         Dog dog = dogRepository.findById(request.getDno())
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
         GroupTable group = groupRepository.findById(request.getGno())
@@ -60,35 +70,28 @@ public class BoardWriteService {
 
         BoardTable savedBoard = boardRepository.save(board);
 
-        List<MultipartFile> images = imgRequest.getImageFiles();
-        if (images != null && !images.isEmpty()) {
-            for (MultipartFile image : images) {
+        // 🌟 여기서 newImages 로그를 찍어보자!
+        System.out.println("🔥 createPost - newImages: " + newImages);
+        if (newImages != null) {
+            for (MultipartFile file : newImages) {
+                System.out.println("  🔹 fileName: " + file.getOriginalFilename() + ", size: " + file.getSize());
+            }
+        }
+
+
+        // 🔥 여기서 직접 newImages로 처리!
+        if (newImages != null && !newImages.isEmpty()) {
+            for (MultipartFile image : newImages) {
                 if (image.isEmpty()) continue;
 
-                try {
-                    // 파일명 랜덤으로 생성
-                    String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                    Path savePath = Paths.get(uploadDir, fileName);
+                String imgUrl = saveImage(image); // ⭐️ 공통 메서드 사용
 
-                    // 디렉토리 없으면 생성
-                    Files.createDirectories(savePath.getParent());
-
-                    // 파일 복사
-                    Files.copy(image.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
-
-                    // DB에는 웹에서 접근 가능한 경로로 저장!
-                    BoardImgTable img = new BoardImgTable();
-                    img.setBoard(savedBoard);
-                    img.setBiurl("/uploads/img/" + fileName); // ✅ 웹 URL만 저장!
-                    img.setBititle("첨부 이미지");
-                    img.setBiuploadedat(LocalDateTime.now());
-                    boardImgRepository.save(img);
-                    System.out.println("💡 uploadDir = " + uploadDir);
-                    System.out.println("✅ 이미지 저장 성공: " + img.getBiurl());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("이미지 저장 실패", e);
-                }
+                BoardImgTable img = new BoardImgTable();
+                img.setBoard(savedBoard);
+                img.setBiurl(imgUrl);
+                img.setBititle("첨부 이미지");
+                img.setBiuploadedat(LocalDateTime.now());
+                boardImgRepository.save(img);
             }
             boardImgRepository.flush();
         }
@@ -109,6 +112,8 @@ public class BoardWriteService {
             if (!board.getWriterdog().getDno().equals(dno)) {
                 throw new SecurityException("수정 권한 없음");
             }
+
+            System.out.println("삭제할 bino들: " + deleteImgIds);
 
             // ✅ 삭제 대상 이미지 제거
             if (deleteImgIds != null && !deleteImgIds.isEmpty()) {
@@ -134,27 +139,21 @@ public class BoardWriteService {
                 for (MultipartFile image : newImages) {
                     if (image.isEmpty()) continue;
 
-                    try {
-                        String uploadDir = new File("src/main/resources/static/uploads/img").getAbsolutePath();
-                        String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                        Path filepath = Paths.get(uploadDir, filename);
-                        Files.createDirectories(filepath.getParent());
-                        Files.copy(image.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+                    String imgUrl = saveImage(image); // ⭐️ 공통 메서드 사용
 
-                        BoardImgTable img = new BoardImgTable();
-                        img.setBoard(board);
-                        // ✅ /uploads/img로 경로 통일!
-                        img.setBiurl("/uploads/img/" + filename);
-                        img.setBititle("첨부 이미지");
-                        img.setBiuploadedat(LocalDateTime.now());
+                    BoardImgTable img = new BoardImgTable();
+                    img.setBoard(board);
+                    img.setBiurl(imgUrl);
+                    img.setBititle("첨부 이미지");
+                    img.setBiuploadedat(LocalDateTime.now());
 
-                        board.getImages().add(img);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    board.getImages().add(img);
                 }
             }
+
+            // 🔥 진짜 반영 로직!
+            boardRepository.save(board);
+            entityManager.flush();
         }
 
         // ✅ 게시글 삭제

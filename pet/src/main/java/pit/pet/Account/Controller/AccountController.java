@@ -9,27 +9,30 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pit.pet.Account.Repository.AddressRepository;
 import pit.pet.Account.Repository.TOSTableRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.Request.DogRegisterRequest;
 import pit.pet.Account.Service.CustomUserDetails;
 import pit.pet.Account.Service.DogService;
 import pit.pet.Account.Service.UserService;
-import pit.pet.Account.User.Address;
-import pit.pet.Account.User.TOSTable;
-import pit.pet.Account.User.User;
+import pit.pet.Account.User.*;
+import pit.pet.Security.CustomOAuth2User;
 import pit.pet.Security.JWT.JwtTokenProvider;
-import pit.pet.Account.User.Role;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,6 +46,7 @@ public class AccountController {
     private final TOSTableRepository tosTableRepository;
     private final DogService dogService;
     private final ObjectMapper objectMapper;
+    private final AddressRepository addressRepository;
 
     @GetMapping("/register")
     public String showRegisterForm() {
@@ -81,7 +85,6 @@ public class AccountController {
                                @RequestParam(value = "marketingAgree", required = false) Boolean marketingAgree,
                                HttpSession session,
                                HttpServletResponse response) {
-        System.out.println(dogCount);
 
         // ✅ TOSTable 인스턴스 생성 및 동의서 정보 세팅
         TOSTable tosTable = new TOSTable();
@@ -167,10 +170,6 @@ public class AccountController {
 
         User user = optionalUser.get();
 
-        System.out.println("🔍 DB 암호화된 패스워드: " + user.getUpwd());
-        System.out.println("🔍 사용자가 입력한 패스워드: " + password);
-        System.out.println("🔍 매칭 결과: " + bCryptPasswordEncoder.matches(password, user.getUpwd()));
-
         if (!bCryptPasswordEncoder.matches(password, user.getUpwd())) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return "Account/Login_center";
@@ -234,7 +233,6 @@ public class AccountController {
 
         // 모델에 사용자 정보와 강아지 목록 추가
         model.addAttribute("user", user);
-        model.addAttribute("dogList", dogService.getDogsByUser(user.getUno()));
 
         return "Mypage"; // 템플릿 경로 맞게 수정 (ex: templates/Account/mypage.html)
     }
@@ -245,7 +243,10 @@ public class AccountController {
             @RequestPart("dog") String dogJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal CustomUserDetails principal) {
-
+        if (principal == null) {
+            // 비로그인 상태 방어
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
         try {
             DogRegisterRequest request = objectMapper.readValue(dogJson, DogRegisterRequest.class);
             request.setImageFile(imageFile);
@@ -266,6 +267,64 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록 실패: " + e.getMessage());
         }
     }
+    @GetMapping("/missing-info")
+    public String missingInfoForm(Model model, @AuthenticationPrincipal CustomOAuth2User user) {
+        model.addAttribute("user", user.getUser());
+        return "register/missing-info";
+    }
+
+    @PostMapping("/missing-info")
+    public String missingInfoSubmit(
+            @AuthenticationPrincipal CustomOAuth2User oAuthUser,
+            @RequestParam String gender,
+            @RequestParam String bday,
+            @RequestParam String pno,
+            @RequestParam String city,
+            @RequestParam String county,
+            @RequestParam String town,
+            @RequestParam(name="assent") Boolean assent,
+            @RequestParam(name="privacyAgree") Boolean privacyAgree,
+            @RequestParam(name="marketingAgree", required = false, defaultValue = "false") Boolean marketingAgree
+    ) {
+        User u = oAuthUser.getUser();
+        u.setUgender(Gender.valueOf(gender));
+        u.setUBday(java.sql.Date.valueOf(bday));
+        u.setUpno(pno);
+
+        if(u.getUpwd() == null) {
+            u.setUpwd(UUID.randomUUID().toString());
+        }
+        userRepository.save(u);
+
+        Address address = u.getAddress();
+        if (address == null) address = new Address();
+        address.setCity(city);
+        address.setCounty(county);
+        address.setTown(town);
+        address.setUser(u);
+        addressRepository.save(address);
+        u.setAddress(address);
+
+        TOSTable tos = u.getTosTable();
+        if (tos == null) tos = new TOSTable();
+        tos.setAssent(assent);
+        tos.setPrivacyAgree(privacyAgree);
+        tos.setMarketingAgree(marketingAgree != null ? marketingAgree : false);
+        tos.setUser(u);
+        tosTableRepository.save(tos);
+        u.setTosTable(tos);
+
+        userRepository.save(u);
+
+        // ⭐ 인증 정보 새로 세팅!
+        // CustomOAuth2User는 네가 만든 OAuth2User 구현체여야 함
+        CustomOAuth2User updatedUser = new CustomOAuth2User(u, oAuthUser.getAttributes());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                updatedUser, null, updatedUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return "redirect:/";
+    }
+
 
 
     private void deleteCookie(String name, HttpServletResponse response) {
