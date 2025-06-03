@@ -16,6 +16,9 @@ let calendarState = {
 };
 
 let posts = []
+let deleteImgIds = [];
+let isEditMode = false;
+let editingCommentCno = null
 
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
@@ -43,63 +46,59 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // 기본 submit 막기 (Ajax 방식으로 전송하려면!)
 
         const formData = new FormData(this);
-        console.log('🐞 formData gno:', formData.get('gno'));
-        fetch('/board/create', { // 📌 서버 주소
+        const bnoInput = document.getElementById('bno');
+        const contentTextarea = document.getElementById('newContent');
+        if (isEditMode) {
+            if (bnoInput && bnoInput.value && !isNaN(parseInt(bnoInput.value))) {
+                formData.append('bno', bnoInput.value);
+            } else {
+                console.error('❌ 수정 모드인데 bno가 유효하지 않음:', bnoInput?.value);
+            }
+
+            if (contentTextarea) {
+                formData.append('newContent', contentTextarea.value.trim());
+            }
+            console.log('deleteImgIds:', deleteImgIds);
+            formData.append('deleteImgIds', deleteImgIds.join(','));
+        } else {
+            // 새 글 작성할 때는 content로!
+            if (contentTextarea) {
+                formData.append('content', contentTextarea.value.trim());
+            }
+        }
+
+        // ✅ formData 내용 확인 로그!
+        console.log('🐞 formData 최종 확인');
+        for (let pair of formData.entries()) {
+            console.log(pair[0]+ ', '+ pair[1]);
+        }
+
+        const url = isEditMode ? '/board/api/update' : '/board/api/create';
+
+        fetch(url, {
             method: 'POST',
             body: formData
         })
             .then(response => response.ok ? response.text() : Promise.reject(response))
             .then(data => {
-                console.log('✅ 게시글 작성 성공:', data);
+                console.log(isEditMode ? '✅ 게시글 수정 성공' : '✅ 게시글 작성 성공', data);
 
                 // 모달 닫기
                 hideCreatePostModal();
 
-                // 이후 UI 업데이트 (예: 새 게시물 렌더링)
+                // 이후 UI 업데이트
                 createPosts(); // 혹은 게시물 새로고침
 
-                // 메시지 표시 등...
-                showSuccessMessage('게시글이 성공적으로 작성되었습니다! 🎉');
+                // 메시지 표시
+                showSuccessMessage(isEditMode ? '게시글이 성공적으로 수정되었습니다! 🎉' : '게시글이 성공적으로 작성되었습니다! 🎉');
+
+                deleteImgIds = [];
             })
             .catch(error => {
-                console.error('❌ 게시글 작성 실패:', error);
+                console.error(isEditMode ? '❌ 게시글 수정 실패:' : '❌ 게시글 작성 실패:', error);
             });
-        document.querySelectorAll(".comment-options-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const menu = e.target.nextElementSibling;
-                menu.style.display = menu.style.display === "block" ? "none" : "block";
-            });
-        });
-
-        document.querySelectorAll(".delete-comment-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const commentItem = e.target.closest(".modal_text");
-                const cno = commentItem.dataset.cno;
-                if (confirm("정말 삭제하시겠습니까?")) {
-                    fetch(`/api/comments/${cno}`, { method: "DELETE" })
-                        .then(() => location.reload());
-                }
-            });
-        });
-
-        document.querySelectorAll(".edit-comment-btn").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const commentItem = e.target.closest(".modal_text");
-                const cno = commentItem.dataset.cno;
-                const oldText = commentItem.querySelector(".modal_post_text").innerText;
-                const newText = prompt("댓글 수정", oldText);
-                if (newText) {
-                    fetch(`/api/comments/${cno}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ text: newText })
-                    }).then(() => location.reload());
-                }
-            });
-        });
     });
+
     console.log('🚀 페이지 로드 완료 - 초기화 시작');
 
     function loadMyGroupDogs(gno) {
@@ -117,6 +116,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .catch(error => console.error('❌ 강아지 목록 불러오기 실패:', error));
+    }
+
+    function setEditImage(imageUrl, imgId) {
+        const imagePreview = document.getElementById('imagePreview');
+        if (imagePreview) {
+            imagePreview.src = imageUrl;
+            imagePreview.style.display = 'block';
+            imagePreview.dataset.imgId = imgId; // ← PK 저장
+        }
     }
 
     // 게시물 생성
@@ -234,7 +242,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // const imageUrl = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
 
-        const imageUrl = (post.images || []).map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
+        const imageUrl = (post.images || [])
+            .filter(url => typeof url === 'string' && url.startsWith('/uploads/img/'))
+            .map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image" onerror="this.onerror=null;this.src='/uploads/img/default.jpg'"/>`)
+            .join('');
 
         const dogName = post.writerDogName || '알 수 없음';
         console.log('🐞 createPostElement post:', post);
@@ -251,13 +262,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="post_menu_btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="5" height="23" viewBox="0 0 5 23">
+                        <svg class="post_menu_toggle" xmlns="http://www.w3.org/2000/svg" width="5" height="23" viewBox="0 0 5 23">
                           <g id="그룹_162502" data-name="그룹 162502" transform="translate(-9196 -5930)">
                             <circle id="타원_9374" data-name="타원 9374" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5930)" fill="#b7b7b7"/>
                             <circle id="타원_9375" data-name="타원 9375" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5939)" fill="#b7b7b7"/>
                             <circle id="타원_9376" data-name="타원 9376" cx="2.5" cy="2.5" r="2.5" transform="translate(9196 5948)" fill="#b7b7b7"/>
                           </g>
                         </svg>
+                        
+                        <div class="post_menu_options">
+                           <button class="edit_post_btn">수정</button>
+                           <button class="delete_post_btn">삭제</button>
+                        </div>
                     </div>
                 </div>
                     <div class="board_post_img" data-post-index="${index}">
@@ -393,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 comments.forEach(comment => {
                     const commentItem = document.createElement('div');
                     commentItem.classList.add('comment_item');
+                    commentItem.setAttribute('data-cno', comment.bcno);
                     commentItem.innerHTML = `
                     <div class="comment_profile">
                         <img src="${comment.profileUrl}" alt="user">
@@ -400,6 +417,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="comment_text">
                         <span class="comment_username">${comment.dogName}</span>
                         <span>${comment.bccomment}</span>
+                        <span class="comment_menu_btn">
+                            <svg class="comment_menu_toggle" width="24" height="24" viewBox="0 0 24 24">
+                                <circle cx="12" cy="5" r="2"/>
+                                <circle cx="12" cy="12" r="2"/>
+                                <circle cx="12" cy="19" r="2"/>
+                            </svg>
+                            <div class="comment_menu_options" style="display:none;">
+                                <button class="edit-comment-btn">수정</button>
+                                <button class="delete-comment-btn">삭제</button>
+                            </div>
+                        </span>
                     </div>
                 `;
                     commentContainer.appendChild(commentItem);
@@ -460,6 +488,395 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(err => console.error('❌ 댓글 로드 실패:', err));
     }
+
+    document.addEventListener('click', function(e) {
+
+        if (e.target.classList.contains('edit-comment-btn')) {
+            const commentItem = e.target.closest('.comment_item');
+            const cno = commentItem.getAttribute('data-cno');
+            const textSpan = commentItem.querySelector('.comment_text span:nth-child(2)');
+            const oldText = textSpan.textContent;
+            const modal = e.target.closest('.post_modal');
+            const input = modal.querySelector('.comment_input');
+            input.value = oldText;
+            input.focus();
+            editingCommentCno = cno;
+            input.placeholder = '댓글 수정중...';
+        }
+
+        if (e.target.closest('.comment_menu_toggle')) {
+            // 메뉴 토글
+            const menu = e.target.closest('.comment_menu_btn').querySelector('.comment_menu_options');
+            // 모든 메뉴 닫기
+            document.querySelectorAll('.comment_menu_options').forEach(m => m.style.display = 'none');
+            // 현재 것만 토글
+            menu.style.display = (menu.style.display === 'block' ? 'none' : 'block');
+            e.stopPropagation();
+        } else {
+            // 바깥 클릭 시 메뉴 닫기
+            document.querySelectorAll('.comment_menu_options').forEach(m => m.style.display = 'none');
+        }
+
+        // 댓글 입력/수정 문제
+
+        if (e.target.classList.contains('comment_submit')) {
+            const modal = e.target.closest('.post_modal');
+            const input = modal.querySelector('.comment_input');
+            const content = input.value.trim();
+            if (!content) {
+                alert('댓글 내용을 입력하세요!');
+                return;
+            }
+
+            // 수정모드일 때 (editingCommentCno 값이 있으면)
+            if (editingCommentCno) {
+                const modal = e.target.closest('.post_modal');
+                fetch(`/board/comment/api/comments/${editingCommentCno}`, {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({content})
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            // 수정한 댓글 DOM에서 텍스트만 갱신
+                            const commentItem = modal.querySelector(`.comment_item[data-cno="${editingCommentCno}"]`);
+                            if (commentItem) {
+                                commentItem.querySelector('.comment_text span:nth-child(2)').textContent = content;
+                            }
+                            // 수정모드 초기화
+                            editingCommentCno = null;
+                            input.value = '';
+                            input.placeholder = '댓글 달기...';
+                        } else {
+                            alert("댓글 수정 실패");
+                        }
+                    })
+                    .catch(err => alert('댓글 수정 오류'));
+            }
+            // 새 댓글 등록(POST)
+            else {
+                const bno = modal.getAttribute('data-bno');
+                const dno = modal.getAttribute('data-dno'); // 필요시
+                fetch('/board/api/comments', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        bno: bno,
+                        dno: dno,
+                        content: content
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        input.value = '';
+                        input.placeholder = '댓글 달기...';
+                        const commentsDiv = modal.querySelector('.modal_comments');
+                        const commentHtml = `
+                <div class="comment_item" data-cno="${data.bcno}">
+                    <div class="comment_profile">
+                        <img src="/img/default-profile.jpg" alt="user">
+                    </div>
+                    <div class="comment_text">
+                        <span class="comment_username">${data.dogName}</span>
+                        <span>${data.bccomment}</span>
+                        <span class="comment_menu_btn">
+                            <svg class="comment_menu_toggle" width="24" height="24" viewBox="0 0 24 24">
+                                <circle cx="12" cy="5" r="2"/>
+                                <circle cx="12" cy="12" r="2"/>
+                                <circle cx="12" cy="19" r="2"/>
+                            </svg>
+                            <div class="comment_menu_options" style="display:none;">
+                                <button class="edit-comment-btn">수정</button>
+                                <button class="delete-comment-btn">삭제</button>
+                            </div>
+                        </span>
+                    </div>
+                </div>`;
+                        commentsDiv.innerHTML += commentHtml;
+                    })
+                    .catch(err => {
+                        console.error('❌ 댓글 등록 실패:', err);
+                        alert('댓글 등록에 실패했습니다.');
+                    });
+            }
+        }
+
+        // 댓글 삭제
+        if (e.target.classList.contains('delete-comment-btn')) {
+            const commentItem = e.target.closest('.comment_item');
+            const cno = commentItem.getAttribute('data-cno');
+
+            console.log("삭제 클릭: ", commentItem, cno);
+
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch(`/board/comment/api/comments/${cno}`, { method: "DELETE" })
+                    .then(res => {
+                        if (res.ok) commentItem.remove();
+                        else alert("삭제 실패");
+                    });
+            }
+        }
+
+
+        // 메뉴 토글 (SVG 버튼 클릭 시)
+        if (e.target.closest('.post_menu_toggle')) {
+            const menu = e.target.closest('.post_menu_btn').querySelector('.post_menu_options');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // 게시글 수정
+        if (e.target.classList.contains('edit_post_btn')) {
+            isEditMode = true; // 수정 모드 켜기
+
+            // 1️⃣ 클릭한 게시글 div (부모 .group_board) 찾기
+            const postElement = e.target.closest('.group_board');
+
+            // 2️⃣ 거기서 data-post-id로 bno 가져오기
+            const bno = postElement.getAttribute('data-post-id');
+            console.log('✅ 수정할 게시글 번호 (bno):', bno);
+
+            // 3️⃣ 모달 열기 전에 bno hidden input에 채우기
+            const bnoInput = document.getElementById('bno');
+            if (bnoInput) {
+                bnoInput.value = bno;
+            }
+
+            // 4️⃣ 서버에서 수정할 게시글의 모든 데이터 가져오기
+            fetch(`/board/api/post/${bno}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('✅ 불러온 수정용 데이터:', data);
+
+                    // 글 내용
+                    const contentInput = document.getElementById('postContent');
+                    if (contentInput) {
+                        contentInput.value = data.bcontent || '';
+                    }
+
+                    if (data.images && data.images.length > 0 && data.imageIds && data.imageIds.length > 0) {
+                        console.log("setEditImage 호출! imgId:", data.imageIds[0]);
+                        setEditImage(data.images[0], data.imageIds[0]);
+                    } else {
+                        console.warn("이미지 PK가 없음. imageIds:", data.imageIds);
+                    }
+
+                    // 이미지 미리보기
+                    const imagePreview = document.getElementById('imagePreview');
+                    const imageUploadPlaceholder = document.getElementById('imageUploadPlaceholder');
+                    const imageActions = document.getElementById('imageActions');
+
+                    if (imagePreview && data.images && data.images.length > 0) {
+                        imagePreview.src = data.images[0];
+                        imagePreview.style.display = 'block';
+                        if (imageUploadPlaceholder) imageUploadPlaceholder.style.display = 'none'; // ✅ 이 줄!
+                        if (imageActions) imageActions.style.display = 'flex'; // 이미지가 있을 때 액션 버튼 보여주기
+                    } else if (imagePreview) {
+                        imagePreview.style.display = 'none';
+                        if (imageUploadPlaceholder) imageUploadPlaceholder.style.display = 'flex'; // ✅ 이 줄!
+                        if (imageActions) imageActions.style.display = 'none';
+                    }
+                    if (data.images && data.images.length > 0 && data.imageIds && data.imageIds.length > 0) {
+                        setEditImage(data.images[0], data.imageIds[0]);
+                        if (imageUploadPlaceholder) imageUploadPlaceholder.style.display = 'none';
+                        if (imageActions) imageActions.style.display = 'flex';
+                    }
+
+                    // 그룹번호(gno) 채우기
+                    const gnoInput = document.querySelector('input[name="gno"]');
+                    if (gnoInput) gnoInput.value = data.gno;
+
+                    // 강아지 선택
+                    const dnoSelect = document.getElementById('dno');
+                    if (dnoSelect && data.dno) {
+                        dnoSelect.value = data.dno;
+                    }
+
+                    // 5️⃣ 모달 열기
+                    showCreatePostModal(data.gno, true, bno); // true = 수정 모드!
+                })
+                .catch(err => {
+                    console.error('❌ 게시글 불러오기 실패:', err);
+                    alert('게시글 정보를 불러오는데 실패했습니다.');
+                });
+        }
+
+
+        // 게시글 삭제
+        if (e.target.classList.contains('delete_post_btn')) {
+            const postId = e.target.closest('.group_board').getAttribute('data-post-id');
+            if (confirm('정말 삭제하시겠습니까?')) {
+                fetch(`/board/api/delete?bno=${postId}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('삭제 완료!');
+                            location.reload();
+                        } else {
+                            alert('삭제 실패');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('❌ 삭제 요청 실패:', err);
+                        alert('서버 오류로 삭제 실패!');
+                    });
+            }
+        }
+
+        // 메뉴 외부 클릭 시 메뉴 닫기
+        if (!e.target.closest('.post_menu_btn')) {
+            document.querySelectorAll('.post_menu_options').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+
+        // 게시물 이미지 클릭 시 모달 열기
+        if (e.target.classList.contains('board_post_img') || e.target.closest('.board_post_img')) {
+            const postElement = e.target.closest('.board_post_img');
+            if (postElement) {
+                const postIndex = postElement.getAttribute('data-post-index');
+                if (postIndex !== null) {
+                    openModal(parseInt(postIndex));
+                }
+            }
+        }
+
+        // // ---------- 댓글 수정(put) ----------
+        // if (editingCommentCno) {
+        //     fetch(`/board/comment/api/comments/${editingCommentCno}`, {
+        //         method: "PUT",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({ content })
+        //     })
+        //         .then(res => {
+        //             if (res.ok) {
+        //                 // DOM에서 기존 댓글 텍스트만 갱신
+        //                 const commentItem = modal.querySelector(`.comment_item[data-cno="${editingCommentCno}"]`);
+        //                 if (commentItem) {
+        //                     commentItem.querySelector('.comment_text span:nth-child(2)').textContent = content;
+        //                 }
+        //                 resetEditMode(modal);
+        //             } else {
+        //                 alert("댓글 수정 실패");
+        //             }
+        //         })
+        //         .catch(err => alert('댓글 수정 오류'));
+        // }
+        // // ---------- 댓글 등록(post) ----------
+        // else {
+        //     const bno = modal.getAttribute('data-bno');
+        //     fetch('/board/comment/api/comments', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({ bno, content })
+        //     })
+        //         .then(response => response.json())
+        //         .then(newComment => {
+        //             const commentContainer = modal.querySelector('.modal_comments');
+        //             const commentItem = document.createElement('div');
+        //             commentItem.classList.add('comment_item');
+        //             commentItem.setAttribute('data-cno', newComment.bcno);
+        //             commentItem.innerHTML = `
+        //             <div class="comment_profile">
+        //               <img src="${newComment.profileUrl || '/img/default-profile.jpg'}" alt="user">
+        //             </div>
+        //             <div class="comment_text">
+        //               <span class="comment_username">${newComment.dogName}</span>
+        //               <span>${newComment.bccomment}</span>
+        //               <span class="comment_actions">
+        //                 <button class="edit-comment-btn">수정</button>
+        //                 <button class="delete-comment-btn">삭제</button>
+        //               </span>
+        //             </div>
+        //         `;
+        //             commentContainer.appendChild(commentItem);
+        //
+        //             input.value = '';
+        //         })
+        //         .catch(err => {
+        //             console.error('❌ 댓글 등록 실패:', err);
+        //             alert('댓글 등록에 실패했습니다.');
+        //         });
+        // }
+
+
+        // 좋아요 버튼 클릭
+        if (e.target.closest('.post_heart_icon')) {
+            const heartIcon = e.target.closest('.post_heart_icon');
+            const index = heartIcon.getAttribute('data-post-index');
+            if (index !== null) {
+                toggleLike(parseInt(index));
+
+                // 애니메이션 효과
+                heartIcon.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    heartIcon.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        // 북마크 버튼 클릭
+        if (e.target.closest('.post_bookmark_icon')) {
+            const bookmarkIcon = e.target.closest('.post_bookmark_icon');
+            const index = bookmarkIcon.getAttribute('data-post-index');
+            if (index !== null) {
+                toggleBookmark(parseInt(index));
+
+                // 애니메이션 효과
+                bookmarkIcon.style.transform = 'scale(1.2) rotate(10deg)';
+                setTimeout(() => {
+                    bookmarkIcon.style.transform = 'scale(1) rotate(0deg)';
+                }, 300);
+            }
+        }
+
+        // 댓글 아이콘 클릭
+        if (e.target.closest('.post_comment_icon')) {
+            const commentIcon = e.target.closest('.post_comment_icon');
+            const index = commentIcon.getAttribute('data-post-index');
+            if (index !== null) {
+                openModal(parseInt(index));
+
+                // 클릭 애니메이션
+                commentIcon.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    commentIcon.style.transform = 'scale(1)';
+                }, 150);
+            }
+        }
+        const addPostBtn = e.target.closest('.add_post_btn');
+
+        if (addPostBtn) {
+            const groupId = addPostBtn.getAttribute('data-group-id');
+            isEditMode = false; // 여기!!
+
+            console.log('✅ groupId (위임방식):', groupId);
+
+            // ✅ 방어코드: groupId가 없으면 중단
+            if (!groupId || groupId === 'undefined') {
+                console.warn('⚠️ groupId가 undefined거나 비어있습니다. 요청 중단!');
+                return;
+            }
+
+            showCreatePostModal(groupId, false);
+        }
+
+    });
+
+    // 게시물 이미지 더블클릭 좋아요
+    document.addEventListener('dblclick', function(e) {
+        if (e.target.classList.contains('board_post_img') || e.target.closest('.board_post_img')) {
+            const postElement = e.target.closest('.board_post_img');
+            if (postElement) {
+                const index = postElement.getAttribute('data-post-index');
+                if (index !== null) {
+                    posts[parseInt(index)].liked = true;
+                    updatePostLikeState(parseInt(index));
+
+                    // 하트 이펙트 생성
+                    createHeartEffect(postElement);
+                }
+            }
+        }
+    });
 
     // 좋아요 토글 함수
     function toggleLike(index) {
@@ -549,120 +966,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 이벤트 위임을 사용한 클릭 이벤트
-    document.addEventListener('click', function(e) {
-        // 게시물 이미지 클릭 시 모달 열기
-        if (e.target.classList.contains('board_post_img') || e.target.closest('.board_post_img')) {
-            const postElement = e.target.closest('.board_post_img');
-            if (postElement) {
-                const postIndex = postElement.getAttribute('data-post-index');
-                if (postIndex !== null) {
-                    openModal(parseInt(postIndex));
-                }
-            }
-        }
-
-        // 댓글 작성
-
-        if (e.target.classList.contains('comment_submit')) {
-            const modal = e.target.closest('.post_modal');
-            const input = modal.querySelector('.comment_input');
-            const bccomment = input.value.trim();
-            if (!bccomment) return;
-
-            const bno = posts[modal.getAttribute('data-post-index')].id;
-
-            const requestBody = { bno, dno, content: bccomment };
-
-            fetch('/board/comment/api/comments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-                .then(response => response.json())
-                .then(newComment => {
-                    const commentContainer = modal.querySelector('.modal_comments');
-                    const commentItem = document.createElement('div');
-                    commentItem.classList.add('comment_item');
-                    commentItem.innerHTML = `
-          <div class="comment_profile">
-            <img src="https://via.placeholder.com/28x28/fd79a8/ffffff?text=🐕" alt="user">
-          </div>
-          <div class="comment_text">
-            <span class="comment_username">${newComment.dogName}</span>
-            <span>${newComment.bccomment}</span>
-          </div>
-        `;
-                    commentContainer.appendChild(commentItem);
-
-                    input.value = '';
-                })
-                .catch(err => console.error('❌ 댓글 등록 실패:', err));
-        }
-
-        // 좋아요 버튼 클릭
-        if (e.target.closest('.post_heart_icon')) {
-            const heartIcon = e.target.closest('.post_heart_icon');
-            const index = heartIcon.getAttribute('data-post-index');
-            if (index !== null) {
-                toggleLike(parseInt(index));
-
-                // 애니메이션 효과
-                heartIcon.style.transform = 'scale(1.3)';
-                setTimeout(() => {
-                    heartIcon.style.transform = 'scale(1)';
-                }, 200);
-            }
-        }
-
-        // 북마크 버튼 클릭
-        if (e.target.closest('.post_bookmark_icon')) {
-            const bookmarkIcon = e.target.closest('.post_bookmark_icon');
-            const index = bookmarkIcon.getAttribute('data-post-index');
-            if (index !== null) {
-                toggleBookmark(parseInt(index));
-
-                // 애니메이션 효과
-                bookmarkIcon.style.transform = 'scale(1.2) rotate(10deg)';
-                setTimeout(() => {
-                    bookmarkIcon.style.transform = 'scale(1) rotate(0deg)';
-                }, 300);
-            }
-        }
-
-        // 댓글 아이콘 클릭
-        if (e.target.closest('.post_comment_icon')) {
-            const commentIcon = e.target.closest('.post_comment_icon');
-            const index = commentIcon.getAttribute('data-post-index');
-            if (index !== null) {
-                openModal(parseInt(index));
-
-                // 클릭 애니메이션
-                commentIcon.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    commentIcon.style.transform = 'scale(1)';
-                }, 150);
-            }
-        }
-    });
-
-    // 게시물 이미지 더블클릭 좋아요
-    document.addEventListener('dblclick', function(e) {
-        if (e.target.classList.contains('board_post_img') || e.target.closest('.board_post_img')) {
-            const postElement = e.target.closest('.board_post_img');
-            if (postElement) {
-                const index = postElement.getAttribute('data-post-index');
-                if (index !== null) {
-                    posts[parseInt(index)].liked = true;
-                    updatePostLikeState(parseInt(index));
-
-                    // 하트 이펙트 생성
-                    createHeartEffect(postElement);
-                }
-            }
-        }
-    });
-
     // 하트 이펙트 생성 함수
     function createHeartEffect(element) {
         const heart = document.createElement('div');
@@ -702,37 +1005,41 @@ document.addEventListener('DOMContentLoaded', function() {
     //         }, 100);
     //     });
     // }
-    document.addEventListener('click', function(e) {
-        console.log('🐞 e.target:', e.target);  // ⭐️ 클릭된 정확한 요소
-        const addPostBtn = e.target.closest('.add_post_btn');
-        console.log('🐞 addPostBtn:', addPostBtn);  // ⭐️ 찾은 add_post_btn (null이면 못 찾음!)
-
-        if (addPostBtn) {
-            const groupId = addPostBtn.getAttribute('data-group-id');
-            console.log('✅ groupId (위임방식):', groupId);
-
-            // ✅ 방어코드: groupId가 없으면 중단
-            if (!groupId || groupId === 'undefined') {
-                console.warn('⚠️ groupId가 undefined거나 비어있습니다. 요청 중단!');
-                return;
-            }
-
-            showCreatePostModal(groupId);
-        }
-    });
-
 
     // 게시글 작성 모달 관련 함수들
-    function showCreatePostModal(groupId) {
+    function showCreatePostModal(groupId, editMode = false, bno = null) {
+        isEditMode = editMode;
         const modal = document.getElementById('createPostModal');
+
         if (modal) {
             console.log('✅ showCreatePostModal groupId:', groupId);
             loadMyGroupDogs(groupId);
-            // 🪄 여기서 숨겨진 input에 gno 채워주기!
+
+            // ⭐️ 작성/수정에 따라 textarea name 바꾸기
+            const postContent = document.getElementById('postContent');
+            if (postContent) {
+                if (isEditMode) {
+                    postContent.setAttribute('name', 'newContent');
+                } else {
+                    postContent.setAttribute('name', 'content');
+                }
+                console.log('✅ textarea name 속성:', postContent.getAttribute('name'));
+            }
+
+            // 🪄 gno 채우기
             const gnoInput = modal.querySelector('input[name="gno"]');
             if (gnoInput) {
-                gnoInput.value = groupId; // groupId를 gno에 대입!
-                console.log('✅ 그룹번호(gno) 입력 완료:', groupId);
+                gnoInput.value = groupId;
+            }
+
+            // bno 처리도 여기에...
+            const bnoInput = modal.querySelector('input[name="bno"]');
+            if (bnoInput) {
+                if (isEditMode && bno) {
+                    bnoInput.value = bno;
+                } else {
+                    bnoInput.value = '';
+                }
             }
 
             modal.style.display = 'flex';
@@ -741,64 +1048,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 10);
             document.body.style.overflow = 'hidden';
 
-            // 폼 초기화
-            resetCreatePostForm();
+            if (!isEditMode) {
+                resetCreatePostForm();
+            }
 
-            // 이벤트 리스너 설정
             setupCreatePostModalEvents();
         }
     }
 
-    document.addEventListener('click', function(e) {
-        // 댓글 등록 버튼 클릭 처리
-        if (e.target.classList.contains('comment_submit')) {
-            const modal = e.target.closest('.post_modal');
-            const input = modal.querySelector('.comment_input');
-            const content = input.value.trim();
-            if (!content) {
-                alert('댓글 내용을 입력하세요!');
-                return;
-            }
-
-            const bno = modal.getAttribute('data-bno');
-            const dno = modal.getAttribute('data-dno'); // 예: 모달에 dno 저장했다면
-
-            fetch('/board/api/comments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    bno: bno,
-                    dno: dno,
-                    content: content
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    console.log('✅ 댓글 등록 성공:', data);
-
-                    // 입력칸 비우기
-                    input.value = '';
-
-                    // 댓글 목록에 추가
-                    const commentsDiv = modal.querySelector('.modal_comments');
-                    const commentHtml = `
-                    <div class="comment_item">
-                        <div class="comment_profile">
-                            <img src="/img/default-profile.jpg" alt="user">
-                        </div>
-                        <div class="comment_text">
-                            <span class="comment_username">${data.dogName}</span>
-                            <span>${data.bccomment}</span>
-                        </div>
-                    </div>`;
-                    commentsDiv.innerHTML += commentHtml;
-                })
-                .catch(err => {
-                    console.error('❌ 댓글 등록 실패:', err);
-                    alert('댓글 등록에 실패했습니다.');
-                });
-        }
-    });
 
     function hideCreatePostModal() {
         const modal = document.getElementById('createPostModal');
@@ -896,6 +1153,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // 이미지 제거 버튼
         if (removeImageBtn) {
             removeImageBtn.addEventListener('click', () => {
+                const imagePreview = document.getElementById('imagePreview');
+                console.log('remove 클릭 - imgId:', imagePreview?.dataset.imgId); // 추가
+                if (isEditMode && imagePreview && imagePreview.dataset.imgId) {
+                    if (!deleteImgIds.includes(imagePreview.dataset.imgId)) {
+                        deleteImgIds.push(imagePreview.dataset.imgId);
+                    }
+                    console.log('삭제할 PK 리스트:', deleteImgIds); // 추가
+                }
                 resetImageUpload();
             });
         }
@@ -1168,6 +1433,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 모달 닫기 이벤트 설정
             setupEventModalEvents();
+        }
+    }
+
+
+// 수정모드 취소 및 초기화 함수 (필수)
+    function resetEditMode(modal) {
+        editingCommentCno = null;
+        const input = modal.querySelector('.comment_input');
+        if (input) {
+            input.value = '';
+            input.placeholder = '댓글 달기...';
         }
     }
 

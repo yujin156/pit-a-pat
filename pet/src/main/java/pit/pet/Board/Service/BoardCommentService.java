@@ -72,6 +72,34 @@ public class BoardCommentService {
                 .getBoard().getBno();
     }
 
+    // 댓글 수정 (REST)
+    @Transactional
+    public void updateCommentByApi(Long cno, BoardCommentUpdateRequest request, Long dno) {
+        BoardCommentTable comment = commentRepository.findById(cno)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+
+        if (!comment.getDog().getDno().equals(dno)) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+
+        comment.setBccomment(request.getContent());
+        commentRepository.save(comment);
+    }
+
+    // 댓글 삭제 (REST)
+    @Transactional
+    public void deleteCommentByApi(Long cno, Long dno) {
+        BoardCommentTable comment = commentRepository.findById(cno)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+
+        if (!comment.getDog().getDno().equals(dno)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        commentRepository.delete(comment);
+    }
+
+
     // 댓글 삭제
     @Transactional
     public void deleteComment(Long bcno, Long dno) {

@@ -2,6 +2,7 @@ package pit.pet.Board.Controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -49,22 +50,16 @@ public class BoardController {
     private final BoardImgRepository boardImgRepository;
 
     // ✅ 게시글 작성
-    @PostMapping("/create")
-    public String createPost(@ModelAttribute BoardCreateRequest request,
-                             @ModelAttribute BoardImgUploadRequest imgRequest) {
-
-        System.out.println("===== 📩 게시글 생성 요청 =====");
-        System.out.println("받은 dno = " + request.getDno());
-        System.out.println("받은 gno = " + request.getGno()); // ✅ 수정
-        System.out.println("받은 content = " + request.getContent());
-        System.out.println("받은 이미지 수 = " + (imgRequest.getImageFiles() != null ? imgRequest.getImageFiles().size() : 0));
-
-        BoardTable saved = boardWriteService.createPost(request, imgRequest);
-
-        System.out.println("✅ 저장된 게시글 bno = " + saved.getBno());
-
-        return "redirect:/board/view/" + saved.getBno();
-    }
+//    @PostMapping("/create")
+//    public String createPost(@ModelAttribute BoardCreateRequest request,
+//                             @ModelAttribute BoardImgUploadRequest imgRequest) {
+//
+//
+//        BoardTable saved = boardWriteService.createPost(request, imgRequest);
+//
+//
+//        return "redirect:/board/view/" + saved.getBno();
+//    }
 
     // ✅ 게시글 작성 폼
     @GetMapping("/write")
@@ -84,6 +79,37 @@ public class BoardController {
         model.addAttribute("myGroupDogs", myGroupDogs);
         model.addAttribute("boardWriteRequest", new BoardCreateRequest());
         return "board/write";
+    }
+
+    @PostMapping("/api/create")
+    @ResponseBody
+    public ResponseEntity<?> createPostApi(
+            @ModelAttribute BoardCreateRequest request,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+            @AuthenticationPrincipal UserDetails principal) {
+
+        System.out.println("🔥 newImages: " + newImages);
+        if (newImages != null) {
+            newImages.forEach(f -> System.out.println("  🔹 fileName: " + f.getOriginalFilename()));
+        }
+
+        // 로그인 유저 확인
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow();
+
+        // 대표 강아지 찾기
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
+
+        if (dno == null) {
+            return ResponseEntity.badRequest().body("대표 강아지를 찾을 수 없습니다.");
+        }
+
+        // 게시글 생성
+        BoardTable saved = boardWriteService.createPost(request, newImages , dno);
+
+        // 성공 응답
+        return ResponseEntity.ok(Map.of("bno", saved.getBno()));
     }
 
     @GetMapping("/api/my-group-dogs")
@@ -125,6 +151,29 @@ public class BoardController {
         return "board/edit";
     }
 
+    @GetMapping("/api/post/{bno}")
+    @ResponseBody
+    public ResponseEntity<?> getPost(@PathVariable Long bno) {
+        BoardTable board = boardRepository.findByIdWithImages(bno)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+
+        List<String> imageUrls = boardImgRepository.findByBoard(board)
+                .stream().map(BoardImgTable::getBiurl).toList();
+
+        List<Integer> imageIds = boardImgRepository.findByBoard(board)
+                .stream().map(BoardImgTable::getBino).toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("bno", board.getBno());
+        response.put("bcontent", board.getBcontent());
+        response.put("images", imageUrls);
+        response.put("imageIds", imageIds); // 이 줄!!
+
+        response.put("gno", board.getGroup().getGno());
+
+        return ResponseEntity.ok(response);
+    }
+
     // ✅ 게시글 수정
     @PostMapping("/update")
     public String updateBoard(@ModelAttribute BoardUpdateRequest request,
@@ -146,6 +195,29 @@ public class BoardController {
         return "redirect:/board/view/" + request.getBno();
     }
 
+    @PostMapping("/api/update")
+    @ResponseBody
+    public ResponseEntity<String> updateBoardApi(
+            @ModelAttribute BoardUpdateRequest request,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "deleteImgIds", required = false) List<Integer> deleteImgIds,
+            @AuthenticationPrincipal UserDetails principal) {
+
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow();
+
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
+
+        if (dno == null) {
+            return ResponseEntity.badRequest().body("대표 강아지를 찾을 수 없습니다.");
+        }
+
+        boardWriteService.updateBoard(request, newImages, deleteImgIds, dno);
+        System.out.println("이미지:" + newImages);
+        return ResponseEntity.ok("게시글 수정 성공");
+    }
+
     // ✅ 게시글 삭제
     @PostMapping("/delete")
     public String deletePost(@RequestParam Long bno,
@@ -161,6 +233,20 @@ public class BoardController {
 
         boardWriteService.deletePost(bno, dno);
         return "redirect:/groups/" + gno;
+    }
+
+    @DeleteMapping("/api/delete")
+    @ResponseBody
+    public ResponseEntity<String> deletePostApi(@RequestParam Long bno,
+                                                @AuthenticationPrincipal UserDetails principal) {
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow();
+
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
+
+        boardWriteService.deletePost(bno, dno);
+        return ResponseEntity.ok("게시글 삭제 성공");
     }
 
 //    @GetMapping("/api/posts")
@@ -281,8 +367,6 @@ public class BoardController {
         model.addAttribute("myGroupDogs", myGroupDogs);
         model.addAttribute("boardImages", boardImages); // ✅ 이미지 리스트도 모델로 내려줌!
 
-        System.out.println("✅ group = " + group);
-        System.out.println("✅ boardImages = " + boardImages);
 
         return "board/detail";
     }

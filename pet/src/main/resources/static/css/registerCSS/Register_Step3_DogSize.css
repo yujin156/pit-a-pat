@@ -70,7 +70,6 @@
     display: none;
 }
 
-.dog-size-options input[type="radio"]:checked + .option-box {
+.dog-size-options input[type="radio"]:checked + .size_card {
     outline: 3px solid #3A7FEB;
-    transform: scale(1.05);
 }

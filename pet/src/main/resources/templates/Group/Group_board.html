@@ -215,6 +215,7 @@
       <div class="create_post_modal_body">
         <form id="createPostForm" th:action="@{/board/create}" method="post" enctype="multipart/form-data">
           <input type="hidden" name="gno" id="modalGnoInput" value="">
+          <input type="hidden" name="bno" id="bno" value="">
           <!-- 이미지 업로드 영역 -->
           <div class="image_upload_section">
             <div class="image_preview_container" id="imagePreviewContainer">
@@ -233,7 +234,7 @@
                 <button type="button" class="btn_remove_image" id="removeImageBtn">이미지 제거</button>
               </div>
             </div>
-            <input type="file" id="imageUpload" name="imageFiles" accept="image/*" style="display: none;" multiple>
+            <input type="file" id="imageUpload" name="newImages" accept="image/*" style="display: none;" multiple>
           </div>
 
           <!-- 게시글 내용 작성 -->
@@ -241,7 +242,6 @@
             <label for="postContent">게시글 내용</label>
             <textarea
                     id="postContent"
-                    name="content"
                     placeholder="오늘은 어떤 하루를 보내셨나요? 반려견과의 특별한 순간을 공유해주세요! 🐾"
                     rows="4"
                     maxlength="500"

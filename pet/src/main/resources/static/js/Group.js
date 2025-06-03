@@ -11,7 +11,7 @@ let creatingGroup = false;
 document.addEventListener('DOMContentLoaded', function() {
     const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
 
-    // ✅ Promise.all로 fetch 모두 끝나고 나서 렌더링!
+    // ✅ Promise.all로 fetch 모두 끝나고 나서 탭 렌더링
     Promise.all([
         fetch('/groups/api/my-groups')
             .then(response => response.json())
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 myGroups = data.map(group => ({
                     id: group.gno,
                     title: group.gname,
-                    imageUrl: `/groups/images/${group.imageUrl || 'default.jpg'}`,
+                    imageUrl: group.gimg ? group.gimg : '/uploads/img/default.jpg',
                     avatarUrl: `/groups/images/${group.avatarUrl || 'default_avatar.jpg'}`,
                     keyword: group.gkeyword
                 }));
@@ -34,20 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('전체 그룹 데이터 오류:', error))
     ]).then(() => {
-        // ⭐️ 모든 fetch가 끝나고 나서 탭 렌더링!
+        // ⭐️ 모든 fetch가 끝나고 나서 로그인 여부에 따라 첫 화면 렌더링!
         if (isAuthenticated) {
-            currentTab = 'my';
-            document.querySelectorAll('.tab_item').forEach(tab => tab.classList.remove('active'));
-            document.querySelector('.tab_item[data-tab="my"]').classList.add('active');
-            updateTabContent('my');
+            switchTab('my');
         } else {
-            currentTab = 'all';
-            document.querySelectorAll('.tab_item').forEach(tab => tab.classList.remove('active'));
-            document.querySelector('.tab_item[data-tab="all"]').classList.add('active');
-            updateTabContent('all');
+            switchTab('all');
         }
     });
 
+    // 검색창 이벤트
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', searchGroups);
@@ -63,15 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (createGroupBtn) {
         createGroupBtn.addEventListener('click', createNewGroup);
     }
-
-    // // ✅ ⭐️ 로그인 여부에 따라 기본 탭 활성화 결정
-    // if (isAuthenticated) {
-    //     currentTab = 'my';
-    //     updateTabContent('my');
-    // } else {
-    //     currentTab = 'all';
-    //     updateTabContent('all');
-    // }
 });
 
 // ✅ 탭 관리
@@ -79,7 +65,10 @@ let currentTab = 'my';
 function switchTab(tabType) {
     currentTab = tabType;
     document.querySelectorAll('.tab_item').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
+    const tabElement = document.querySelector(`.tab_item[data-tab="${tabType}"]`);
+    if (tabElement) {
+        tabElement.classList.add('active');
+    }
     updateTabContent(tabType);
 }
 
@@ -93,9 +82,8 @@ function updateTabContent(tabType) {
         groupsGrid.innerHTML = getAllGroupsHTML();
     } else if (tabType === 'application') {
         groupsGrid.innerHTML = getApplicationStatusHTML();
-
     }
-};
+}
 
 function getMyGroupsHTML() {
     let html = `
@@ -113,60 +101,6 @@ function getAllGroupsHTML() {
         <div class="group_card" onclick="viewGroup('${group.gno}')">
             <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.gno}')">⋯</div>
             <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
-            <div class="member_profile">
-                <div class="profile_avatar" style="background-image: url('${group.avatarUrl ? group.avatarUrl : '/groups/images/default_avatar.jpg'}')"></div>
-            </div>
-            <div class="card_info">
-                <span class="card_title">${group.gname}</span>
-            </div>
-        </div>
-    `).join(''); // 🔥 map() 끝나고 join('')로 문자열로 이어주기
-}
-
-// ✅ Group Card 생성 함수
-function createGroupCard(group) {
-    return `
-        <div class="group_card" onclick="viewGroup('${group.id}')">
-            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.id}')">⋯</div>
-            <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
-            <div class="member_profile">
-                <div class="profile_avatar" style="background-image: url('${group.avatarUrl ? group.avatarUrl : '/groups/images/default_avatar.jpg'}')"></div>
-            </div>
-        </div>
-    `;
-}
-
-// ✅ Profile Card 생성 함수
-function profileCard(profile) {
-    return `
-        <div class="profile_card ${profile.isMain ? 'selected' : ''}" 
-             data-profile-id="${profile.id}" 
-             onclick="ModalManager.selectProfile('${profile.id}')"
-             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${profile.avatarUrl}');">
-
-            ${!profile.isMain ? `<div class="profile_card_menu" onclick="event.stopPropagation(); ModalManager.openProfileMenu('${profile.id}')"></div>` : ''}
-
-            <div class="profile_info_overlay">
-                <div class="profile_name">${profile.petName}</div>
-                <div class="profile_details">
-                    <span class="profile_detail_item">${profile.breed}</span>
-                    <span class="profile_detail_item">${profile.size}</span>
-                    <span class="profile_detail_item">${profile.gender}</span>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// ✅ 전체 그룹 카드 HTML 생성 함수
-function getAllGroupsHTML() {
-    return allGroups.map(group => `
-        <div class="group_card" onclick="viewGroup('${group.gno}')">
-            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.gno}')">⋯</div>
-            <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
-            <div class="member_profile">
-                <div class="profile_avatar" style="background-image: url('${group.avatarUrl ? group.avatarUrl : '/groups/images/default_avatar.jpg'}')"></div>
-            </div>
             <div class="card_info">
                 <span class="card_title">${group.gname}</span>
             </div>
@@ -174,7 +108,19 @@ function getAllGroupsHTML() {
     `).join('');
 }
 
-// ✅ 그룹 검색 함수
+function createGroupCard(group) {
+    return `
+        <div class="group_card" onclick="viewGroup('${group.id}')">
+            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.id}')">⋯</div>
+            <div class="card_image" style="background-image: url('${group.imageUrl ? group.imageUrl : '/groups/images/default.jpg'}')"></div>
+            <div class="card_info">
+                <span class="card_title">${group.title}</span>
+            </div>
+        </div>
+    `;
+}
+
+// 검색 함수
 function searchGroups() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const keywordSelect = document.querySelector('.keyword_select');
@@ -186,7 +132,6 @@ function searchGroups() {
         let keywordMatch = true;
         let textMatch = true;
 
-        // 키워드 필터링
         if (selectedKeyword && currentTab === 'all') {
             switch (selectedKeyword) {
                 case 'breed':
@@ -206,20 +151,19 @@ function searchGroups() {
                         title.includes('모험') || title.includes('탐험');
                     break;
             }
-
-            // ❌ 여기서 this.renderProfileGrid() 같은 호출은 주석처리
-            // this.renderProfileGrid();
         }
 
-        // 텍스트 검색
         if (searchTerm) {
             textMatch = title.includes(searchTerm);
         }
 
-        // 조건 만족 여부
         card.style.display = (keywordMatch && textMatch) ? 'block' : 'none';
     });
 }
+
+// 나머지 모달/이미지 업로드/그룹 생성/기타 기능은 그대로 유지 (너가 올린 버전 그대로!)
+
+
 
 function getApplicationStatusHTML() {
     return applicationGroups.map(group => `
@@ -280,7 +224,9 @@ function updateNextButton() {
 function uploadImage() {
     const input = document.createElement('input');
     input.type = 'file';
+    input.name = 'gimg'; // ✅ 여기 input.name으로 수정
     input.accept = 'image/*';
+    input.style.display = 'none'; // ✅ 여기도 input으로!
     input.onchange = function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -295,6 +241,7 @@ function uploadImage() {
             reader.readAsDataURL(file);
         }
     };
+    document.body.appendChild(input); // ✅ 이 부분이 빠졌다면 추가!
     input.click();
 }
 
