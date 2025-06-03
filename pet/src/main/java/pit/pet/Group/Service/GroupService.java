@@ -57,7 +57,7 @@ public class GroupService {
                 Files.createDirectories(filepath.getParent());
                 Files.copy(request.getGimg().getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
 
-                group.setGimg("/img/" + filename);
+                group.setGimg("/uploads/img/" + filename); // ⭐️ 여기만 이렇게 고쳐!
             } catch (Exception e) {
                 throw new RuntimeException("이미지 저장 실패", e);
             }

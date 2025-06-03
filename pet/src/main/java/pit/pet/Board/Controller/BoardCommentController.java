@@ -32,24 +32,6 @@ public class BoardCommentController {
     private final DogRepository dogRepository;
     private final DogService dogService;
 
-    // ✅ 댓글 등록
-//    @PostMapping("/comment/create")
-//    public String createComment(@RequestParam Long bno,
-//                                @RequestParam Long dno,
-//                                @RequestParam String bccontent) {
-//        if (dno == null) return "redirect:/error"; // 로그인 안 한 상태 등 예외 처리
-//
-//        BoardCommentCreateRequest request = new BoardCommentCreateRequest();
-//        request.setBno(bno);
-//        request.setContent(bccontent);
-//
-//        boardCommentService.createComment(request, dno);
-//
-//        return "redirect:/board/view/" + bno;
-//    }
-
-
-
     // ✅ 댓글 수정
     @PutMapping("/update")
     public ResponseEntity<BoardCommentTable> updateComment(@RequestBody BoardCommentUpdateRequest request,
@@ -70,6 +52,22 @@ public class BoardCommentController {
         return "redirect:/board/view/" + bno;
     }
 
+    // 댓글 수정(REST)
+    @PutMapping("/comment/api/comments/{cno}")
+    public ResponseEntity<?> updateCommentApi(@PathVariable Long cno,
+                                              @RequestBody BoardCommentUpdateRequest request,
+                                              @AuthenticationPrincipal UserDetails principal) {
+        // 로그인 유저의 대표 강아지 dno 가져오기
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
+
+        boardCommentService.updateCommentByApi(cno, request, dno);
+
+        return ResponseEntity.ok().build();
+    }
+
     // ✅ 댓글 삭제
     @PostMapping("/{bcno}/delete")
     public String deleteComment(@PathVariable Long bcno,
@@ -77,6 +75,20 @@ public class BoardCommentController {
                                 @RequestParam Long dno) {
         boardCommentService.deleteComment(bcno, dno);
         return "redirect:/board/view/" + bno;
+    }
+
+    // 댓글 삭제(REST)
+    @DeleteMapping("/comment/api/comments/{cno}")
+    public ResponseEntity<?> deleteCommentApi(@PathVariable Long cno,
+                                              @AuthenticationPrincipal UserDetails principal) {
+        User me = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
+
+        boardCommentService.deleteCommentByApi(cno, dno);
+
+        return ResponseEntity.ok().build();
     }
 
     // ✅ 특정 게시글의 댓글 목록 조회 (optional)
