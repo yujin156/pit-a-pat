@@ -15,7 +15,7 @@ import java.util.List;
 public class DogRegisterRequest {
     private String name;
     private String gender;
-    private String neutering;
+    private NeuterStatus neuterStatus;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
@@ -27,8 +27,6 @@ public class DogRegisterRequest {
 
     // 키워드1만 남김
     private List<Long> keyword1Ids;
-
-    private NeuterStatus neuterStatus;
 
     private MultipartFile imageFile; // ✅ 정확히 선언
 }
