@@ -168,26 +168,27 @@ function nextStep() {
     // Step4 → Step5
     if (currentStep === 4) {
         const activeIframe = document.querySelector('.content_step#content_step4 iframe');
+
+        // Step4 iframe이 로드되고 나서 dogId가 생성되는 시점에 아래 로직 실행
         activeIframe.onload = () => {
             console.log('✅ Step4 iframe onload 발생');
             const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
+
+            // Step4에서 dogId 생성
             const dogIdInput = iframeDoc.querySelector('input[name="dogId"]');
-            if (dogIdInput) {
-                const dogId = dogIdInput.value;
-                console.log('🐶 dogId 가져온 값:', dogId);
 
-                const urlParams = new URL(activeIframe.src).searchParams;
-                const currentDogIndex = urlParams.get('currentDogIndex');
-                const totalDogs = urlParams.get('totalDogs');
+            if (dogIdInput && dogIdInput.value) {
+                const dogId = dogIdInput.value; // dogId 값 가져오기
 
-                document.querySelector('.content_step#content_step5 iframe').src =
-                    `/dog/register/step5?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}&dogId=${dogId}`;
-                // ✅ active 클래스를 여기서 붙이지 마라! updateStep()에서만 붙여라
+                // 2. URL 파라미터로 currentDogIndex, totalDogs, dogId 세팅
+                const step5Iframe = document.querySelector('.content_step#content_step5 iframe');
+                step5Iframe.src = `/dog/register/step5?currentDogIndex=${currentDogIndex}&totalDogs=${totalDogs}&dogId=${dogId}`;
             } else {
                 console.warn('⚠️ dogId를 못찾았음! 다시 시도 필요');
             }
         };
     }
+
 
     // Step5: 키워드 선택 form submit → 여기서만 최종 완료!
     if (currentStep === 5) {
@@ -259,8 +260,3 @@ function completeRegistration() {
     alert('회원가입이 완료되었습니다!');
     window.location.href = '/';
 }
-
-// 전역 함수 유지!
-// window.nextStep = nextStep;
-// window.prevStep = prevStep;
-// window.goHome = goHome;
