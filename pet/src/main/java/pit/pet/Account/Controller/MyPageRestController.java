@@ -1,6 +1,7 @@
 package pit.pet.Account.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -77,11 +78,17 @@ public class MyPageRestController {
     }
 
     @GetMapping("/dogs")
-    public List<DogProfileResponse> getMyDogs(@AuthenticationPrincipal CustomUserDetails principal) {
-        User user = userRepository.findByUemail(principal.getUsername()).orElseThrow();
+    public ResponseEntity<?> getMyDogs(@AuthenticationPrincipal CustomUserDetails principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+        User user = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         List<Dog> dogs = dogRepository.findByOwner(user);
-        return dogs.stream()
+        List<DogProfileResponse> result = dogs.stream()
                 .map(DogProfileResponse::fromEntity)
                 .toList();
+        return ResponseEntity.ok(result);
     }
+
 }

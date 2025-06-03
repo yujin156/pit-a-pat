@@ -1,14 +1,18 @@
 package pit.pet.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.io.File;
 import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Value;
-@Configuration
-public class WebConfig implements WebMvcConfigurer {
 
+@Configuration
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer {
+    private final CompleteUserCheckInterceptor completeUserCheckInterceptor;
     @Value("${app.upload-dir}")
     private String uploadDir;  // ex) "./uploads"
 
@@ -22,5 +26,23 @@ public class WebConfig implements WebMvcConfigurer {
         // 2) "file:" + 절대경로 형태로 매핑
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + absolutePath);
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        System.out.println("✅ CompleteUserCheckInterceptor 등록!");
+        registry.addInterceptor(completeUserCheckInterceptor)
+                .addPathPatterns(
+                        "/mypage/**",
+                        "/user/**",
+                        "/api/**",
+                        "/",            // 메인(홈)
+                        "/home",        // 홈 페이지가 /home이면
+                        "/login"
+                )
+                .excludePathPatterns(
+                        "/user/missing-info", "/register/**", "/oauth2/**",
+                        "/login", "/css/**", "/js/**", "/img/**","/api/**"
+                );
     }
 }

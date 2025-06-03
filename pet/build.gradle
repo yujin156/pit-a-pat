@@ -53,6 +53,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation "org.springframework.ai:spring-ai-mcp-server-spring-boot-starter:1.0.0-M6"
 	implementation "org.springframework.ai:spring-ai-mcp-client-spring-boot-starter:1.0.0-M6"
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
