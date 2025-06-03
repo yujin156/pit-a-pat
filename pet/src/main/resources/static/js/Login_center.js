@@ -45,6 +45,11 @@ function initializeLoginCenter() {
 
         return null;
     }
+    function clearMatchingStorage() {
+        console.log("🧹 매칭 관련 스토리지 초기화");
+        sessionStorage.removeItem('sessionSelectedDogId');
+        localStorage.removeItem('selectedMainDogId');
+    }
 
     // 프로필 순서 재배치 및 선택 표시
     function updateProfileOrder() {

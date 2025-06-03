@@ -81,12 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== 프로필 셀렉터 설정 =====
-    function setupProfileSelector() {
-        if (friendDogSelect) {
-            friendDogSelect.addEventListener('change', handleProfileChange);
-            console.log('프로필 셀렉터 이벤트 리스너 설정 완료');
-        }
-    }
+
 
     // ===== 프로필 변경 처리 =====
     function handleProfileChange(e) {
@@ -108,22 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== 초기 선택된 프로필 설정 =====
-    function initializeSelectedProfile() {
-        if (friendDogSelect) {
-            let savedDogId = window.friendData?.selectedDogId;
 
-            if (!savedDogId) {
-                savedDogId = localStorage.getItem('selectedFriendDogId');
-            }
-
-            if (savedDogId) {
-                friendDogSelect.value = savedDogId;
-                console.log('저장된 프로필 복원:', savedDogId);
-            }
-
-            updateCurrentDogDisplay();
-        }
-    }
 
     // ===== 현재 강아지 정보 표시 =====
     function updateCurrentDogDisplay() {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.User.Address;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DogFriendController {
     private final FriendService friendService;
+    private final DogService dogService;
     private final DogRepository dogRepo;
     private final UserRepository userRepo;
     private final SgisRegionService sgisRegionService;
