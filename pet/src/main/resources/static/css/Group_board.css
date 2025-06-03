@@ -268,6 +268,31 @@
 .board_post_img:hover {
     transform: scale(1.02);
 }
+/* ============================================
+   그륩 맴버 관리
+   ============================================ */
+.group_member_row{
+    display: flex;
+    justify-content: space-between;
+}
+.group_member_search{
+    display: flex;
+}
+.member_contain{
+    background-color: #F5F6F8;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+}
+.member_profile_img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 1px solid #ffffff;
+    background-color: #FFFFFF;
+    box-shadow: 0 1px 1px #000000;
+}
+
 
 /* ============================================
    게시물 아이콘 영역 (하트, 북마크 등)
