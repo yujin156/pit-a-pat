@@ -127,7 +127,37 @@
     gap: 10px;
     justify-content: flex-start;
 }
+.species-search-container {
+    position: relative;
+}
+#speciesAutocompleteList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none; /* 기본은 숨김 */
+}
 
+#speciesAutocompleteList.show {
+    display: block;
+}
+
+#speciesAutocompleteList div {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#speciesAutocompleteList div:hover {
+    background-color: #f2f2f2;
+}
 /* 키워드 선택 영역 (오른쪽) */
 .keyword-section {
     flex: 1;

@@ -52,10 +52,10 @@
           </select>
 
           <!-- 견종 검색 (자동완성) -->
-          <div class="breed-search-container">
-            <input type="text" id="breedInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
-            <div id="breedAutocompleteList" class="autocomplete-list"></div>
-            <input type="hidden" id="selectedBreedId" />
+          <div class="species-search-container">
+            <input type="text" id="speciesInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
+            <div id="speciesAutocompleteList" class="autocomplete-list"></div>
+            <input type="hidden" id="selectedSpeciesId" />
           </div>
 
           <!-- 지역 선택 3단계 드롭다운 -->
@@ -189,5 +189,6 @@
 <script th:src="@{/js/MatchJS/Match_profile.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
+<script th:src="@{/js/Common/DogProfileSelector.js}"></script>
 </body>
 </html>

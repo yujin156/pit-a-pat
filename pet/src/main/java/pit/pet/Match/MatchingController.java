@@ -214,12 +214,9 @@ public class MatchingController {
                     addressData.put("county", dog.getOwner().getAddress().getCounty());
                     addressData.put("fullAddress", fullAddress);
 
-                    System.out.println("주소 변환: " + dog.getOwner().getAddress().getCity() +
-                            " -> " + fullAddress);
 
                 } catch (Exception e) {
                     // 주소 변환 실패 시 기본값
-                    System.err.println("주소 변환 실패: " + e.getMessage());
                     addressData.put("city", "위치");
                     addressData.put("county", "미공개");
                     addressData.put("fullAddress", "위치 미공개");
@@ -295,6 +292,31 @@ public class MatchingController {
         }
     }
 
+    @GetMapping("/autocomplete")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> autocompleteSpecies(
+            @RequestParam String keyword) {
+        try {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+
+            List<String> matched = dogService.searchSpeciesNames(keyword.trim());
+
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (String name : matched) {
+                response.add(Map.of("id", name, "name", name)); // id와 name 둘 다 name으로
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("견종 자동완성 실패: {}", e.getMessage());
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+
     /**
      * 전체 강아지 랜덤 조회 API
      */
@@ -332,9 +354,11 @@ public class MatchingController {
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> searchDogs(
-            @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String breed,
-            @RequestParam(required = false) String location,
+            @RequestParam(name = "ugender", required = false) String gender,
+            @RequestParam(name = "speciesId", required = false) String speciesId    ,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String county,
+            @RequestParam(required = false) String town,
             @RequestParam(required = false) String keyword1,
             @RequestParam(defaultValue = "10") int limit,
             @AuthenticationPrincipal UserDetails principal) {
@@ -344,9 +368,11 @@ public class MatchingController {
             List<Dog> dogs;
 
             if (isLoggedIn) {
-                dogs = matchingService.searchDogsForUser(gender, breed, location, keyword1, principal.getUsername(), limit);
+                dogs = matchingService.searchDogsForUser(
+                        gender,speciesId, city, county, town, keyword1, principal.getUsername(), limit);
             } else {
-                dogs = matchingService.searchDogsForGuest(gender, breed, location, keyword1, limit);
+                dogs = matchingService.searchDogsForGuest(
+                        gender,speciesId, city, county, town, keyword1, limit);
             }
 
             List<Map<String, Object>> safeDogsData = new ArrayList<>();

@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.matchData && !window.matchData.isLoggedIn) {
+        console.log("🔒 로그아웃 상태 → 세션 스토리지 초기화");
+        sessionStorage.removeItem('sessionSelectedDogId');
+        localStorage.removeItem('selectedMainDogId');
+    }
     console.log('=== Match.js 초기화 시작 ===');
 
     // ===== 전역 변수 =====
@@ -47,18 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 메인 강아지 선택 설정
-    function setupMainDogSelection() {
-        const savedMainDogId = localStorage.getItem('selectedMainDogId') || window.selectedMainDogId;
 
-        if (savedMainDogId && myDogSelect) {
-            myDogSelect.value = savedMainDogId;
-            console.log('저장된 메인 프로필 복원:', savedMainDogId);
-        }
-
-        if (window.matchData && window.matchData.isLoggedIn && window.matchData.userDogs && window.matchData.userDogs.length > 0) {
-            updateMainDogDisplay();
-        }
-    }
 
     function updateMainDogDisplay() {
         const mainDogId = getSelectedMainDogId();
@@ -71,92 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 선택된 메인 강아지 ID 가져오기
-    function getSelectedMainDogId() {
-        // 1. 드롭다운에서 선택된 값 (최우선)
-        if (myDogSelect && myDogSelect.value) {
-            return parseInt(myDogSelect.value);
-        }
 
-        // 2. localStorage에 저장된 값
-        const savedId = localStorage.getItem('selectedMainDogId');
-        if (savedId) {
-            return parseInt(savedId);
-        }
-
-        // 3. 전역 변수
-        if (window.selectedMainDogId) {
-            return parseInt(window.selectedMainDogId);
-        }
-
-        // 4. 첫 번째 강아지 (기본값)
-        if (window.matchData && window.matchData.userDogs && window.matchData.userDogs.length > 0) {
-            return window.matchData.userDogs[0].dno;
-        }
-
-        return null;
-    }
-
-    // 프로필 셀렉터 설정
-    function setupProfileSelector() {
-        if (myDogSelect) {
-            myDogSelect.addEventListener('change', handleProfileChange);
-        }
-    }
-
-    // 프로필 변경 처리
-    function handleProfileChange(e) {
-        const selectedDogId = parseInt(e.target.value);
-        if (!selectedDogId || isNaN(selectedDogId)) return;
-
-        localStorage.setItem('selectedMainDogId', selectedDogId);
-        window.selectedMainDogId = selectedDogId;
-
-        showNotification('선택한 강아지 기준으로 새로 불러오는 중입니다...', 'info');
-
-        currentDogs = [];
-        currentCardIndex = 0;
-        if (cardStack) cardStack.innerHTML = '';
-
-        showLoading();
-
-        fetch(`/matching/search/all?limit=20&t=${Date.now()}`)
-            .then(res => res.json())
-            .then(dogs => {
-                currentDogs = dogs || [];
-                filterDogsForCurrentProfile(); // 현재 선택한 강아지 기준 필터
-                renderCards();
-            })
-            .catch(err => {
-                console.error('강아지 불러오기 실패', err);
-                showNotification('강아지 목록을 불러오는데 실패했어요.', 'error');
-            })
-            .finally(() => {
-                hideLoading();
-            });
-    }
-
-    // 새로운 프로필에 맞는 강아지 목록 다시 로드
-    function reloadDogsForNewProfile() {
-        console.log('새 프로필용 강아지 목록 로드 중...');
-        showLoading();
-
-        // 현재 선택된 키워드가 있으면 키워드 검색, 없으면 전체 검색
-        if (selectedKeywords.length > 0) {
-            const keywordParams = selectedKeywords.map(k => `keywords=${encodeURIComponent(k)}`).join('&');
-            fetch(`/matching/search/keywords?${keywordParams}&limit=20`)
-                .then(response => response.json())
-                .then(dogs => {
-                    console.log('키워드 기반 새 프로필 강아지 로드:', dogs.length);
-                    processFreshDogData(dogs);
-                })
-                .catch(error => {
-                    console.error('키워드 기반 새 프로필 강아지 로드 실패:', error);
-                    loadAllDogsForNewProfile();
-                });
-        } else {
-            loadAllDogsForNewProfile();
-        }
-    }
 
     function loadAllDogsForNewProfile() {
         fetch('/matching/search/all?limit=20')
@@ -429,6 +338,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     list.innerHTML = '';
+                    if (data.length > 0) {
+                        list.classList.add('show');
+                    } else {
+                        list.classList.remove('show');
+                    }
+
                     data.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'autocomplete-item';
@@ -437,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             input.value = item.name;
                             hidden.value = item.id;
                             list.innerHTML = '';
+                            list.classList.remove('show');
                         };
                         list.appendChild(div);
                     });
@@ -446,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', (e) => {
             if (!list.contains(e.target) && e.target !== input) {
                 list.innerHTML = '';
+                list.classList.remove('show');
             }
         });
     }
@@ -686,56 +603,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // 검색 함수
     function performSearch() {
         const gender = document.getElementById('genderFilter')?.value || '';
-        const breed = document.getElementById('breedFilter')?.value || '';
-        const location = document.getElementById('locationFilter')?.value || '';
+        const breedId = document.getElementById('selectedBreedId')?.value || '';
+        const city = document.getElementById('cityFilter')?.value || '';
+        const county = document.getElementById('countyFilter')?.value || '';
+        const town = document.getElementById('townFilter')?.value || '';
         const keyword1 = selectedKeywords.length > 0 ? selectedKeywords[0] : '';
 
-        console.log('=== 검색 시작 ===');
-        showLoading();
-
         const params = new URLSearchParams();
-        if (gender && gender.trim() !== '') {
-            params.append('gender', gender.trim());
-        }
-        if (breed && breed.trim() !== '') {
-            params.append('breed', breed.trim());
-        }
-        if (location && location.trim() !== '') {
-            params.append('location', location.trim());
-        }
-        if (keyword1 && keyword1.trim() !== '') {
-            params.append('keyword1', keyword1.trim());
-        }
+        if (gender) params.append('gender', gender);
+        if (breedId) params.append('breed', breedId);
+        if (city) params.append('city', city);
+        if (county) params.append('county', county);
+        if (town) params.append('town', town);
+        if (keyword1) params.append('keyword1', keyword1);
         params.append('limit', '20');
 
-        const searchUrl = `/matching/search?${params.toString()}`;
-
-        fetch(searchUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
+        fetch(`/matching/search?${params.toString()}`)
+            .then(res => res.json())
             .then(dogs => {
-                console.log('복합 검색 결과:', dogs.length, '마리');
-                currentDogs = Array.isArray(dogs) ? dogs : [];
-                currentCardIndex = 0;
-
-                // 현재 프로필에 맞게 필터링
+                currentDogs = dogs || [];
                 filterDogsForCurrentProfile();
                 renderCards();
-                hideLoading();
-
-                if (currentDogs.length === 0) {
-                    showNotification('검색 조건에 맞는 강아지를 찾을 수 없습니다.', 'info');
-                } else {
-                    showNotification(`${currentDogs.length}마리의 강아지를 찾았습니다.`, 'success');
-                }
-            })
-            .catch(error => {
-                console.error('검색 오류:', error);
-                showNotification('검색 중 오류가 발생했습니다.', 'error');
                 hideLoading();
             });
     }
