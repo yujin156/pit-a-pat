@@ -54,6 +54,7 @@ dependencies {
 	implementation "org.springframework.ai:spring-ai-mcp-server-spring-boot-starter:1.0.0-M6"
 	implementation "org.springframework.ai:spring-ai-mcp-client-spring-boot-starter:1.0.0-M6"
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

@@ -1,17 +1,20 @@
 package pit.pet.Board.Controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.DogDTO;
 import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardCommentTable;
 import pit.pet.Board.Entity.BoardImgTable;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,18 +52,6 @@ public class BoardController {
     private final BoardCommentRepository boardCommentRepository;
     private final BoardManageService boardManageService;
     private final BoardImgRepository boardImgRepository;
-
-    // ✅ 게시글 작성
-//    @PostMapping("/create")
-//    public String createPost(@ModelAttribute BoardCreateRequest request,
-//                             @ModelAttribute BoardImgUploadRequest imgRequest) {
-//
-//
-//        BoardTable saved = boardWriteService.createPost(request, imgRequest);
-//
-//
-//        return "redirect:/board/view/" + saved.getBno();
-//    }
 
     // ✅ 게시글 작성 폼
     @GetMapping("/write")
@@ -85,12 +77,16 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<?> createPostApi(
             @ModelAttribute BoardCreateRequest request,
-            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+            // "newImages"를 "imageFiles"로 변경
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> receivedImageFiles,
             @AuthenticationPrincipal UserDetails principal) {
 
-        System.out.println("🔥 newImages: " + newImages);
-        if (newImages != null) {
-            newImages.forEach(f -> System.out.println("  🔹 fileName: " + f.getOriginalFilename()));
+        // 로그 및 변수명도 일관성 있게 변경하면 좋습니다.
+        System.out.println("🔥 받은 파일 (newImages): " + receivedImageFiles);
+        if (receivedImageFiles != null) {
+            receivedImageFiles.forEach(f -> System.out.println("  🔹 파일 이름: " + f.getOriginalFilename()));
+        } else {
+            System.out.println("🔥 받은 파일 (newImages)이 null입니다.");
         }
 
         // 로그인 유저 확인
@@ -105,25 +101,28 @@ public class BoardController {
             return ResponseEntity.badRequest().body("대표 강아지를 찾을 수 없습니다.");
         }
 
-        // 게시글 생성
-        BoardTable saved = boardWriteService.createPost(request, newImages , dno);
+        // 서비스 호출 시에도 변경된 변수명 사용
+        BoardTable saved = boardWriteService.createPost(request, receivedImageFiles, dno);
 
-        // 성공 응답
         return ResponseEntity.ok(Map.of("bno", saved.getBno()));
     }
 
     @GetMapping("/api/my-group-dogs")
     @ResponseBody
-    public List<Dog> getMyGroupDogs(@RequestParam Long gno,
-                                    @AuthenticationPrincipal UserDetails principal) {
+    public List<DogDTO> getMyGroupDogs(@RequestParam Long gno,
+                                       @AuthenticationPrincipal UserDetails principal) {
+        // 현재 로그인된 사용자 가져오기
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow();
 
+        // 사용자 소속 강아지 목록 가져오기
         List<Dog> myDogs = dogRepository.findByOwner(me);
-        // 그룹에 소속된 강아지만 필터링
+
+        // 그룹에 소속된 강아지만 필터링하여 DTO로 변환 후 반환
         return myDogs.stream()
-                .filter(dog -> groupMemberService.isInGroup(dog.getDno(), gno))
-                .toList();
+                .filter(dog -> groupMemberService.isInGroup(dog.getDno(), gno)) // 그룹 소속 강아지 필터링
+                .map(DogDTO::new) // Dog 엔티티를 DogDTO로 변환
+                .collect(Collectors.toList());
     }
 
     // ✅ 게시글 수정 폼
@@ -175,33 +174,32 @@ public class BoardController {
     }
 
     // ✅ 게시글 수정
-    @PostMapping("/update")
-    public String updateBoard(@ModelAttribute BoardUpdateRequest request,
-                              @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
-                              @RequestParam(value = "deleteImgIds", required = false) List<Integer> deleteImgIds,
-                              @AuthenticationPrincipal UserDetails principal) {
 
-        User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow();
-
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
-
-        if (dno == null) {
-            throw new IllegalStateException("대표 강아지를 찾을 수 없습니다.");
-        }
-
-        boardWriteService.updateBoard(request, newImages, deleteImgIds, dno);
-        return "redirect:/board/view/" + request.getBno();
-    }
 
     @PostMapping("/api/update")
     @ResponseBody
     public ResponseEntity<String> updateBoardApi(
-            @ModelAttribute BoardUpdateRequest request,
+            @Valid @ModelAttribute BoardUpdateRequest request, // bno, newContent, deleteImgIds는 이 객체로 받습니다.
+            BindingResult bindingResult,
             @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
-            @RequestParam(value = "deleteImgIds", required = false) List<Integer> deleteImgIds,
             @AuthenticationPrincipal UserDetails principal) {
+
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시, 에러 메시지 조합하여 반환 가능
+            StringBuilder sb = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> {
+                sb.append(error.getDefaultMessage()).append("\n");
+            });
+            return ResponseEntity.badRequest().body(sb.toString());
+        }
+
+        // DTO에서 bno를 가져와서 확인
+        if (request.getBno() == null) {
+            return ResponseEntity.badRequest().body("게시글 ID(bno)가 null입니다.");
+        }
+        System.out.println("수정할 게시글의 bno (from DTO): " + request.getBno());
+        System.out.println("수정할 내용 (from DTO): " + request.getNewContent()); // newContent도 확인 가능
+        System.out.println("삭제할 이미지 ID 목록 (from DTO): " + request.getDeleteImgIds()); // deleteImgIds도 확인
 
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow();
@@ -213,8 +211,10 @@ public class BoardController {
             return ResponseEntity.badRequest().body("대표 강아지를 찾을 수 없습니다.");
         }
 
-        boardWriteService.updateBoard(request, newImages, deleteImgIds, dno);
-        System.out.println("이미지:" + newImages);
+        // 서비스 호출 시 BoardUpdateRequest 객체와 필요한 파일만 전달
+        // 서비스 내부에서 request.getDeleteImgIds()를 사용하도록 deleteImgIds 파라미터 제거 가능
+        boardWriteService.updateBoard(request, newImages, dno); // deleteImgIds를 명시적으로 넘기지 않고 서비스에서 DTO를 사용하게 변경
+        System.out.println("새 이미지:" + newImages);
         return ResponseEntity.ok("게시글 수정 성공");
     }
 
@@ -249,79 +249,6 @@ public class BoardController {
         return ResponseEntity.ok("게시글 삭제 성공");
     }
 
-//    @GetMapping("/api/posts")
-//    @ResponseBody
-//    public List<Map<String, Object>> getPosts() {
-//        List<BoardTable> boards = boardRepository.findAll();
-//        List<Map<String, Object>> posts = new ArrayList<>();
-//
-//        for (BoardTable board : boards) {
-//            Map<String, Object> post = new HashMap<>();
-//            post.put("id", board.getBno());
-//
-//            // 작성자 정보
-//            if (board.getWriterdog() != null) {
-//                post.put("writerdog", Map.of(
-//                        "dno", board.getWriterdog().getDno(),
-//                        "dname", board.getWriterdog().getDname()
-//                ));
-//            } else {
-//                post.put("writerdog", Map.of(
-//                        "dno", null,
-//                        "dname", "알 수 없음"
-//                ));
-//            }
-//
-//            // ✅ 이미지 목록: biurl을 그대로 반환
-//            List<String> imgUrls = boardImgRepository.findByBoard(board).stream()
-//                    .map(img -> {
-//                        // biurl이 이미 '/uploads/img/파일명' 형태임!
-//                        return img.getBiurl();
-//                    })
-//                    .toList();
-//            post.put("images", imgUrls);
-//
-//            post.put("timeAgo", "1시간 전"); // TODO: 실제 계산 로직으로 바꾸기
-//            post.put("content", board.getBcontent());
-//            post.put("description", board.getBdesc());
-//
-//
-//            post.put("commentCount", board.getCommentCount());
-//
-//            posts.add(post);
-//        }
-//        return posts;
-//    }
-
-//    @GetMapping("/api/groups/{gno}/posts")
-//    @ResponseBody
-//    public List<Map<String, Object>> getPostsByGroup(@PathVariable Long gno) {
-//        List<BoardTable> boards = boardRepository.findByGroup_Gno(gno); // ✅ 그룹별 게시글만
-//        List<Map<String, Object>> posts = new ArrayList<>();
-//
-//        for (BoardTable board : boards) {
-//            Map<String, Object> post = new HashMap<>();
-//            post.put("bno", board.getBno());
-//            post.put("dno", board.getWriterdog().getDno());
-//            post.put("writerDogName", board.getWriterdog().getDname());
-//            post.put("gno", board.getGroup().getGno());
-//            post.put("bcontent", board.getBcontent());
-//            post.put("commentCount", board.getCommentCount());
-//
-//            // ✅ 이미지 URL 리스트도 담아주기
-//            List<String> imgUrls = boardImgRepository.findByBoard(board)
-//                    .stream()
-//                    .map(BoardImgTable::getBiurl)
-//                    .toList();
-//            post.put("images", imgUrls);
-//
-//            posts.add(post);
-//        }
-//        return posts;
-//    }
-
-
-    // ✅ 게시글 상세 보기
     // ✅ 게시글 상세 보기
     @GetMapping("/view/{bno}")
     public String viewBoard(@PathVariable Long bno,

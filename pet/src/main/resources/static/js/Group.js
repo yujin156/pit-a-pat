@@ -16,23 +16,26 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/groups/api/my-groups')
             .then(response => response.json())
             .then(data => {
-                myGroups = data.map(group => ({
-                    id: group.gno,
-                    title: group.gname,
-                    imageUrl: group.gimg ? group.gimg : '/uploads/img/default.jpg',
-                    avatarUrl: `/groups/images/${group.avatarUrl || 'default_avatar.jpg'}`,
-                    keyword: group.gkeyword
-                }));
+                console.log('✅ 내 그룹 데이터:', data);  // 응답 데이터 확인
+                if (Array.isArray(data)) {
+                    myGroups = data;
+                    console.log('✅ 내 그룹 데이터가 배열입니다:', data);
+                } else {
+                    console.error('내 그룹 데이터 오류: 배열이 아닙니다', data);
+                }
             })
             .catch(error => console.error('내 그룹 데이터 오류:', error)),
 
         fetch('/groups/api/all')
             .then(response => response.json())
             .then(data => {
-                allGroups = data;
-                console.log('✅ 전체 그룹 데이터:', allGroups);
-            })
-            .catch(error => console.error('전체 그룹 데이터 오류:', error))
+                if (Array.isArray(data)) {
+                    allGroups = data;
+                    console.log('✅ 전체 그룹 데이터:', data);
+                } else {
+                    console.error('전체 그룹 데이터 오류:', data);
+                }
+            }).catch(error => console.error('전체 그룹 데이터 오류:', error))
     ]).then(() => {
         // ⭐️ 모든 fetch가 끝나고 나서 로그인 여부에 따라 첫 화면 렌더링!
         if (isAuthenticated) {
@@ -110,11 +113,11 @@ function getAllGroupsHTML() {
 
 function createGroupCard(group) {
     return `
-        <div class="group_card" onclick="viewGroup('${group.id}')">
-            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.id}')">⋯</div>
-            <div class="card_image" style="background-image: url('${group.imageUrl ? group.imageUrl : '/groups/images/default.jpg'}')"></div>
+        <div class="group_card" onclick="viewGroup('${group.gno}')">
+            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.gno}')">⋯</div>
+            <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
             <div class="card_info">
-                <span class="card_title">${group.title}</span>
+                <span class="card_title">${group.gname}</span>
             </div>
         </div>
     `;
