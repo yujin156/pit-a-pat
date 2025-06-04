@@ -140,7 +140,67 @@
 
 .group_board_setting {
     cursor: pointer;
-    position: relative;
+    position: relative; /* 자식인 .menu의 absolute 포지셔닝 기준점 */
+    width: 28px; /* SVG 아이콘 크기에 맞게 조정될 수 있음 */
+    display: inline-block; /* 혹은 flex 등, 내용에 맞게 */
+    /* align-content: center; 이 속성은 flex 컨테이너에 주로 사용됩니다. */
+}
+
+/* 그룹 메뉴 */
+.menu {
+    display: none;  /* 메뉴는 기본적으로 숨겨져 있음 */
+    position: absolute;
+    top: 100%; /* 부모 요소 바로 아래에 위치 (예: 30px 대신) */
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 100;
+    width: max-content; /* 내용에 맞게 너비 자동 조정 또는 고정 값 */
+    min-width: 150px; /* 최소 너비 설정 가능 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* 좀 더 보기 좋게 그림자 효과 */
+}
+
+/* 그룹 메뉴를 클릭했을 때만 나타나도록 */
+.group_board_setting:focus-within + .menu,
+.group_board_setting:hover + .menu {
+    display: block; /* .group_board_setting이 클릭되면 .menu 표시 */
+}
+
+/* 메뉴 항목 div 스타일 */
+.menu div {
+    padding: 8px 12px; /* 패딩 조정 */
+    cursor: pointer;
+    white-space: nowrap; /* 텍스트가 한 줄로 표시되도록 */
+    /* writing-mode: horizontal-tb; 기본값이므로 불필요할 수 있습니다. */
+}
+
+.menu div:hover {
+    background-color: #f0f0f0;
+}
+
+#member-management, #join-group, #leave-group {
+    display: none;  /* 기본적으로 숨기기 */
+    padding: 10px;
+    margin: 5px;
+    background-color: #f1f1f1;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+
+#member-management:hover, #join-group:hover, #leave-group:hover {
+    background-color: #e1e1e1;  /* 마우스를 올리면 배경색 변경 */
+}
+
+/* 관리페이지 */
+
+.member_management_container {
+    display: none; /* 기본적으로 숨겨두기 */
+}
+
+.member_management_container.active {
+    display: block; /* active 클래스를 추가했을 때 보이게 설정 */
 }
 
 /* ============================================

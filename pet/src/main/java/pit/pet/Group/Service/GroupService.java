@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -149,4 +150,69 @@ public class GroupService {
         return groupRepository.findById(gno)
                 .orElseThrow(() -> new RuntimeException("해당 그룹이 존재하지 않습니다."));
     }
+
+    public String checkUserStatus(Long groupId, Long userId) {
+        // 그룹 존재 여부 확인
+        GroupTable group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다."));
+
+        System.out.println("Group ID: " + groupId); // 그룹 ID 콘솔 출력
+
+        // 1. 그룹 리더 확인 (dno는 리더 강아지의 dno, 주인의 userId와 비교)
+        Long leaderDno = group.getGleader();  // 리더 강아지의 dno
+        System.out.println("Leader DNO: " + leaderDno); // 리더 DNO 콘솔 출력
+
+        Optional<Dog> leaderDogOpt = dogRepository.findById(leaderDno);  // 강아지 ID로 강아지 찾기
+        if (leaderDogOpt.isPresent()) {
+            Dog leaderDog = leaderDogOpt.get();
+            System.out.println("Leader Dog Owner User ID: " + leaderDog.getOwner().getUno()); // 리더 강아지의 주인 userId 콘솔 출력
+
+            // 리더 강아지의 주인의 userId와 비교
+            if (leaderDog.getOwner().getUno().equals(userId)) {
+                System.out.println("User is the LEADER");
+                return "LEADER";  // 리더인 경우
+            }
+        }
+
+        // 2. 그룹 멤버 확인 (state가 ACCEPTED인 멤버만 멤버로 인정)
+        boolean isMember = group.getGroupMembers().stream()
+                .anyMatch(member -> {
+                    boolean isMatchingUser = member.getDog().getOwner().getUno().equals(userId);
+                    System.out.println("Checking member - Dog Owner User ID: " + member.getDog().getOwner().getUno() + ", Is matching user: " + isMatchingUser);
+                    return isMatchingUser && member.getState() == MemberStatus.ACCEPTED; // 상태가 ACCEPTED인 멤버
+                });
+
+        if (isMember) {
+            System.out.println("User is a MEMBER");
+            return "MEMBER"; // ACCEPTED 상태인 멤버인 경우
+        }
+
+        System.out.println("User is NOT JOINED");
+        return "NOT_JOINED"; // 비가입자일 경우
+    }
+
+
+    public Long getLeaderGmno(Long gno, List<Dog> myDogs) {
+        GroupTable group = groupRepository.findById(gno)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+
+        for (Dog dog : myDogs) {
+            // 해당 그룹에 강아지가 속해 있는지 확인
+            Optional<GroupMemberTable> memberOpt = groupMemberRepository.findByGroupTableAndDog(group, dog);
+
+            // 강아지가 그룹의 멤버일 경우
+            if (memberOpt.isPresent()) {
+                Long gmno = memberOpt.get().getGmno();
+
+                // 해당 강아지가 리더인지 확인 (gleader는 그룹 리더의 dno를 나타냄)
+                if (group.getGleader().equals(dog.getDno())) {
+                    return gmno; // 리더일 경우 해당 gmno 반환
+                }
+            }
+        }
+
+        // 리더가 아닌 경우 null 반환 (리더가 아님)
+        return null;  // 예외 던지지 않고 null 반환
+    }
+
 }
