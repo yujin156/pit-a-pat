@@ -106,6 +106,7 @@ function getAllGroupsHTML() {
             <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
             <div class="card_info">
                 <span class="card_title">${group.gname}</span>
+                <span class="card_content">${group.gcontent}</span>
             </div>
         </div>
     `).join('');
@@ -118,6 +119,7 @@ function createGroupCard(group) {
             <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
             <div class="card_info">
                 <span class="card_title">${group.gname}</span>
+                <span class="card_content">${group.gcontent}</span>
             </div>
         </div>
     `;

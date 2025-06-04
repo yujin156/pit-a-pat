@@ -22,8 +22,92 @@ let editingCommentCno = null
 
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.group_board_setting');  // 메뉴 버튼 (SVG)
+    const menu = document.getElementById('menu'); // 메뉴
     const gno = window.location.pathname.split("/").pop();
+
+    const memberManagementTab = document.querySelector("#member-management");  // 가입대기자/멤버 관리 탭
+    const groupBoardLeft = document.querySelector(".group_board_left");  // group_board_left를 선택
+
+    const groupBoard = document.querySelector(".group_board");  // 게시글 영역
+    const memberManagementContainer = document.querySelector(".member_management_container");  // 멤버 관리 영역
+
     console.log('✅ gno:', gno);
+
+    // "가입대기자/멤버 관리" 클릭 시
+    memberManagementTab.addEventListener('click', function() {
+        // 게시글 영역 숨기기
+        groupBoard.style.display = 'none';
+
+        // 멤버 관리 영역 보이기
+        memberManagementContainer.style.display = 'block';
+    });
+
+    // "모임 멤버들" 클릭 시
+    const memberTab = document.querySelector(".tab_button.active");  // 모임 멤버들 탭을 선택
+    memberTab.addEventListener('click', function() {
+        // 게시글 영역 보이기
+        groupBoard.style.display = 'block';
+
+        // 멤버 관리 영역 숨기기
+        memberManagementContainer.style.display = 'none';
+    });
+
+    menuButton.addEventListener('click', function() {
+        // 메뉴 보이기/숨기기
+        if (menu.style.display === "none" || menu.style.display === "") {
+            menu.style.display = "block"; // 메뉴 표시
+        } else {
+            menu.style.display = "none"; // 메뉴 숨기기
+        }
+    });
+
+    fetch(`/groups/${gno}/menu-status`)
+        .then(response => response.json())
+        .then(data => {
+            const status = data.status;  // "LEADER", "MEMBER", "NOT_JOINED"
+            console.log("Status: ", status); // 상태 확인용
+            const gleader = data.gleader; // 리더의 gmno (null이면 리더 아님)
+
+            const memberManagement = document.getElementById("member-management");
+            const joinGroup = document.getElementById("join-group");
+            const leaveGroup = document.getElementById("leave-group");
+            const menu = document.getElementById("menu");
+
+            console.log("joinGroup style.display before: ", joinGroup.style.display); // 디버깅: 가입하기 버튼의 스타일 확인
+
+            // 기본적으로 모든 메뉴 항목 숨기기
+            memberManagement.style.display = "none";
+            joinGroup.style.display = "none";
+            leaveGroup.style.display = "none";
+            menu.style.display = "none"; // 메뉴 숨기기 (기본값으로 숨겨두기)
+
+            // 조건에 맞춰 메뉴 항목 보이기
+            if (status === "LEADER") {
+                memberManagement.style.display = "block";  // 리더에게만 '가입대기자/멤버 관리' 보임
+                joinGroup.style.display = "none";  // 리더는 가입하기 안 보임
+                leaveGroup.style.display = "none"; // 리더는 탈퇴하기 안 보임
+            } else if (status === "MEMBER") {
+                leaveGroup.style.display = "block";  // 멤버는 '탈퇴하기' 보임
+                joinGroup.style.display = "none";  // 멤버는 가입하기 안 보임
+            } else if (status === "NOT_JOINED") {
+                joinGroup.style.display = "block";  // 비가입자는 '가입하기' 보임
+                memberManagement.style.display = "none";  // 비가입자는 가입대기자/멤버 관리 안 보임
+                leaveGroup.style.display = "none";  // 비가입자는 탈퇴하기 안 보임
+            }
+
+            // 디버깅: 가입하기 버튼 스타일 확인
+            console.log("joinGroup style.display after: ", joinGroup.style.display); // 디버깅: 가입하기 버튼의 스타일 확인
+
+            joinGroup.addEventListener('click', function () {
+                window.location.href = `/groups/${gno}/apply`;  // '가입하기' 페이지로 이동
+            });
+
+            leaveGroup.addEventListener('click', function () {
+                window.location.href = `/groups/${gno}/withdraw`;  // '탈퇴하기' 페이지로 이동
+            });
+        })
+        .catch(error => console.error('메뉴 상태 조회 실패:', error));
 
     fetch(`/board/api/groups/${gno}/posts`)
         .then(response => response.json())
@@ -121,6 +205,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 alert(errorMessage);
             });
+
+                // 클릭 이벤트 추가
+                memberManagement.addEventListener('click', function () {
+                    window.location.href = `/groups/${gno}/manage`;  // '가입대기자/멤버 관리' 페이지로 이동
+                });
+
+                joinGroup.addEventListener('click', function () {
+                    window.location.href = `/groups/${gno}/apply`;  // '가입하기' 페이지로 이동
+                });
+
+                leaveGroup.addEventListener('click', function () {
+                    window.location.href = `/groups/${gno}/withdraw`;  // '탈퇴하기' 페이지로 이동
+                });
+
     });
 
 

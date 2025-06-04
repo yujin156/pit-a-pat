@@ -9,6 +9,7 @@ import pit.pet.Account.User.Dog;
 import pit.pet.Group.entity.GroupTable;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,8 @@ public class BoardTable {
     @Column(name = "b_content", columnDefinition = "TEXT")
     private String bcontent;
 
-    @Column(name = "b_nowtime")
+    @CreationTimestamp
+    @Column(name = "bnowtime", updatable = false)
     private LocalDateTime bnowtime;
 
     // ✅ 게시글 - 그룹 (N:1)

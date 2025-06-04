@@ -186,6 +186,40 @@ public class GroupController {
         return groupService.getMyGroups(me);
     }
 
+    //현재 접속자 지위 확인
+
+    @GetMapping("/{gno}/menu-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getGroupMenuStatus(@PathVariable Long gno, @AuthenticationPrincipal UserDetails principal) {
+        // 로그인한 사용자 확인
+        if (principal == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "로그인이 필요합니다."));
+        }
+
+        // principal에서 이메일(Username) 가져오기
+        String username = principal.getUsername();  // principal은 UserDetails 타입
+
+        // 이메일을 통해 User 객체 찾기
+        User me = userRepository.findByUemail(username)
+                .orElseThrow(() -> new RuntimeException("해당 이메일로 가입된 사용자가 없습니다."));
+
+        // 사용자의 강아지 목록 가져오기
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+
+        // 사용자 강아지 중 리더인지 확인
+        String status = groupService.checkUserStatus(gno, me.getUno());
+
+        // 리더의 gmno 가져오기
+        Long leaderGmno = groupMemberService.getLeaderGmno(gno, myDogs);
+
+        // 결과 맵 생성
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", status); // 사용자 상태 (LEADER, MEMBER, NOT_JOINED)
+        result.put("gleader", leaderGmno); // 리더 gmno 값 반환
+
+        return ResponseEntity.ok(result);  // 상태와 리더 정보 반환
+    }
+
     // 그룹 가입 신청 폼 (강아지 선택)
     @GetMapping("/{gno}/apply")
     public String showApplyForm(@PathVariable Long gno,

@@ -76,7 +76,7 @@ public class GroupMemberService {
             }
         }
 
-        throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다.");
+        return null;
     }
 
     public void handleJoinRequest(Long gmno, MemberStatus status, Long leaderGmno) {
