@@ -4,14 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.User;
 import pit.pet.Group.Repository.GroupMemberRepository;
 import pit.pet.Group.Repository.GroupRepository;
 import pit.pet.Group.Request.CreateGroupRequest;
-import pit.pet.Group.entity.GroupMemberTable;
-import pit.pet.Group.entity.GroupTable;
-import pit.pet.Group.entity.Keyword;
-import pit.pet.Group.entity.MemberStatus;
+import pit.pet.Group.entity.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +19,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,6 +28,7 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final DogRepository dogRepository;
 
     /**
      * 그룹 생성
@@ -85,8 +86,44 @@ public class GroupService {
                 .orElseThrow(() -> new RuntimeException("해당 그룹이 존재하지 않습니다."));
     }
 
-    public List<GroupTable> getAllGroups() {
-        return groupRepository.findAll();
+    public List<GroupTableDTO> getAllGroups() {
+        // GroupTable을 GroupTableDTO로 변환해서 반환
+        return groupRepository.findAll().stream()
+                .map(group -> new GroupTableDTO(
+                        group.getGno(),
+                        group.getGname(),
+                        group.getGinfo(),
+                        group.getInterest(),
+                        group.getGmembercount(),
+                        group.getGleader(),
+                        group.getGcontent(),
+                        group.getGimg(),
+                        group.getGkeyword()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    // 로그인한 사용자의 그룹 목록을 DTO로 반환
+    public List<GroupTableDTO> getMyGroups(User me) {
+        // 유저의 강아지 목록 가져오기
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+
+        // 강아지 목록을 기준으로 그룹 멤버 조회
+        List<GroupMemberTable> memberships = groupMemberRepository.findByDogIn(myDogs);
+
+        return memberships.stream()
+                .map(groupMember -> new GroupTableDTO(
+                        groupMember.getGroupTable().getGno(),
+                        groupMember.getGroupTable().getGname(),
+                        groupMember.getGroupTable().getGinfo(),
+                        groupMember.getGroupTable().getInterest(),
+                        groupMember.getGroupTable().getGmembercount(),
+                        groupMember.getGroupTable().getGleader(),
+                        groupMember.getGroupTable().getGcontent(),
+                        groupMember.getGroupTable().getGimg(),
+                        groupMember.getGroupTable().getGkeyword()
+                ))
+                .collect(Collectors.toList());
     }
 
     public void changeLeader(Long gno, Long currentLeaderGmno, Long newLeaderGmno) {

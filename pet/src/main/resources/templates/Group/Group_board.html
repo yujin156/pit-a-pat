@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Group_board</title>
 
-    <link rel="stylesheet" href="/static/css/Content.css">
-    <link rel="stylesheet" href="/static/css/Group_board.css">
+    <link rel="stylesheet" href="/css/Content.css">
+    <link rel="stylesheet" href="/css/Group_board.css">
 
 
     <!-- 구글 캘린더 API -->
@@ -317,6 +317,7 @@
             <div class="create_post_modal_body">
                 <form id="createPostForm" th:action="@{/board/create}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="gno" id="modalGnoInput" value="">
+                    <input type="hidden" name="bno" id="bno">
                     <!-- 이미지 업로드 영역 -->
                     <div class="image_upload_section">
                         <div class="image_preview_container" id="imagePreviewContainer">
@@ -337,7 +338,7 @@
                                 <button type="button" class="btn_remove_image" id="removeImageBtn">이미지 제거</button>
                             </div>
                         </div>
-                        <input type="file" id="imageUpload" name="imageFiles" accept="image/*"
+                        <input type="file" id="imageUpload" name="newImages" accept="image/*"
                                style="display: none;"
                                multiple>
                     </div>
@@ -413,7 +414,7 @@
 </div>
 
 <!--<script defer th:src="@{/js/Group_board.js}"></script>-->
-<script defer src="/static/js/Group_board.js"></script>
+<script defer src="/js/Group_board.js"></script>
 
 </body>
 </html>

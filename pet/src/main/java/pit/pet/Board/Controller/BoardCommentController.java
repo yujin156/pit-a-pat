@@ -13,6 +13,7 @@ import pit.pet.Account.Service.DogService;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardCommentTable;
+import pit.pet.Board.Entity.BoardCommentTableDTO;
 import pit.pet.Board.Request.BoardCommentCreateRequest;
 import pit.pet.Board.Request.BoardCommentUpdateRequest;
 import pit.pet.Board.Service.BoardCommentService;
@@ -128,19 +129,12 @@ public class BoardCommentController {
     // ✅ 게시글에 달린 댓글 목록 조회
     @GetMapping("/api/comments/{bno}")
     @ResponseBody
-    public List<Map<String, Object>> getCommentsApi(@PathVariable Long bno) {
+    public List<BoardCommentTableDTO> getCommentsApi(@PathVariable Long bno) {
         List<BoardCommentTable> comments = boardCommentService.getCommentsByBoard(bno);
 
-        return comments.stream().map(comment -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("bcno", comment.getBcno());
-            map.put("bccomment", comment.getBccomment());
-            map.put("dogName", comment.getDog().getDname());
-            map.put("createdDate", comment.getCreatedAt());
-            String profileUrl = dogService.getProfileImageUrl(comment.getDog().getDno());
-            map.put("profileUrl", profileUrl);
-
-            return map;
-        }).collect(Collectors.toList());
+        // BoardCommentTable을 BoardCommentTableDTO로 변환
+        return comments.stream()
+                .map(comment -> new BoardCommentTableDTO(comment, dogService)) // DTO로 변환
+                .collect(Collectors.toList());
     }
 }
