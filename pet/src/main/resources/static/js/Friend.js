@@ -1,162 +1,179 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('=== Friend.js 초기화 시작 ===');
 
-    // ===== 전역 변수 =====
     let currentFriends = [];
     let isLoading = false;
 
-    // DOM 요소들
     const friendDogSelect = document.getElementById('friendDogSelect');
     const friendLoadingSpinner = document.getElementById('friendLoadingSpinner');
     const friendNotification = document.getElementById('friendNotification');
     const breedSearch = document.querySelector('.search_type');
     const nameSearch = document.querySelector('.search_friend');
 
-    // ===== 초기화 =====
+    init();
+
     function init() {
         console.log('Friend.js 초기화 중...');
 
-        // 데이터 확인
-        if (window.friendData) {
-            console.log('친구 데이터:', window.friendData);
-            currentFriends = window.friendData.friends || [];
-        } else {
-            console.warn('friendData가 없습니다.');
-            currentFriends = [];
-        }
-
         setupEventListeners();
-        setupProfileSelector();
         setupSearchListeners();
-        initializeSelectedProfile();
-        debugFriendData(); // ✅ 디버깅 함수 추가
+        setupProfileChangeListener();
+        setupDropdownListener(); // ✅ 드롭다운 직접 리스너 추가
+
+        // ✅ 초기 상태 확인 및 설정
+        if (window.dogProfileManager?.hasSelection()) {
+            const selectedId = window.dogProfileManager.getSelectedDogId();
+            console.log('기존 선택된 강아지 ID:', selectedId);
+
+            // 드롭다운 값 동기화
+            if (friendDogSelect && selectedId) {
+                friendDogSelect.value = selectedId;
+            }
+
+            loadFriendsForDog(selectedId);
+        } else {
+            // ✅ 선택된 강아지가 없으면 가이드 표시
+            showProfileSelectionGuide();
+            // 드롭다운 초기화
+            if (friendDogSelect) {
+                friendDogSelect.value = '';
+            }
+        }
 
         console.log('=== Friend.js 초기화 완료 ===');
     }
 
-    // ✅ 친구 데이터 디버깅 함수
-    function debugFriendData() {
-        console.log('=== 친구 데이터 디버깅 ===');
-        console.log('총 친구 수:', currentFriends.length);
+    // ✅ 드롭다운 직접 리스너 추가
+    function setupDropdownListener() {
+        if (friendDogSelect) {
+            friendDogSelect.addEventListener('change', function(e) {
+                const selectedDogId = e.target.value;
+                console.log('드롭다운에서 강아지 선택:', selectedDogId);
 
-        if (currentFriends.length > 0) {
-            currentFriends.forEach((friend, index) => {
-                console.log(`친구 ${index + 1}:`, {
-                    id: friend.dno,
-                    name: friend.dname,
-                    hasImage: !!(friend.image && friend.image.diurl),
-                    hasGender: !!(friend.ugender && friend.ugender.doglabel),
-                    hasSpecies: !!(friend.species && friend.species.name),
-                    addressInMap: window.friendData?.friendAddressMap?.[friend.dno],
-                    requestIdInMap: window.friendData?.friendRequestIds?.[friend.dno]
-                });
+                if (selectedDogId) {
+                    // DogProfileManager에 선택 알림
+                    if (window.dogProfileManager) {
+                        window.dogProfileManager.selectDog(parseInt(selectedDogId));
+                    }
+                    loadFriendsForDog(parseInt(selectedDogId));
+                } else {
+                    // 선택 해제
+                    if (window.dogProfileManager) {
+                        window.dogProfileManager.clearSelection();
+                    }
+                    showProfileSelectionGuide();
+                }
             });
         }
-
-        console.log('주소 맵:', window.friendData?.friendAddressMap);
-        console.log('Request ID 맵:', window.friendData?.friendRequestIds);
-        console.log('=== 디버깅 완료 ===');
     }
 
-    // ===== 이벤트 리스너 설정 =====
-    function setupEventListeners() {
-        // 프로필 버튼 이벤트
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.profile_btn')) {
-                const btn = e.target.closest('.profile_btn');
-                const dogId = btn.dataset.dogId;
-                if (dogId) {
-                    handleProfileClick(dogId);
-                }
+    function setupProfileChangeListener() {
+        window.addEventListener('globalProfileChanged', function (e) {
+            const { dogId, dogName } = e.detail;
+            console.log('🐶 프로필 변경 감지:', dogName || '선택 해제');
+
+            // ✅ 드롭다운 값 동기화
+            if (friendDogSelect) {
+                friendDogSelect.value = dogId || '';
             }
-        });
 
-        // ✅ 채팅 버튼 이벤트 개선
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.chat_btn')) {
-                const btn = e.target.closest('.chat_btn');
-
-                // 비활성화된 버튼인지 확인
-                if (btn.disabled || btn.classList.contains('disabled')) {
-                    showNotification('채팅을 시작할 수 없습니다. 친구 관계가 확인되지 않았습니다.', 'error');
-                    return;
-                }
-
-                const friendRequestId = btn.dataset.friendRequestId;
-                console.log('채팅 버튼 클릭 - FriendRequest ID:', friendRequestId);
-
-                if (friendRequestId && friendRequestId !== '' && friendRequestId !== 'null') {
-                    handleChatClick(friendRequestId);
-                } else {
-                    console.error('유효하지 않은 FriendRequest ID:', friendRequestId);
-                    showNotification('채팅 정보를 찾을 수 없습니다.', 'error');
-                }
-            }
-        });
-
-        // 친구 카드 클릭 이벤트 (프로필 보기)
-        document.addEventListener('click', function(e) {
-            const friendCard = e.target.closest('.friend_dog_card');
-            if (friendCard && !e.target.closest('.friend_action_btn')) {
-                const dogId = friendCard.dataset.dogId;
-                if (dogId) {
-                    handleProfileClick(dogId);
-                }
+            if (dogId) {
+                showNotification(`${dogName}의 친구 목록을 불러옵니다!`, 'info');
+                removeGuide();
+                loadFriendsForDog(dogId);
+            } else {
+                showProfileSelectionGuide();
+                clearFriendsList();
             }
         });
     }
 
-    // ===== 프로필 셀렉터 설정 =====
-    function setupProfileSelector() {
+    function showProfileSelectionGuide() {
+        const container = document.querySelector('.friend_content');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="profile-selection-guide">
+                <div class="guide-icon">🐕</div>
+                <h3>어떤 강아지의 친구를 볼까요?</h3>
+                <p>위의 드롭다운에서 강아지를 선택하면<br>그 강아지의 친구 목록을 볼 수 있어요!</p>
+                <button onclick="focusFriendDropdown()" class="guide-btn">강아지 선택하기</button>
+            </div>`;
+
+        // ✅ 가이드 스타일 적용
+        const guideElement = container.querySelector('.profile-selection-guide');
+        if (guideElement) {
+            guideElement.style.cssText = `
+                display: flex; flex-direction: column; align-items: center;
+                justify-content: center; text-align: center; padding: 80px 20px;
+                color: #7f8c8d; min-height: 400px;
+            `;
+
+            const guideIcon = guideElement.querySelector('.guide-icon');
+            if (guideIcon) {
+                guideIcon.style.cssText = 'font-size: 80px; margin-bottom: 20px; opacity: 0.5;';
+            }
+
+            const guideBtn = guideElement.querySelector('.guide-btn');
+            if (guideBtn) {
+                guideBtn.style.cssText = `
+                    padding: 12px 30px; background: #387FEB; color: white; border: none;
+                    border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer;
+                    transition: all 0.3s ease;
+                `;
+            }
+        }
+    }
+
+    // ✅ 친구 목록 초기화 함수 추가
+    function clearFriendsList() {
+        currentFriends = [];
+        const container = document.querySelector('.friend_content');
+        if (container) {
+            container.innerHTML = '';
+        }
+        updateCurrentDogDisplay('');
+    }
+
+    window.focusFriendDropdown = function () {
         if (friendDogSelect) {
-            friendDogSelect.addEventListener('change', handleProfileChange);
-            console.log('프로필 셀렉터 이벤트 리스너 설정 완료');
+            friendDogSelect.focus();
+            friendDogSelect.click();
         }
-    }
+    };
 
-    // ===== 프로필 변경 처리 =====
-    function handleProfileChange(e) {
-        const selectedDogId = parseInt(e.target.value);
-        console.log('프로필 변경:', selectedDogId);
-
-        if (selectedDogId && !isLoading) {
-            const selectedDog = window.friendData?.userDogs?.find(dog => dog.dno === selectedDogId);
-            if (selectedDog) {
-                localStorage.setItem('selectedFriendDogId', selectedDogId);
-                showNotification(`${selectedDog.dname}의 친구 목록을 불러옵니다!`, 'info');
-
-                // ✅ AJAX로 친구 목록 갱신
-                loadFriendsForDog(selectedDogId);
-            }
-        }
-    }
-
-    // ✅ AJAX로 특정 강아지의 친구 목록 로드
     function loadFriendsForDog(dogId) {
+        if (!dogId || isLoading) return;
+
+        console.log('친구 목록 로딩 시작 - 강아지 ID:', dogId);
         showLoading();
 
         fetch(`/dog-friends/api/list?dogId=${dogId}`)
-            .then(response => response.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                return res.json();
+            })
             .then(data => {
-                if (data.success) {
-                    console.log('친구 목록 갱신 성공:', data);
+                console.log('API 응답 데이터:', data);
 
-                    // 데이터 업데이트
-                    window.friendData.friends = data.friends;
-                    window.friendData.friendAddressMap = data.friendAddressMap;
-                    window.friendData.friendRequestIds = data.friendRequestIds;
+                if (data.success && Array.isArray(data.friends)) {
                     currentFriends = data.friends;
-
-                    // 페이지 갱신 대신 동적 업데이트
-                    updateFriendsList(data);
-                    showNotification(`${data.selectedDogName}의 친구 ${data.friendCount}마리를 불러왔습니다!`, 'success');
+                    updateFriendsList(currentFriends, data.friendAddressMap, data.friendRequestIds);
+                    updateCurrentDogDisplay(data.selectedDogName);
+                    showNotification(`${data.selectedDogName}의 친구 ${data.friendCount}마리를 불러왔습니다`, 'success');
                 } else {
-                    console.error('친구 목록 갱신 실패:', data.message);
-                    showNotification(data.message || '친구 목록을 불러오는데 실패했습니다.', 'error');
+                    console.warn('친구 데이터 없음 또는 오류:', data.message || '알 수 없는 오류');
+                    currentFriends = [];
+                    updateFriendsList([], {}, {});
+                    showNotification(data.message || '친구 데이터를 불러올 수 없습니다.', 'error');
                 }
             })
             .catch(error => {
-                console.error('친구 목록 갱신 오류:', error);
+                console.error('API 오류:', error);
+                currentFriends = [];
+                updateFriendsList([], {}, {});
                 showNotification('네트워크 오류가 발생했습니다.', 'error');
             })
             .finally(() => {
@@ -164,247 +181,161 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // ✅ 친구 목록 동적 업데이트
-    function updateFriendsList(data) {
-        const friendContent = document.querySelector('.friend_content');
-        if (!friendContent) return;
+    function updateFriendsList(friends, addressMap, requestIds) {
+        const container = document.querySelector('.friend_content');
+        if (!container) return;
 
-        if (!data.friends || data.friends.length === 0) {
-            friendContent.innerHTML = `
+        if (!friends || friends.length === 0) {
+            container.innerHTML = `
                 <div class="no-friends-message">
-                    <div class="no-friends-icon">🐕</div>
-                    <h3>아직 친구가 없어요</h3>
-                    <p>매칭 페이지에서 새로운 친구를 만들어보세요!</p>
+                    <div class="no-friends-icon">🐾</div>
+                    <h3>친구가 없습니다</h3>
+                    <p>매칭을 통해 친구를 먼저 사귀어 보세요!</p>
                     <button onclick="window.location.href='/matching'" class="goto-matching-btn">매칭하러 가기</button>
-                </div>
-            `;
+                </div>`;
             return;
         }
 
-        const friendsHtml = data.friends.map(friend => createFriendCardHTML(friend, data)).join('');
-        friendContent.innerHTML = `<div class="dog-grid-container">${friendsHtml}</div>`;
+        container.innerHTML = '';
+        const grid = document.createElement('div');
+        grid.className = 'dog-grid-container';
 
-        // 서브타이틀 업데이트
-        const subTitle = document.querySelector('.friend_sub_title');
-        if (subTitle) {
-            subTitle.textContent = `${data.selectedDogName}의 친구들 (${data.friendCount}마리)`;
-        }
-    }
-
-    // ✅ 친구 카드 HTML 생성
-    function createFriendCardHTML(friend, data) {
-        const address = data.friendAddressMap[friend.dno] || '위치 미공개';
-        const gender = friend.ugender?.doglabel || '성별 미공개';
-        const species = friend.species?.name || '견종 미공개';
-        const requestId = data.friendRequestIds[friend.dno];
-
-        // 이미지 HTML 생성
-        let imageHTML;
-        if (friend.image && friend.image.diurl) {
-            imageHTML = `
-                <img class="f_dog_img" 
-                     src="${friend.image.diurl}" 
-                     alt="${friend.dname} 사진"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="f_dog_img default-img" style="display: none; background: linear-gradient(135deg, #387FEB, #6FA4FF); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: bold;">
-                    ${friend.dname ? friend.dname.charAt(0) : '🐕'}
-                </div>
-            `;
-        } else {
-            imageHTML = `
-                <div class="f_dog_img default-img" 
-                     style="background: linear-gradient(135deg, #387FEB, #6FA4FF); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: bold;">
-                    ${friend.dname ? friend.dname.charAt(0) : '🐕'}
-                </div>
-            `;
-        }
-
-        return `
-            <div class="friend_dog_card" data-dog-id="${friend.dno}">
-                <div class="f_dog_hbtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="5" height="25" viewBox="0 0 5 25">
-                        <g transform="translate(-7432 -1784)">
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1784)" fill="#b7b7b7"/>
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1794)" fill="#b7b7b7"/>
-                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(7432 1804)" fill="#b7b7b7"/>
-                        </g>
-                    </svg>
-                </div>
-                <div class="f_dog_card_cont">
-                    ${imageHTML}
-                    
-                    <p class="f_dog_name">${friend.dname || '이름 미공개'}</p>
-                    
-                    <div class="dog_keyword_row">
-                        <label class="dog_keyword">${address}</label>
-                        <label class="dog_keyword">${gender}</label>
-                        <label class="dog_keyword">${species}</label>
-                    </div>
-                    
-                    <div class="friend_actions">
-                        <button class="friend_action_btn profile_btn" data-dog-id="${friend.dno}" title="프로필 보기">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </button>
-                        
-                        <button class="friend_action_btn chat_btn ${!requestId ? 'disabled' : ''}" 
-                                data-friend-request-id="${requestId || ''}"
-                                ${!requestId ? 'disabled' : ''}
-                                title="${requestId ? '채팅하기' : '채팅 불가능'}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    // ===== 초기 선택된 프로필 설정 =====
-    function initializeSelectedProfile() {
-        if (friendDogSelect) {
-            // 서버에서 전달받은 selectedDogId 우선 사용
-            let savedDogId = window.friendData?.selectedDogId;
-
-            // localStorage에서 가져오기 (백업)
-            if (!savedDogId) {
-                savedDogId = localStorage.getItem('selectedFriendDogId');
-            }
-
-            if (savedDogId) {
-                friendDogSelect.value = savedDogId;
-                console.log('저장된 프로필 복원:', savedDogId);
-            }
-
-            // 현재 선택된 강아지 정보 표시
-            updateCurrentDogDisplay();
-        }
-    }
-
-    // ===== 현재 강아지 정보 표시 =====
-    function updateCurrentDogDisplay() {
-        const selectedDogId = friendDogSelect?.value;
-        if (selectedDogId && window.friendData?.userDogs) {
-            const selectedDog = window.friendData.userDogs.find(dog => dog.dno == selectedDogId);
-            if (selectedDog) {
-                console.log('현재 선택된 강아지:', selectedDog.dname);
-
-                // 친구 수 표시
-                const friendCount = currentFriends.length;
-                const subTitle = document.querySelector('.friend_sub_title');
-                if (subTitle) {
-                    subTitle.textContent = `${selectedDog.dname}의 친구들 (${friendCount}마리)`;
-                }
-            }
-        }
-    }
-
-    // ===== 검색 기능 설정 =====
-    function setupSearchListeners() {
-        if (breedSearch) {
-            breedSearch.addEventListener('input', handleSearch);
-        }
-        if (nameSearch) {
-            nameSearch.addEventListener('input', handleSearch);
-        }
-    }
-
-    // ===== 검색 처리 =====
-    function handleSearch() {
-        const breedValue = breedSearch?.value?.toLowerCase() || '';
-        const nameValue = nameSearch?.value?.toLowerCase() || '';
-
-        console.log('검색 중:', { breed: breedValue, name: nameValue });
-
-        const friendCards = document.querySelectorAll('.friend_dog_card');
-        let visibleCount = 0;
-
-        friendCards.forEach(card => {
-            const dogName = card.querySelector('.f_dog_name')?.textContent?.toLowerCase() || '';
-            const keywords = Array.from(card.querySelectorAll('.dog_keyword'))
-                .map(k => k.textContent.toLowerCase());
-
-            const matchesBreed = breedValue === '' || keywords.some(k => k.includes(breedValue));
-            const matchesName = nameValue === '' || dogName.includes(nameValue);
-
-            if (matchesBreed && matchesName) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
+        friends.forEach(friend => {
+            const card = createFriendCard(friend, addressMap, requestIds);
+            grid.appendChild(card);
         });
 
-        // 검색 결과 없음 메시지
-        updateSearchResults(visibleCount);
+        container.appendChild(grid);
+        console.log('친구 목록 UI 업데이트 완료:', friends.length, '마리');
     }
 
-    // ===== 검색 결과 업데이트 =====
-    function updateSearchResults(visibleCount) {
-        const contentContainer = document.querySelector('.friend_content');
-        const noResultsMessage = document.querySelector('.no-search-results');
-
-        // 기존 메시지 제거
-        if (noResultsMessage) {
-            noResultsMessage.remove();
-        }
-
-        // 검색 결과가 없을 때 메시지 표시
-        if (visibleCount === 0 && currentFriends.length > 0) {
-            const message = document.createElement('div');
-            message.className = 'no-search-results';
-            message.innerHTML = `
-                <div class="no-friends-icon">🔍</div>
-                <h3>검색 결과가 없습니다</h3>
-                <p>다른 키워드로 검색해보세요.</p>
-            `;
-            message.style.cssText = `
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 80px 20px;
-                color: #7f8c8d;
-                min-height: 200px;
-            `;
-            contentContainer.appendChild(message);
+    function updateCurrentDogDisplay(dogName) {
+        const count = currentFriends.length;
+        const title = document.querySelector('.friend_sub_title');
+        if (title && dogName) {
+            title.textContent = `${dogName}의 친구들 (${count}마리)`;
+        } else if (title) {
+            title.textContent = '좋아하는 강아지 친구들';
         }
     }
 
-    // ===== 프로필 클릭 처리 =====
-    function handleProfileClick(dogId) {
-        console.log('프로필 보기:', dogId);
-        showNotification('프로필 페이지로 이동합니다!', 'info');
+    function createFriendCard(friend, addressMap, requestIds) {
+        const card = document.createElement('div');
+        card.className = 'friend_dog_card';
+        card.dataset.dogId = friend.dno;
 
-        setTimeout(() => {
-            window.location.href = `/friend/profile/${dogId}`;
-        }, 500);
+        // ✅ 이미지 처리 개선
+        let imgHtml = '';
+        if (friend.image && friend.image.diurl) {
+            imgHtml = `<img class="f_dog_img" src="${friend.image.diurl}" alt="${friend.dname}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div class="f_dog_img default-img" style="display: none;">${friend.dname.charAt(0)}</div>`;
+        } else {
+            imgHtml = `<div class="f_dog_img default-img">${friend.dname.charAt(0)}</div>`;
+        }
+
+        const address = addressMap[friend.dno] || '위치 미공개';
+        const gender = (friend.ugender && friend.ugender.doglabel) ? friend.ugender.doglabel : '성별 미공개';
+        const breed = (friend.species && friend.species.name) ? friend.species.name : '견종 미공개';
+        const canChat = !!requestIds[friend.dno];
+
+        card.innerHTML = `
+            <div class="f_dog_card_cont">
+                ${imgHtml}
+                <p class="f_dog_name">${friend.dname}</p>
+                <div class="dog_keyword_row">
+                    <label class="dog_keyword">${address}</label>
+                    <label class="dog_keyword">${gender}</label>
+                    <label class="dog_keyword">${breed}</label>
+                </div>
+                <div class="friend_actions">
+                    <button class="friend_action_btn profile_btn" title="프로필 보기" data-dog-id="${friend.dno}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                    <button class="friend_action_btn chat_btn ${canChat ? '' : 'disabled'}" 
+                            ${canChat ? '' : 'disabled'} 
+                            data-friend-request-id="${requestIds[friend.dno] || ''}"
+                            title="${canChat ? '채팅하기' : '채팅 불가능'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>`;
+
+        return card;
     }
 
-    // ===== 채팅 클릭 처리 =====
-    function handleChatClick(friendRequestId) {
-        console.log('채팅 시작:', friendRequestId);
-        showNotification('채팅창을 열고 있습니다!', 'success');
+    function setupEventListeners() {
+        document.addEventListener('click', function (e) {
+            const profileBtn = e.target.closest('.profile_btn');
+            const chatBtn = e.target.closest('.chat_btn');
 
-        setTimeout(() => {
-            // 새 창으로 채팅 열기
-            const chatWindow = window.open(
-                `/chat/${friendRequestId}`,
-                'chatWindow',
-                'width=800,height=600,scrollbars=yes,resizable=yes'
-            );
-
-            if (!chatWindow) {
-                showNotification('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.', 'error');
+            if (profileBtn) {
+                const id = profileBtn.dataset.dogId;
+                if (id) {
+                    console.log('프로필 보기 클릭:', id);
+                    window.location.href = `/friend/profile/${id}`;
+                }
             }
-        }, 500);
+
+            if (chatBtn) {
+                if (chatBtn.disabled || chatBtn.classList.contains('disabled')) {
+                    showNotification('채팅 불가: 친구가 아닙니다.', 'error');
+                    return;
+                }
+                const reqId = chatBtn.dataset.friendRequestId;
+                if (reqId) {
+                    console.log('채팅 시작:', reqId);
+                    window.open(`/chat/${reqId}`, 'chatWindow', 'width=800,height=600');
+                } else {
+                    showNotification('채팅 정보를 찾을 수 없습니다.', 'error');
+                }
+            }
+        });
     }
 
-    // ===== 로딩 표시/숨김 =====
+    function setupSearchListeners() {
+        if (breedSearch) breedSearch.addEventListener('input', handleSearch);
+        if (nameSearch) nameSearch.addEventListener('input', handleSearch);
+    }
+
+    function handleSearch() {
+        const breed = breedSearch?.value.toLowerCase() || '';
+        const name = nameSearch?.value.toLowerCase() || '';
+        const cards = document.querySelectorAll('.friend_dog_card');
+        let count = 0;
+
+        cards.forEach(card => {
+            const dname = card.querySelector('.f_dog_name')?.textContent.toLowerCase() || '';
+            const keywords = Array.from(card.querySelectorAll('.dog_keyword')).map(k => k.textContent.toLowerCase());
+            const match = (!breed || keywords.some(k => k.includes(breed))) && (!name || dname.includes(name));
+            card.style.display = match ? 'block' : 'none';
+            if (match) count++;
+        });
+
+        updateSearchResults(count);
+    }
+
+    function updateSearchResults(count) {
+        const container = document.querySelector('.friend_content');
+        const existing = document.querySelector('.no-search-results');
+        if (existing) existing.remove();
+
+        if (count === 0 && currentFriends.length > 0) {
+            const msg = document.createElement('div');
+            msg.className = 'no-search-results';
+            msg.innerHTML = `<div class="no-friends-icon">🔍</div><h3>검색 결과가 없습니다</h3><p>다른 키워드로 검색해보세요.</p>`;
+            msg.style.cssText = `
+                display: flex; flex-direction: column; align-items: center;
+                justify-content: center; text-align: center; padding: 80px 20px;
+                color: #7f8c8d; min-height: 200px;`;
+            container.appendChild(msg);
+        }
+    }
+
     function showLoading() {
         isLoading = true;
         if (friendLoadingSpinner) {
@@ -419,94 +350,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== 알림 표시 =====
-    function showNotification(message, type = 'info', duration = 3000) {
+    function showNotification(msg, type = 'info') {
         if (!friendNotification) return;
 
-        // 기존 알림 제거
-        friendNotification.className = 'friend-notification';
+        friendNotification.textContent = msg;
+        friendNotification.className = `friend-notification show ${type}`;
 
-        // 새 알림 설정
-        friendNotification.textContent = message;
-        friendNotification.classList.add('show', type);
-
-        // 자동 제거
         setTimeout(() => {
             friendNotification.classList.remove('show');
-        }, duration);
+        }, 3000);
 
-        console.log(`알림 [${type}]:`, message);
+        console.log(`알림 [${type}]:`, msg);
     }
 
-    // ===== 유틸리티 함수들 =====
-
-    // 현재 선택된 강아지 ID 가져오기
-    function getSelectedDogId() {
-        return friendDogSelect?.value ? parseInt(friendDogSelect.value) : null;
+    function removeGuide() {
+        const guide = document.querySelector('.profile-selection-guide');
+        if (guide) {
+            guide.remove();
+        }
     }
 
-    // 특정 강아지의 친구 수 가져오기
-    function getFriendCount(dogId) {
-        return currentFriends.length;
-    }
-
-    // ===== 전역 함수로 내보내기 (디버깅용) =====
-    window.friendFunctions = {
-        showNotification,
-        handleProfileClick,
-        handleChatClick,
-        loadFriendsForDog,
-        getSelectedDogId,
-        getFriendCount,
-        debugFriendData
+    // ✅ 디버깅용 글로벌 함수들
+    window.friendDebug = {
+        getCurrentFriends: () => currentFriends,
+        getSelectedDogId: () => window.dogProfileManager?.getSelectedDogId(),
+        reloadFriends: (dogId) => {
+            if (dogId) loadFriendsForDog(dogId);
+            else console.log('강아지 ID가 필요합니다.');
+        }
     };
-
-    // ===== 초기화 실행 =====
-    init();
 });
-
-// ===== CSS 스타일 추가 (JavaScript로 동적 추가) =====
-const friendStyle = document.createElement('style');
-friendStyle.textContent = `
-    .no-search-results {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 80px 20px;
-        color: #7f8c8d;
-        min-height: 200px;
-    }
-    
-    .no-search-results .no-friends-icon {
-        font-size: 60px;
-        margin-bottom: 15px;
-        opacity: 0.5;
-    }
-    
-    .no-search-results h3 {
-        font-size: 20px;
-        color: #387FEB;
-        margin-bottom: 8px;
-    }
-    
-    .no-search-results p {
-        font-size: 14px;
-        margin: 0;
-    }
-
-    /* 채팅 버튼 비활성화 스타일 */
-    .chat_btn.disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
-
-    /* 로딩 중 스타일 */
-    .loading {
-        opacity: 0.6;
-        pointer-events: none;
-    }
-`;
-document.head.appendChild(friendStyle);

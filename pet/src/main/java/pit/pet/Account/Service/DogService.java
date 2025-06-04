@@ -159,6 +159,9 @@ public class DogService {
         }
         return dogRepository.findByKeyword1Containing(keyword);
     }
+    public List<String> searchSpeciesNames(String keyword) {
+        return speciesRepository.findSpeciesNamesByKeyword(keyword);
+    }
 
     /**
      * 강아지 ID로 조회

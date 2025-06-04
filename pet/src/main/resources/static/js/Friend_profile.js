@@ -1,269 +1,175 @@
-// 강아지 프로필 데이터
-const dogProfiles = [
-    {
-        id: 1,
-        name: "구름",
-        group: "내향적 강아지 모임",
-        location: "수유3동",
-        gender: "수컷 (중성화O)",
-        breed: "비숑",
-        size: "소형견",
-        birthday: "2018년 7월 7일",
-        keywords: ["내향적", "엄마 껌딱지 겁쟁이", "주변에 관심없는 나혼자 산다형"],
-        intro: "닭고기 알러지가 있어요.\n산책은 주기적으로 하고 풍성한 머리가 포인트에요.\n옷 입는걸 싫어하고 대형견을 보면 짖어요.\n활발한 강아지나 아기 강아지는 조금 힘들어해요.",
-        image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 비숑 이미지
-        isFavorite: false
-    },
-    {
-        id: 2,
-        name: "월이",
-        group: "사자가 되지 못한 라이언",
-        location: "서교동",
-        gender: "수컷 (중성화X)",
-        breed: "포메라니안",
-        size: "소형견",
-        birthday: "2020년 3월 15일",
-        keywords: ["활발함", "사교적", "장난꾸러기"],
-        intro: "항상 밝고 활발해요.\n사람을 좋아하고 다른 강아지와 잘 어울립니다.\n간식을 좋아하고 놀이를 무척 좋아합니다.\n배변 훈련이 잘 되어있어요.",
-        image: "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80", // 포메라니안 이미지
-        isFavorite: true
-    }
-];
-
-// 현재 표시 중인 강아지 인덱스
-let currentDogIndex = 0;
-
-// 요소 참조
-let starElement;
-let leftBtn;
-let rightBtn;
-let deleteBtn;
-let cancelBtn;
-let confirmBtn;
-let deleteModal;
-let toastMsg;
-
-// 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
-    // 요소 참조 초기화
-    starElement = document.getElementById('favorite-star');
-    leftBtn = document.querySelector('.f_profile_left_btn');
-    rightBtn = document.querySelector('.f_profile_right_btn');
-    deleteBtn = document.getElementById('delete-friend-btn');
-    cancelBtn = document.getElementById('cancel-delete');
-    confirmBtn = document.getElementById('confirm-delete');
-    deleteModal = document.getElementById('delete-modal');
-    toastMsg = document.getElementById('toast-message');
+    console.log('=== Friend_profile.js 초기화 시작 ===');
+    console.log('dogProfiles:', dogProfiles);
+    console.log('currentDogIndex:', currentDogIndex);
 
-    // 초기 데이터 표시
-    updateProfile();
+    // ===== 전역 변수 =====
+    // let currentDogIndex = 0; // HTML에서 전달받음
+    // const dogProfiles = []; // HTML에서 전달받음
 
-    // 이벤트 리스너 추가
-    if (leftBtn) leftBtn.addEventListener('click', showPreviousDog);
-    if (rightBtn) rightBtn.addEventListener('click', showNextDog);
-    if (starElement) starElement.addEventListener('click', toggleFavorite);
-    if (deleteBtn) deleteBtn.addEventListener('click', showDeleteModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', hideDeleteModal);
-    if (confirmBtn) confirmBtn.addEventListener('click', deleteFriend);
-});
+    // ===== DOM 요소 참조 =====
+    let starElement;
+    let leftBtn;
+    let rightBtn;
+    let deleteBtn;
+    let cancelBtn;
+    let confirmBtn;
+    let deleteModal;
+    let toastMsg;
+    let chatIcon;
 
-// 이전 강아지 프로필 표시
-function showPreviousDog() {
-    if (currentDogIndex > 0) {
-        slideToProfile(currentDogIndex - 1);
-        showToast("이전 친구 프로필을 불러왔습니다.");
-    }
-}
+    // ===== 초기화 =====
+    function init() {
+        console.log('Friend_profile.js 초기화 중...');
 
-// 다음 강아지 프로필 표시
-function showNextDog() {
-    if (currentDogIndex < dogProfiles.length - 1) {
-        slideToProfile(currentDogIndex + 1);
-        showToast("다음 친구 프로필을 불러왔습니다.");
-    }
-}
+        // 요소 참조 초기화
+        initElements();
 
-// 부드러운 슬라이드 효과로 프로필 변경
-function slideToProfile(newIndex) {
-    if (newIndex < 0 || newIndex >= dogProfiles.length) return;
+        // 이벤트 리스너 설정
+        setupEventListeners();
 
-    // 현재 프로필 페이드아웃
-    const currentSlide = document.querySelector('.profile-slide.active');
-    if (currentSlide) {
-        currentSlide.classList.remove('active');
-    }
-
-    // 잠시 후 새 프로필로 업데이트
-    setTimeout(() => {
-        currentDogIndex = newIndex;
-        updateProfileContent();
+        // 초기 상태 설정
         updateNavigationButtons();
+        updateFavoriteState();
+        updateChatButton();
 
-        // 새 프로필 페이드인
-        setTimeout(() => {
-            const newSlide = document.querySelector('.profile-slide');
-            if (newSlide) {
-                newSlide.classList.add('active');
-            }
-        }, 50);
-    }, 250);
-}
-
-// 프로필 정보 업데이트
-function updateProfile() {
-    if (dogProfiles.length === 0) {
-        document.querySelector('.f_profile').innerHTML = '<div class="no-friends">등록된 친구가 없습니다.</div>';
-        // 친구가 없으면 양쪽 버튼 모두 숨기기
-        if (leftBtn) leftBtn.classList.add('hidden');
-        if (rightBtn) rightBtn.classList.add('hidden');
-        return;
+        console.log('=== Friend_profile.js 초기화 완료 ===');
     }
 
-    // 프로필 슬라이드 컨테이너 생성
-    const profileContainer = document.querySelector('.f_profile');
-    profileContainer.innerHTML = `
-        <div class="profile-slide active">
-            <div class="f_profile_card">
-                <div class="profile_txt">
-                    <div class="profile_name_icon">
-                        <h3 class="profile_name"></h3>
-                        <div class="profile_hart_icon">
-                            <svg id="Animated_Heart" data-name="Animated Heart" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="39.46" height="34.444" viewBox="0 0 39.46 34.444">
-                                <defs>
-                                    <clipPath id="clip-path">
-                                        <path id="Heart_Mask" data-name="Heart Mask" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
-                                    </clipPath>
-                                </defs>
-                                <g id="Animated_Heart-2" data-name="Animated Heart" clip-path="url(#clip-path)">
-                                    <path id="Simple_Heart" data-name="Simple Heart" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
-                                    <path id="Heart_Liquid" data-name="Heart Liquid" d="M-5.756-8.178c3.752-7.616,8.77-9.917,26.474,0s22.426-10.5,28.105,0,2.336,40.287,2.336,40.287H-8.026S-9.508-.562-5.756-8.178Z" transform="translate(-0.875 2.396)" fill="#eda9dd"/>
-                                </g>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="profile_group_title"></p>
-                    <div class="profile_keyword_row">
-                        <label class="profile_pink profile_location"></label>
-                        <label class="profile_blue profile_gender_label"></label>
-                        <label class="profile_blue profile_breed_label"></label>
-                    </div>
-                    <div class="profile_keyword_row profile_keywords_container">
-                    </div>
-                </div>
-                <div class="profile_card_gradient"></div>
-                <div class="profile_card_img"></div>
-            </div>
-            <div class="f_profile_info">
-                <div class="profile_info_row">
-                    <label class="profile_pink">견종</label>
-                    <span class="profile_type"></span>
-                    <label class="profile_white">소형견</label>
-                    <div class="profile_star" id="favorite-star">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38.601 36.856">
-                            <g id="Artboard" transform="translate(1.5 1.5)">
-                                <g id="star">
-                                    <path id="Shape" d="M17.8,0l5.5,11.143,12.3,1.8L26.7,21.61l2.1,12.247-11-5.785-11,5.785L8.9,21.61,0,12.941l12.3-1.8Z" fill="#B7B7B7" stroke="#B7B7B7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" fill-rule="evenodd"/>
-                                </g>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="profile_chat_icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="chat">
-                            <path d="M8,11a1,1,0,1,0,1,1A1,1,0,0,0,8,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,12,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,16,11ZM12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9A10,10,0,0,0,12,2Zm0,18H5.41l.93-.93a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.7A8,8,0,1,1,12,20Z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="profile_info_row">
-                    <label class="profile_pink">성별</label>
-                    <span class="profile_gender"></span>
-                </div>
-                <div class="profile_info_row">
-                    <label class="profile_pink">생일</label>
-                    <span class="profile_birthday"></span>
-                </div>
-                <div class="profile_gift">
-                    <label class="profile_send_gift">친구에게 선물 보내기</label>
-                    <div class="profile_gift_icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24.644" height="24.603" viewBox="0 0 24.644 24.603">
-                            <g id="그룹_162474" data-name="그룹 162474" transform="translate(-1278.838 -491.139)">
-                                <path id="패스_83409" data-name="패스 83409" d="M3.516,13.42H21.128v8.806a1.258,1.258,0,0,1-1.258,1.258H4.774a1.258,1.258,0,0,1-1.258-1.258Zm8.806,10.064V8.388M1,9.646A1.258,1.258,0,0,1,2.258,8.388H22.386a1.258,1.258,0,0,1,1.258,1.258v2.516a1.258,1.258,0,0,1-1.258,1.258H2.258A1.258,1.258,0,0,1,1,12.162ZM12.444,7.13c-.55-3.749-6.29-8.177-8.411-5.095-2,2.908,2.121,6.353,7.153,5.095" transform="translate(1278.838 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                <path id="패스_83410" data-name="패스 83410" d="M10,7.13c.55-3.749,6.29-8.177,8.411-5.095,2.005,2.908-2.121,6.353-7.153,5.095" transform="translate(1281.16 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-                <label class="profile_pink">강아지 소개</label>
-                <p class="dog_intro"></p>
-                <button class="profile_white" id="delete-friend-btn">친구 삭제하기</button>
-            </div>
-        </div>
-    `;
-
-    // 새로 생성된 요소들에 대한 이벤트 리스너 재등록
-    starElement = document.getElementById('favorite-star');
-    deleteBtn = document.getElementById('delete-friend-btn');
-
-    if (starElement) starElement.addEventListener('click', toggleFavorite);
-    if (deleteBtn) deleteBtn.addEventListener('click', showDeleteModal);
-
-    // 프로필 내용 업데이트
-    updateProfileContent();
-
-    // 화살표 버튼 표시/숨김 업데이트
-    updateNavigationButtons();
-}
-
-// 프로필 내용만 업데이트하는 함수 (슬라이드 효과용)
-function updateProfileContent() {
-    if (dogProfiles.length === 0) return;
-
-    const dog = dogProfiles[currentDogIndex];
-
-    // 프로필 정보 업데이트
-    const nameElement = document.querySelector('.profile_name');
-    const groupElement = document.querySelector('.profile_group_title');
-    const cardImgElement = document.querySelector('.profile_card_img');
-
-    if (nameElement) nameElement.textContent = dog.name;
-    if (groupElement) groupElement.textContent = dog.group;
-
-    // 이미지 설정
-    if (cardImgElement) {
-        console.log('Setting image for:', dog.name, 'Image URL:', dog.image);
-        cardImgElement.style.backgroundImage = `url('${dog.image}')`;
+    // ===== 요소 참조 초기화 =====
+    function initElements() {
+        starElement = document.getElementById('favorite-star');
+        leftBtn = document.querySelector('.f_profile_left_btn');
+        rightBtn = document.querySelector('.f_profile_right_btn');
+        deleteBtn = document.getElementById('delete-friend-btn');
+        cancelBtn = document.getElementById('cancel-delete');
+        confirmBtn = document.getElementById('confirm-delete');
+        deleteModal = document.getElementById('delete-modal');
+        toastMsg = document.getElementById('toast-message');
+        chatIcon = document.querySelector('.profile_chat_icon:not(.disabled)');
     }
 
-    // 프로필 카드 첫 번째 키워드 행 업데이트 (위치, 성별, 견종)
-    const locationElement = document.querySelector('.profile_location');
-    const genderLabelElement = document.querySelector('.profile_gender_label');
-    const breedLabelElement = document.querySelector('.profile_breed_label');
+    // ===== 이벤트 리스너 설정 =====
+    function setupEventListeners() {
+        // 네비게이션 버튼
+        if (leftBtn) {
+            leftBtn.addEventListener('click', showPreviousDog);
+        }
+        if (rightBtn) {
+            rightBtn.addEventListener('click', showNextDog);
+        }
 
-    if (locationElement) locationElement.textContent = dog.location;
-    if (genderLabelElement) genderLabelElement.textContent = dog.gender.includes('수컷') ? '수컷' : '암컷';
-    if (breedLabelElement) breedLabelElement.textContent = dog.breed;
+        // 즐겨찾기 버튼
+        if (starElement) {
+            starElement.addEventListener('click', toggleFavorite);
+        }
 
-    // 두 번째 키워드 행 업데이트 (성격 키워드들)
-    const keywordsContainer = document.querySelector('.profile_keywords_container');
-    if (keywordsContainer) {
-        keywordsContainer.innerHTML = dog.keywords.map(keyword =>
-            `<label class="profile_blue">${keyword}</label>`
-        ).join('');
+        // 삭제 관련 버튼
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', showDeleteModal);
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', hideDeleteModal);
+        }
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', deleteFriend);
+        }
+
+        // 채팅 버튼
+        if (chatIcon) {
+            chatIcon.addEventListener('click', handleChatClick);
+            chatIcon.style.cursor = 'pointer';
+        }
+
+        // 키보드 네비게이션
+        document.addEventListener('keydown', handleKeyboardNavigation);
+
+        // 모달 외부 클릭 시 닫기
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    hideDeleteModal();
+                }
+            });
+        }
     }
 
-    // 오른쪽 정보 영역 업데이트
-    const typeElement = document.querySelector('.profile_type');
-    const genderElement = document.querySelector('.profile_gender');
-    const birthdayElement = document.querySelector('.profile_birthday');
-    const introElement = document.querySelector('.dog_intro');
+    // ===== 이전 강아지 프로필 표시 =====
+    function showPreviousDog() {
+        if (currentDogIndex > 0 && dogProfiles.length > 1) {
+            navigateToProfile(currentDogIndex - 1);
+        }
+    }
 
-    if (typeElement) typeElement.textContent = dog.breed;
-    if (genderElement) genderElement.textContent = dog.gender;
-    if (birthdayElement) birthdayElement.textContent = dog.birthday;
-    if (introElement) introElement.textContent = dog.intro;
+    // ===== 다음 강아지 프로필 표시 =====
+    function showNextDog() {
+        if (currentDogIndex < dogProfiles.length - 1 && dogProfiles.length > 1) {
+            navigateToProfile(currentDogIndex + 1);
+        }
+    }
 
-    // 즐겨찾기 상태 업데이트
-    if (starElement) {
+    // ===== 프로필 네비게이션 (URL 변경) =====
+    function navigateToProfile(newIndex) {
+        if (newIndex < 0 || newIndex >= dogProfiles.length) {
+            console.warn('잘못된 인덱스:', newIndex);
+            return;
+        }
+
+        const targetDog = dogProfiles[newIndex];
+        if (targetDog && targetDog.id) {
+            console.log('다른 강아지 프로필로 이동:', targetDog.name, 'ID:', targetDog.id);
+
+            // 로딩 표시
+            showLoading();
+
+            // 페이지 이동
+            window.location.href = `/friend/profile/${targetDog.id}`;
+        } else {
+            console.error('프로필 데이터가 없습니다:', targetDog);
+            showToast('프로필을 찾을 수 없습니다.', 'error');
+        }
+    }
+
+    // ===== 네비게이션 버튼 상태 업데이트 =====
+    function updateNavigationButtons() {
+        if (!leftBtn || !rightBtn) return;
+
+        console.log('네비게이션 버튼 업데이트:', {
+            총개수: dogProfiles.length,
+            현재인덱스: currentDogIndex
+        });
+
+        // 강아지가 1마리만 있거나 없는 경우 양쪽 버튼 모두 숨기기
+        if (dogProfiles.length <= 1) {
+            leftBtn.classList.add('hidden');
+            rightBtn.classList.add('hidden');
+            return;
+        }
+
+        // 첫 번째 강아지인 경우 왼쪽 버튼 숨기기
+        if (currentDogIndex === 0) {
+            leftBtn.classList.add('hidden');
+            rightBtn.classList.remove('hidden');
+        }
+        // 마지막 강아지인 경우 오른쪽 버튼 숨기기
+        else if (currentDogIndex === dogProfiles.length - 1) {
+            rightBtn.classList.add('hidden');
+            leftBtn.classList.remove('hidden');
+        }
+        // 중간 강아지인 경우 양쪽 버튼 모두 표시
+        else {
+            leftBtn.classList.remove('hidden');
+            rightBtn.classList.remove('hidden');
+        }
+    }
+
+    // ===== 즐겨찾기 상태 업데이트 =====
+    function updateFavoriteState() {
+        if (!starElement || !dogProfiles[currentDogIndex]) return;
+
+        const dog = dogProfiles[currentDogIndex];
         const path = starElement.querySelector('path');
+
         if (dog.isFavorite) {
             starElement.classList.add('active');
             if (path) {
@@ -278,99 +184,380 @@ function updateProfileContent() {
             }
         }
     }
-}
 
-// 네비게이션 버튼 상태 업데이트 함수
-function updateNavigationButtons() {
-    if (!leftBtn || !rightBtn) return;
+    // ===== 채팅 버튼 상태 업데이트 =====
+    function updateChatButton() {
+        if (!dogProfiles[currentDogIndex]) return;
 
-    // 강아지가 1마리만 있는 경우 양쪽 버튼 모두 숨기기
-    if (dogProfiles.length <= 1) {
-        leftBtn.classList.add('hidden');
-        rightBtn.classList.add('hidden');
-        return;
-    }
+        const dog = dogProfiles[currentDogIndex];
+        const chatIcon = document.querySelector('.profile_chat_icon');
 
-    // 첫 번째 강아지인 경우 왼쪽 버튼 숨기기
-    if (currentDogIndex === 0) {
-        leftBtn.classList.add('hidden');
-        rightBtn.classList.remove('hidden');
-    }
-    // 마지막 강아지인 경우 오른쪽 버튼 숨기기
-    else if (currentDogIndex === dogProfiles.length - 1) {
-        rightBtn.classList.add('hidden');
-        leftBtn.classList.remove('hidden');
-    }
-    // 중간 강아지인 경우 양쪽 버튼 모두 표시
-    else {
-        leftBtn.classList.remove('hidden');
-        rightBtn.classList.remove('hidden');
-    }
-}
-
-// 즐겨찾기 토글 기능
-function toggleFavorite() {
-    const dog = dogProfiles[currentDogIndex];
-    dog.isFavorite = !dog.isFavorite;
-
-    // 즐겨찾기 상태 업데이트
-    const path = starElement.querySelector('path');
-    if (dog.isFavorite) {
-        starElement.classList.add('active');
-        if (path) {
-            path.setAttribute('fill', '#EDA9DD');
-            path.setAttribute('stroke', '#EDA9DD');
+        if (dog.friendRequestId) {
+            chatIcon.classList.remove('disabled');
+            chatIcon.style.cursor = 'pointer';
+            chatIcon.title = '채팅하기';
+        } else {
+            chatIcon.classList.add('disabled');
+            chatIcon.style.cursor = 'not-allowed';
+            chatIcon.title = '채팅 불가능';
         }
-        showToast(`${dog.name}이(가) 즐겨찾기에 추가되었습니다.`);
-    } else {
-        starElement.classList.remove('active');
-        if (path) {
-            path.setAttribute('fill', '#B7B7B7');
-            path.setAttribute('stroke', '#B7B7B7');
+    }
+
+    // ===== 즐겨찾기 토글 =====
+    function toggleFavorite() {
+        if (!dogProfiles[currentDogIndex]) return;
+
+        const dog = dogProfiles[currentDogIndex];
+        const newFavoriteState = !dog.isFavorite;
+
+        console.log('즐겨찾기 상태 변경:', dog.name, '현재:', dog.isFavorite, '→', newFavoriteState);
+
+        // 서버에 즐겨찾기 상태 저장 API 호출
+        fetch('/friend/favorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                dogId: dog.id,
+                isFavorite: newFavoriteState
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 클라이언트 상태 업데이트
+                    dog.isFavorite = newFavoriteState;
+                    updateFavoriteState();
+
+                    const message = newFavoriteState
+                        ? `${dog.name}이(가) 즐겨찾기에 추가되었습니다.`
+                        : `${dog.name}이(가) 즐겨찾기에서 제거되었습니다.`;
+
+                    showToast(message, 'success');
+                } else {
+                    showToast(data.message || '즐겨찾기 처리에 실패했습니다.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('즐겨찾기 처리 오류:', error);
+                showToast('오류가 발생했습니다.', 'error');
+            });
+    }
+
+    // ===== 채팅 버튼 클릭 처리 =====
+    function handleChatClick() {
+        if (!dogProfiles[currentDogIndex]) return;
+
+        const dog = dogProfiles[currentDogIndex];
+        const requestId = dog.friendRequestId;
+
+        if (requestId) {
+            console.log('채팅 시작:', dog.name, 'Request ID:', requestId);
+            showToast(`${dog.name}와의 채팅을 시작합니다!`, 'info');
+
+            // 새 창에서 채팅 열기
+            setTimeout(() => {
+                window.open(`/chat/${requestId}`, 'chatWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
+            }, 500);
+        } else {
+            showToast('채팅 정보를 찾을 수 없습니다.', 'error');
         }
-        showToast(`${dog.name}이(가) 즐겨찾기에서 제거되었습니다.`);
-    }
-}
-
-// 삭제 모달 표시
-function showDeleteModal() {
-    if (deleteModal) deleteModal.classList.add('active');
-}
-
-// 삭제 모달 숨기기
-function hideDeleteModal() {
-    if (deleteModal) deleteModal.classList.remove('active');
-}
-
-// 친구 삭제 처리
-function deleteFriend() {
-    const dogName = dogProfiles[currentDogIndex].name;
-
-    // 배열에서 현재 프로필 제거
-    dogProfiles.splice(currentDogIndex, 1);
-
-    // 인덱스 조정
-    if (currentDogIndex >= dogProfiles.length) {
-        currentDogIndex = Math.max(0, dogProfiles.length - 1);
     }
 
-    // 모달 닫기
-    hideDeleteModal();
+    // ===== 삭제 모달 표시 =====
+    function showDeleteModal() {
+        if (deleteModal) {
+            deleteModal.classList.add('active');
 
-    // 프로필이 남아있으면 업데이트, 없으면 메시지 표시
-    updateProfile();
-    showToast(`${dogName}이(가) 친구 목록에서 삭제되었습니다.`);
-}
+            // 현재 강아지 이름을 모달에 표시
+            if (dogProfiles[currentDogIndex]) {
+                const modalTitle = deleteModal.querySelector('.modal-title');
+                if (modalTitle) {
+                    modalTitle.textContent = `정말 ${dogProfiles[currentDogIndex].name}와의 친구 관계를 삭제하시겠습니까?`;
+                }
+            }
+        }
+    }
 
-// 토스트 메시지 표시
-function showToast(message) {
-    if (!toastMsg) return;
+    // ===== 삭제 모달 숨기기 =====
+    function hideDeleteModal() {
+        if (deleteModal) {
+            deleteModal.classList.remove('active');
+        }
+    }
 
-    toastMsg.textContent = message;
-    toastMsg.classList.add('show');
+    // ===== 친구 삭제 처리 =====
+    function deleteFriend() {
+        if (!dogProfiles[currentDogIndex]) return;
 
-    // 3초 후 토스트 메시지 숨기기
-    setTimeout(() => {
-        toastMsg.classList.remove('show');
-    }, 3000);
-}
+        const currentDog = dogProfiles[currentDogIndex];
+        const dogName = currentDog.name;
+        const dogId = currentDog.id;
+
+        console.log('친구 삭제 요청:', dogName, 'ID:', dogId);
+
+        // 로딩 표시
+        showLoading();
+
+        // 서버에 삭제 요청
+        fetch(`/friend/delete/${dogId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast(`${dogName}이(가) 친구 목록에서 삭제되었습니다.`, 'success');
+
+                    // 잠시 후 친구 목록으로 돌아가기
+                    setTimeout(() => {
+                        window.location.href = '/dog-friends/list';
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || '삭제 실패');
+                }
+            })
+            .catch(error => {
+                console.error('친구 삭제 오류:', error);
+                showToast('친구 삭제에 실패했습니다.', 'error');
+                hideLoading();
+            })
+            .finally(() => {
+                hideDeleteModal();
+            });
+    }
+
+    // ===== 키보드 네비게이션 =====
+    function handleKeyboardNavigation(e) {
+        switch(e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                if (currentDogIndex > 0) {
+                    showPreviousDog();
+                }
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                if (currentDogIndex < dogProfiles.length - 1) {
+                    showNextDog();
+                }
+                break;
+            case 'Escape':
+                e.preventDefault();
+                if (deleteModal && deleteModal.classList.contains('active')) {
+                    hideDeleteModal();
+                }
+                break;
+            case 'f':
+            case 'F':
+                if (!e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    toggleFavorite();
+                }
+                break;
+        }
+    }
+
+    // ===== 로딩 표시 =====
+    function showLoading() {
+        const loader = document.createElement('div');
+        loader.id = 'profile-loader';
+        loader.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>로딩 중...</p>
+            </div>
+        `;
+        loader.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        `;
+        document.body.appendChild(loader);
+    }
+
+    // ===== 로딩 숨기기 =====
+    function hideLoading() {
+        const loader = document.getElementById('profile-loader');
+        if (loader) {
+            loader.remove();
+        }
+    }
+
+    // ===== 토스트 메시지 표시 =====
+    function showToast(message, type = 'info') {
+        if (!toastMsg) {
+            console.warn('토스트 메시지 엘리먼트를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 타입에 따른 스타일 적용
+        toastMsg.className = 'toast-notification show';
+
+        switch(type) {
+            case 'success':
+                toastMsg.style.backgroundColor = '#28a745';
+                break;
+            case 'error':
+                toastMsg.style.backgroundColor = '#dc3545';
+                break;
+            case 'info':
+            default:
+                toastMsg.style.backgroundColor = '#387FEB';
+                break;
+        }
+
+        toastMsg.textContent = message;
+
+        // 3초 후 토스트 메시지 숨기기
+        setTimeout(() => {
+            toastMsg.classList.remove('show');
+        }, 3000);
+
+        console.log(`토스트 메시지 [${type}]:`, message);
+    }
+
+    // ===== 프로필 선택 안내 (친구가 없을 때) =====
+    function showProfileSelectionGuide() {
+        const container = document.querySelector('.f_profile');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="profile-selection-guide">
+                <div class="guide-icon">🐕</div>
+                <h3>친구가 없습니다</h3>
+                <p>매칭을 통해 새로운 친구를 만들어보세요!</p>
+                <button onclick="window.location.href='/matching'" class="guide-btn">매칭하러 가기</button>
+            </div>`;
+    }
+
+    // ===== 글로벌 함수들 =====
+    window.goBackToFriendList = function() {
+        showLoading();
+        window.location.href = '/dog-friends/list';
+    };
+
+    window.refreshProfile = function() {
+        showLoading();
+        window.location.reload();
+    };
+
+    // ===== 디버깅용 글로벌 함수들 =====
+    window.friendProfileDebug = {
+        getCurrentDog: () => dogProfiles[currentDogIndex],
+        getAllDogs: () => dogProfiles,
+        getCurrentIndex: () => currentDogIndex,
+        navigateTo: (index) => navigateToProfile(index),
+        toggleFav: () => toggleFavorite(),
+        chat: () => handleChatClick()
+    };
+
+    // ===== 초기화 실행 =====
+    init();
+});
+
+// ===== CSS 스타일 추가 =====
+const style = document.createElement('style');
+style.textContent = `
+    .profile-selection-guide {
+        text-align: center;
+        padding: 80px 20px;
+        color: #7f8c8d;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        min-height: 400px;
+        justify-content: center;
+    }
+
+    .guide-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .profile-selection-guide h3 {
+        font-size: 28px;
+        color: #387FEB;
+        margin: 0;
+    }
+
+    .profile-selection-guide p {
+        font-size: 16px;
+        margin: 0;
+        line-height: 1.5;
+        max-width: 400px;
+    }
+
+    .guide-btn {
+        padding: 15px 30px;
+        background: #387FEB;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .guide-btn:hover {
+        background: #2c6cd6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
+    }
+
+    .loading-spinner {
+        text-align: center;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #387FEB;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .profile_chat_icon.disabled {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+    }
+
+    .profile_chat_icon:not(.disabled):hover {
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
+    }
+
+    .f_profile_left_btn.hidden,
+    .f_profile_right_btn.hidden {
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+    }
+`;
+document.head.appendChild(style);

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.Gender;
 import pit.pet.Account.User.User;
 import pit.pet.Friend.FriendRequest;
 import pit.pet.Friend.FriendRequestRepository;
@@ -214,6 +215,39 @@ public class MatchingService {
     }
 
     // === 기존 매칭 메서드들 (검색 관련) ===
+    /**
+     * 다중 키워드 기반 랜덤 강아지 검색 (비회원)
+     */
+    public List<Dog> findRandomDogsByMultipleKeywords(List<String> keywords, int limit) {
+        try {
+            return dogRepository.findRandomByAnyKeywords(keywords)
+                    .stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("다중 키워드 검색 실패 (비회원): {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 다중 키워드 기반 랜덤 강아지 검색 (로그인 사용자)
+     */
+    public List<Dog> findRandomDogsByMultipleKeywordsForUser(List<String> keywords, String userEmail, int limit) {
+        try {
+            User currentUser = userRepository.findByUemail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            return dogRepository.findRandomByAnyKeywordsExcludingUser(keywords, currentUser.getUemail())
+                    .stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("다중 키워드 검색 실패 (로그인): {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 
     /**
      * 로그인 사용자용 강아지 검색 (자신의 강아지 제외)
@@ -305,20 +339,28 @@ public class MatchingService {
     /**
      * 복합 검색 (로그인 사용자)
      */
-    public List<Dog> searchDogsForUser(String gender, String breed, String location,
+    public List<Dog> searchDogsForUser(String gender, String speciesId,
+                                       String city, String county, String town,
                                        String keyword1, String userEmail, int limit) {
         try {
             User currentUser = userRepository.findByUemail(userEmail)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-            List<Dog> searchResults = dogRepository.findDogsWithFilters(gender, breed, location, keyword1);
+            List<Dog> allDogs = dogRepository.findAll();
+            Gender genderEnum = Gender.fromSearchString(gender);
 
-            return searchResults.stream()
-                    .filter(dog -> !dog.getOwner().getUno().equals(currentUser.getUno()))
+            return allDogs.stream()
+                    .filter(d -> !d.getOwner().getUno().equals(currentUser.getUno()))
+                    .filter(d -> genderEnum == null || (d.getUgender() != null && d.getUgender().equals(genderEnum)))
+                    .filter(d -> speciesId == null || d.getSpecies().getId().toString().equals(speciesId))
+                    .filter(d -> city == null || city.equals(d.getOwner().getAddress().getCity()))
+                    .filter(d -> county == null || county.equals(d.getOwner().getAddress().getCounty()))
+                    .filter(d -> town == null || town.equals(d.getOwner().getAddress().getTown()))
+                    .filter(d -> keyword1 == null || d.getKeywords1().contains(keyword1))
                     .limit(limit)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("복합 검색 실패: {}", e.getMessage());
+            log.error("복합 검색 실패 (사용자): {}", e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -326,16 +368,26 @@ public class MatchingService {
     /**
      * 복합 검색 (비회원)
      */
-    public List<Dog> searchDogsForGuest(String gender, String breed, String location,
+    public List<Dog> searchDogsForGuest(String gender, String speciesId,
+                                        String city, String county, String town,
                                         String keyword1, int limit) {
         try {
-            return dogRepository.findDogsWithFilters(gender, breed, location, keyword1)
-                    .stream()
+            List<Dog> allDogs = dogRepository.findAll();
+            Gender genderEnum = Gender.fromSearchString(gender);
+
+            return allDogs.stream()
+                    .filter(d -> genderEnum == null || (d.getUgender() != null && d.getUgender().equals(genderEnum)))
+                    .filter(d -> speciesId == null || d.getSpecies().getId().toString().equals(speciesId))
+                    .filter(d -> city == null || city.equals(d.getOwner().getAddress().getCity()))
+                    .filter(d -> county == null || county.equals(d.getOwner().getAddress().getCounty()))
+                    .filter(d -> town == null || town.equals(d.getOwner().getAddress().getTown()))
+                    .filter(d -> keyword1 == null || d.getKeywords1().contains(keyword1))
                     .limit(limit)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("복합 검색 실패: {}", e.getMessage());
+            log.error("복합 검색 실패 (비회원): {}", e.getMessage());
             return Collections.emptyList();
         }
     }
+
 }

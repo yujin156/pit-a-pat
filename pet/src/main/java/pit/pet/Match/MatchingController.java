@@ -14,6 +14,7 @@ import pit.pet.Account.Repository.DogKeyword1Repository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Account.User.DogKeyword1;
+import pit.pet.Api.SgisRegionService; // ✅ 추가
 
 import java.util.*;
 
@@ -33,6 +34,9 @@ public class MatchingController {
 
     @Autowired
     private MatchingService matchingService;
+
+    @Autowired
+    private SgisRegionService sgisRegionService; // ✅ 추가
 
     /**
      * 매칭 페이지 메인
@@ -172,7 +176,7 @@ public class MatchingController {
     }
 
     /**
-     * Dog 엔티티를 안전한 Map으로 변환
+     * ✅ Dog 엔티티를 안전한 Map으로 변환 (주소 변환 추가)
      */
     private Map<String, Object> convertDogToSafeMap(Dog dog) {
         Map<String, Object> dogData = new HashMap<>();
@@ -189,15 +193,34 @@ public class MatchingController {
                 dogData.put("species", Map.of("name", dog.getSpecies().getName()));
             }
 
-            // 주소 정보 안전하게 변환
+            // ✅ 주소 정보 안전하게 변환 (SgisRegionService 사용)
             if (dog.getOwner() != null && dog.getOwner().getAddress() != null) {
                 Map<String, Object> addressData = new HashMap<>();
-                String city = dog.getOwner().getAddress().getCity() != null ? dog.getOwner().getAddress().getCity() : "";
-                String county = dog.getOwner().getAddress().getCounty() != null ? dog.getOwner().getAddress().getCounty() : "";
 
-                addressData.put("city", city);
-                addressData.put("county", county);
-                addressData.put("fullAddress", (city + " " + county).trim());
+                try {
+                    // SgisRegionService를 사용해서 실제 주소로 변환
+                    String fullAddress = sgisRegionService.getFullAddress(
+                            dog.getOwner().getAddress().getCity(),
+                            dog.getOwner().getAddress().getCounty(),
+                            dog.getOwner().getAddress().getTown()
+                    );
+
+                    // 변환된 주소가 비어있거나 null이면 기본값 사용
+                    if (fullAddress == null || fullAddress.trim().isEmpty()) {
+                        fullAddress = "위치 미공개";
+                    }
+
+                    addressData.put("city", dog.getOwner().getAddress().getCity());
+                    addressData.put("county", dog.getOwner().getAddress().getCounty());
+                    addressData.put("fullAddress", fullAddress);
+
+
+                } catch (Exception e) {
+                    // 주소 변환 실패 시 기본값
+                    addressData.put("city", "위치");
+                    addressData.put("county", "미공개");
+                    addressData.put("fullAddress", "위치 미공개");
+                }
 
                 dogData.put("owner", Map.of("address", addressData));
             } else {
@@ -209,17 +232,21 @@ public class MatchingController {
                 dogData.put("owner", Map.of("address", addressData));
             }
 
+            // 키워드 정보 처리
             if (dog.getKeywords1() != null && !dog.getKeywords1().isEmpty()) {
                 List<Map<String, Object>> keywordsData = new ArrayList<>();
                 for (DogKeyword1 keyword : dog.getKeywords1()) {
-                    keywordsData.add(Map.of("dktag", keyword.getDktag()));
+                    if (keyword != null && keyword.getDktag() != null) {
+                        keywordsData.add(Map.of("dktag", keyword.getDktag()));
+                    }
                 }
                 dogData.put("keywords1", keywordsData);
             } else {
                 dogData.put("keywords1", new ArrayList<>());
             }
 
-            if (dog.getImage() != null) {
+            // 이미지 정보 처리
+            if (dog.getImage() != null && dog.getImage().getDiurl() != null) {
                 dogData.put("image", Map.of("diurl", dog.getImage().getDiurl()));
             } else {
                 dogData.put("image", null);
@@ -236,11 +263,11 @@ public class MatchingController {
     /**
      * 키워드별 랜덤 강아지 검색 API
      */
-    @GetMapping("/search/keyword")
+    @GetMapping("/search/keywords")
     @ResponseBody
-    public ResponseEntity<List<Map<String, Object>>> searchByKeyword(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "10") int limit,
+    public ResponseEntity<List<Map<String, Object>>> searchByMultipleKeywords(
+            @RequestParam List<String> keywords,
+            @RequestParam(defaultValue = "20") int limit,
             @AuthenticationPrincipal UserDetails principal) {
 
         try {
@@ -248,9 +275,9 @@ public class MatchingController {
             List<Dog> dogs;
 
             if (isLoggedIn) {
-                dogs = matchingService.findRandomDogsByKeywordForUser(keyword, principal.getUsername(), limit);
+                dogs = matchingService.findRandomDogsByMultipleKeywordsForUser(keywords, principal.getUsername(), limit);
             } else {
-                dogs = matchingService.findRandomDogsByKeyword(keyword, limit);
+                dogs = matchingService.findRandomDogsByMultipleKeywords(keywords, limit);
             }
 
             List<Map<String, Object>> safeDogsData = new ArrayList<>();
@@ -260,10 +287,35 @@ public class MatchingController {
 
             return ResponseEntity.ok(safeDogsData);
         } catch (Exception e) {
-            System.err.println("키워드 검색 중 오류: " + e.getMessage());
+            System.err.println("다중 키워드 검색 오류: " + e.getMessage());
             return ResponseEntity.ok(Collections.emptyList());
         }
     }
+
+    @GetMapping("/autocomplete")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> autocompleteSpecies(
+            @RequestParam String keyword) {
+        try {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+
+            List<String> matched = dogService.searchSpeciesNames(keyword.trim());
+
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (String name : matched) {
+                response.add(Map.of("id", name, "name", name));
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("견종 자동완성 실패: {}", e.getMessage());
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
 
     /**
      * 전체 강아지 랜덤 조회 API
@@ -302,9 +354,11 @@ public class MatchingController {
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> searchDogs(
-            @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String breed,
-            @RequestParam(required = false) String location,
+            @RequestParam(name = "ugender", required = false) String gender,
+            @RequestParam(name = "speciesId", required = false) String speciesId, // breed -> speciesId로 수정
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String county,
+            @RequestParam(required = false) String town,
             @RequestParam(required = false) String keyword1,
             @RequestParam(defaultValue = "10") int limit,
             @AuthenticationPrincipal UserDetails principal) {
@@ -314,9 +368,11 @@ public class MatchingController {
             List<Dog> dogs;
 
             if (isLoggedIn) {
-                dogs = matchingService.searchDogsForUser(gender, breed, location, keyword1, principal.getUsername(), limit);
+                dogs = matchingService.searchDogsForUser(
+                        gender, speciesId, city, county, town, keyword1, principal.getUsername(), limit); // breed -> speciesId
             } else {
-                dogs = matchingService.searchDogsForGuest(gender, breed, location, keyword1, limit);
+                dogs = matchingService.searchDogsForGuest(
+                        gender, speciesId, city, county, town, keyword1, limit); // breed -> speciesId
             }
 
             List<Map<String, Object>> safeDogsData = new ArrayList<>();

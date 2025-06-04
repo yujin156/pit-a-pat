@@ -33,7 +33,6 @@
       <select id="myDogSelect" class="profile-select">
         <option value="">어떤 강아지로 매칭할까요?</option>
         <option th:each="dog : ${userDogs}"
-                th:if="${dog != null and dog.dno != null and dog.dname != null}"
                 th:value="${dog.dno}"
                 th:text="${dog.dname + (dog.speciesName != null ? ' (' + dog.speciesName + ')' : '')}"></option>
       </select>
@@ -52,10 +51,10 @@
           </select>
 
           <!-- 견종 검색 (자동완성) -->
-          <div class="breed-search-container">
-            <input type="text" id="breedInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
-            <div id="breedAutocompleteList" class="autocomplete-list"></div>
-            <input type="hidden" id="selectedBreedId" />
+          <div class="species-search-container">
+            <input type="text" id="speciesInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
+            <div id="speciesAutocompleteList" class="autocomplete-list"></div>
+            <input type="hidden" id="selectedSpeciesId" />
           </div>
 
           <!-- 지역 선택 3단계 드롭다운 -->
@@ -151,27 +150,17 @@
   <!-- Login Panel -->
   <div class="login-panel" th:insert="~{Login_center :: login}"></div>
 </div>
-
 <script th:inline="javascript">
   console.log('=== Match.html 데이터 로드 시작 ===');
 
-  // ✅ matchingDogs로 변수명 변경하여 받기
   const rawMatchingDogs = /*[[${matchingDogs}]]*/ [];
   const rawUserDogs = /*[[${userDogs}]]*/ [];
   const rawKeywords = /*[[${keywords}]]*/ [];
   const rawIsLoggedIn = /*[[${isLoggedIn}]]*/ false;
   const rawShowProfileSelector = /*[[${showProfileSelector}]]*/ false;
 
-  console.log('Raw 데이터 확인:');
-  console.log('- matchingDogs:', rawMatchingDogs);
-  console.log('- userDogs:', rawUserDogs);
-  console.log('- keywords:', rawKeywords);
-  console.log('- isLoggedIn:', rawIsLoggedIn);
-  console.log('- showProfileSelector:', rawShowProfileSelector);
-
-  // ✅ matchingDogs를 dogs로 매핑하여 기존 JavaScript 코드와 호환
   window.matchData = {
-    dogs: Array.isArray(rawMatchingDogs) ? rawMatchingDogs : [], // matchingDogs를 dogs로 매핑
+    dogs: Array.isArray(rawMatchingDogs) ? rawMatchingDogs : [],
     userDogs: Array.isArray(rawUserDogs) ? rawUserDogs : [],
     keywords: Array.isArray(rawKeywords) ? rawKeywords : [],
     isLoggedIn: Boolean(rawIsLoggedIn),
@@ -179,12 +168,8 @@
   };
 
   console.log('최종 matchData:', window.matchData);
-  console.log('매칭용 강아지 수:', window.matchData.dogs.length);
-  console.log('내 강아지 수:', window.matchData.userDogs.length);
-  console.log('키워드 수:', window.matchData.keywords.length);
-  console.log('=== Match.html 데이터 로드 완료 ===');
 </script>
-
+<script th:src="@{/js/Common/DogProfileSelector.js}"></script>
 <script th:src="@{/js/MatchJS/Match.js}"></script>
 <script th:src="@{/js/MatchJS/Match_profile.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>

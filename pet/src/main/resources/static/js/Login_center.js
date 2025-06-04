@@ -1,5 +1,3 @@
-// Login_center.js - 정리된 버전
-
 document.addEventListener('DOMContentLoaded', function() {
     // AddFamily_Modal.js가 로드될 때까지 대기
     function waitForAddFamilyModal() {
@@ -14,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     waitForAddFamilyModal();
 });
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchAndRenderDogProfiles();
 });
@@ -25,6 +24,8 @@ function renderDogsGrid(dogs) {
     dogs.forEach(dog => {
         const item = document.createElement('div');
         item.className = 'profile_item';
+        item.dataset.dogId = dog.dno;
+
         let imgDiv = '';
         if (dog.image && dog.image.diurl) {
             imgDiv = `
@@ -56,9 +57,9 @@ function fetchAndRenderDogProfiles() {
                 dno: dog.id,
                 dname: dog.name,
                 image: dog.imageUrl ? { diurl: dog.imageUrl } : null,
-                // status 필드는 logincenter 전용에서만 관리 (DB X)
-                status: dog.status || '온라인'  // 서버에 없으면 기본값(임시)
+                status: dog.status || '온라인'
             }));
+
             // window.dogsData에 저장(공통)
             window.dogsData = dogsData;
 
@@ -69,8 +70,12 @@ function fetchAndRenderDogProfiles() {
             if (document.querySelector('.pet_statuses')) {
                 renderStatusSelects(dogsData);
             }
+        })
+        .catch(error => {
+            console.error('강아지 프로필 로드 실패:', error);
         });
 }
+
 function renderStatusSelects(dogs) {
     const statuses = document.querySelector('.pet_statuses');
     if (!statuses) return;
@@ -92,71 +97,68 @@ function renderStatusSelects(dogs) {
         `;
         statuses.appendChild(sDiv);
     });
-    setupStatusChangeEvents(); // 상태 변경 이벤트 연결!
+    setupStatusChangeEvents();
 }
+
 // 메인 초기화 함수
 function initializeLoginCenter() {
     console.log('Login_center.js 초기화 시작');
 
     // ===== 변수 선언 =====
     let favoriteFriends = [];
-    let selectedMainDogId = null;
 
-    // ===== 강아지 프로필 관리 =====
+    // ===== 프로필 변경 리스너 설정 =====
+    function setupProfileChangeListener() {
+        // DogProfileManager의 이벤트 리스너
+        window.addEventListener('globalProfileChanged', function(e) {
+            const { dogId, dogName, dog } = e.detail;
+            console.log('로그인센터: 프로필 변경 감지:', dogName || '선택 해제');
 
-    // 선택된 메인 강아지 ID 가져오기
-    function getSelectedMainDogId() {
-        // 1. 매칭에서 설정한 값 확인
-        const matchSelected = localStorage.getItem('selectedMainDogId');
-        if (matchSelected) {
-            return parseInt(matchSelected);
-        }
-
-        // 2. 전역 변수 확인
-        if (window.selectedMainDogId) {
-            return parseInt(window.selectedMainDogId);
-        }
-
-        // 3. 첫 번째 강아지를 기본값으로
-        if (window.dogsData && window.dogsData.length > 0) {
-            return window.dogsData[0].dno;
-        }
-
-        return null;
+            if (dogId && dog) {
+                updateProfileDisplay(dog);
+                updateFavoritesTitle(dogName);
+                loadFavoriteFriends();
+                showStatusNotification(`${dogName}(으)로 프로필이 변경되었습니다.`, 'success');
+            } else {
+                // 선택 해제됨
+                clearProfileSelection();
+                updateFavoritesTitle('친한');
+            }
+        });
     }
 
-    // 프로필 순서 재배치 및 선택 표시
-    function updateProfileOrder() {
-        const selectedDogId = getSelectedMainDogId();
-        if (!selectedDogId || !window.dogsData || window.dogsData.length === 0) {
-            return;
-        }
+    // ===== 프로필 표시 업데이트 (시각적 효과만) =====
+    function updateProfileDisplay(selectedDog) {
+        if (!selectedDog || !window.dogsData) return;
 
-        console.log('선택된 강아지 ID:', selectedDogId);
+        console.log('로그인센터 프로필 표시 업데이트:', selectedDog.dname);
 
-        // 강아지 데이터 재정렬 (선택된 강아지를 맨 앞으로)
-        const selectedDog = window.dogsData.find(dog => dog.dno === selectedDogId);
-        if (!selectedDog) {
-            console.log('선택된 강아지를 찾을 수 없음');
-            return;
-        }
+        // 선택된 강아지를 맨 앞으로 이동 + 시각적 강조
+        const reorderedDogs = [
+            selectedDog,
+            ...window.dogsData.filter(dog => dog.dno !== selectedDog.dno)
+        ];
 
-        // 선택된 강아지를 제외한 나머지 강아지들
-        const otherDogs = window.dogsData.filter(dog => dog.dno !== selectedDogId);
-
-        // 재정렬된 순서
-        const reorderedDogs = [selectedDog, ...otherDogs];
-
-        // 프로필 그리드 다시 렌더링
-        renderProfileGrid(reorderedDogs, selectedDogId);
-
-        // 즐겨찾기 타이틀 업데이트
-        updateFavoritesTitle(selectedDog.dname);
-
-        console.log('프로필 순서 업데이트 완료:', selectedDog.dname);
+        renderProfileGrid(reorderedDogs, selectedDog.dno);
     }
 
-    // 프로필 그리드 렌더링
+    // ===== 프로필 선택 해제 =====
+    function clearProfileSelection() {
+        console.log('로그인센터 프로필 선택 해제');
+
+        // 모든 선택 표시 제거
+        const allItems = document.querySelectorAll('.profile_item');
+        allItems.forEach(item => {
+            item.classList.remove('selected');
+        });
+
+        // 원래 순서로 복구 (dogsData 순서)
+        if (window.dogsData) {
+            renderProfileGrid(window.dogsData, null);
+        }
+    }
+
+    // ===== 프로필 그리드 렌더링 (시각적 강조 포함) =====
     function renderProfileGrid(dogs, selectedDogId) {
         const profilesGrid = document.querySelector('.profiles_grid');
         if (!profilesGrid) return;
@@ -169,7 +171,7 @@ function initializeLoginCenter() {
             profileItem.dataset.dogId = dog.dno;
 
             // 선택된 강아지인지 확인
-            if (dog.dno === selectedDogId) {
+            if (dog.dno == selectedDogId) {
                 profileItem.classList.add('selected');
             }
 
@@ -189,42 +191,21 @@ function initializeLoginCenter() {
                 <div class="profile_name">${dog.dname}</div>
             `;
 
-            // 클릭 이벤트 추가
-            profileItem.addEventListener('click', function() {
-                selectDog(dog.dno);
-            });
-
             profilesGrid.appendChild(profileItem);
         });
+
+        console.log('로그인센터 프로필 그리드 렌더링 완료');
     }
 
-    // 강아지 선택 처리
-    function selectDog(dogId) {
-        console.log('강아지 선택됨:', dogId);
-
-        // 로컬 스토리지에 저장
-        localStorage.setItem('selectedMainDogId', dogId);
-        window.selectedMainDogId = dogId;
-        selectedMainDogId = dogId;
-
-        // 프로필 순서 업데이트
-        updateProfileOrder();
-
-        // 친구 목록 다시 로드 (선택된 강아지 기준으로)
-        loadFavoriteFriends();
-
-        // 선택 알림
-        const selectedDog = window.dogsData.find(dog => dog.dno === dogId);
-        if (selectedDog) {
-            showStatusNotification(`${selectedDog.dname}(으)로 프로필이 변경되었습니다.`, 'success');
-        }
-    }
-
-    // 즐겨찾기 타이틀 업데이트
+    // ===== 즐겨찾기 타이틀 업데이트 =====
     function updateFavoritesTitle(dogName) {
         const favoritesTitle = document.querySelector('.favorites-title');
         if (favoritesTitle) {
-            favoritesTitle.innerHTML = `<span class="selected-dog-name">${dogName}</span>의 친한 친구`;
+            if (dogName && dogName !== '친한') {
+                favoritesTitle.innerHTML = `<span class="selected-dog-name">${dogName}</span>의 친한 친구`;
+            } else {
+                favoritesTitle.innerHTML = '친한 친구 즐겨찾기';
+            }
         }
     }
 
@@ -355,7 +336,7 @@ function initializeLoginCenter() {
         }
 
         // 프로필 그리드 업데이트
-        updateProfileOrder();
+        fetchAndRenderDogProfiles();
 
         // 성공 알림
         showStatusNotification(`${newProfileData.dname}이(가) 가족으로 추가되었습니다!`, 'success');
@@ -506,86 +487,60 @@ function initializeLoginCenter() {
         if (btnAddFriend) btnAddFriend.addEventListener('click', addFriend);
     }
 
-    // ===== 프로필 업데이트 감지 =====
+    // ===== 초기화 함수들 =====
 
     // 페이지 로드 시 초기화
     function initializeProfileOrder() {
-        // 로그인된 상태에서만 실행
-        if (window.dogsData && window.dogsData.length > 0) {
-            // 선택된 강아지 ID 확인
-            selectedMainDogId = getSelectedMainDogId();
-
-            if (selectedMainDogId) {
-                console.log('초기 선택된 강아지 ID:', selectedMainDogId);
-                updateProfileOrder();
-            } else {
-                // 기본적으로 첫 번째 강아지 선택
-                if (window.dogsData.length > 0) {
-                    selectDog(window.dogsData[0].dno);
+        // DogProfileManager와 연동하여 현재 선택 상태 확인
+        function waitForProfileManager() {
+            if (window.dogProfileManager) {
+                const selectedDog = window.dogProfileManager.getSelectedDog();
+                if (selectedDog) {
+                    updateProfileDisplay(selectedDog);
+                    updateFavoritesTitle(selectedDog.dname);
+                    console.log('로그인센터: 기존 선택 상태 복원:', selectedDog.dname);
+                } else {
+                    // 선택된 강아지가 없으면 기본 상태
+                    clearProfileSelection();
+                    updateFavoritesTitle('친한');
+                    console.log('로그인센터: 기본 상태로 설정');
                 }
+            } else {
+                setTimeout(waitForProfileManager, 100);
             }
         }
-    }
-
-    // 매칭에서 돌아왔을 때 프로필 업데이트 감지
-    function setupProfileUpdateListener() {
-        // localStorage 변경 감지 (다른 탭에서 변경된 경우)
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'selectedMainDogId' && e.newValue) {
-                console.log('다른 탭에서 강아지 선택 변경됨:', e.newValue);
-                selectedMainDogId = parseInt(e.newValue);
-                updateProfileOrder();
-                loadFavoriteFriends();
-            }
-        });
-
-        // 페이지 포커스 시 확인 (같은 탭에서 매칭 페이지 다녀온 경우)
-        window.addEventListener('focus', function() {
-            const currentSelected = getSelectedMainDogId();
-            if (currentSelected && currentSelected !== selectedMainDogId) {
-                console.log('페이지 포커스 시 강아지 선택 변경 감지:', currentSelected);
-                selectedMainDogId = currentSelected;
-                updateProfileOrder();
-                loadFavoriteFriends();
-            }
-        });
+        waitForProfileManager();
     }
 
     // ===== 전역 함수 노출 =====
 
-    // 매칭 페이지에서 호출할 수 있도록 전역 함수로 노출
-    window.updateProfileOrderFromMatch = function(dogId) {
-        if (dogId) {
-            localStorage.setItem('selectedMainDogId', dogId);
-            window.selectedMainDogId = dogId;
-            selectedMainDogId = dogId;
-            updateProfileOrder();
-            loadFavoriteFriends();
-        }
-    };
-
-    // 프로필 변경 이벤트 리스너 추가
-    window.addEventListener('profileChanged', function(e) {
-        const { dogId, dogName } = e.detail;
-        console.log('프로필 변경 이벤트 수신:', dogName);
-
-        selectedMainDogId = dogId;
-        updateProfileOrder();
-        loadFavoriteFriends();
-    });
-
     // 새 프로필 추가 함수를 전역으로 노출
     window.handleNewProfileAdded = handleNewProfileAdded;
     window.fetchAndRenderDogProfiles = fetchAndRenderDogProfiles;
+
     // ===== 초기화 실행 =====
 
     // 모든 이벤트 리스너 및 초기화 실행
+    setupProfileChangeListener();
     setupStatusChangeEvents();
     setupAddFamilyButton();
     setupFriendManagementButtons();
-    setupProfileUpdateListener();
     initializeProfileOrder();
     loadFavoriteFriends();
 
     console.log('Login_center.js 초기화 완료');
 }
+
+// CSS 애니메이션 추가
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

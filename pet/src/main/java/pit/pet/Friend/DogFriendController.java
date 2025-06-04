@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
+import pit.pet.Account.Service.DogService;
 import pit.pet.Account.User.Address;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DogFriendController {
     private final FriendService friendService;
+    private final DogService dogService;
     private final DogRepository dogRepo;
     private final UserRepository userRepo;
     private final SgisRegionService sgisRegionService;
@@ -118,7 +120,7 @@ public class DogFriendController {
                 return "redirect:/dog/register";
             }
 
-            // 내 강아지 데이터를 안전하게 변환
+            // ✅ 내 강아지 데이터를 안전하게 변환 (Thymeleaf용)
             List<Map<String, Object>> userDogsData = new ArrayList<>();
             for (Dog dog : myDogs) {
                 Map<String, Object> dogData = new HashMap<>();
@@ -144,74 +146,116 @@ public class DogFriendController {
 
             model.addAttribute("userDogs", userDogsData);
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("showProfileSelector", myDogs.size() >= 2);
+            model.addAttribute("showProfileSelector", myDogs.size() >= 1); // ✅ 1마리부터 표시
 
-            if (dogId == null) {
-                dogId = myDogs.get(0).getDno();
+            // ✅ dogId가 없으면 기본값으로 null 설정 (드롭다운에서 "선택하세요" 상태)
+            Dog selectedDog = null;
+            if (dogId != null) {
+                selectedDog = myDogs.stream()
+                        .filter(dog -> dog.getDno().equals(dogId))
+                        .findFirst()
+                        .orElse(null);
             }
 
-            Long finalDogId = dogId;
-
-            Dog selectedDog = myDogs.stream()
-                    .filter(dog -> dog.getDno().equals(finalDogId))
-                    .findFirst()
-                    .orElse(myDogs.get(0));
-
-            dogId = selectedDog.getDno();
-            model.addAttribute("selectedDogId", dogId);
-
-            log.info("선택된 강아지: {} (ID: {})", selectedDog.getDname(), dogId);
-
-            // ✅ 실제 친구 데이터 조회
-            List<Dog> friends = friendService.getMatchedFriends(dogId);
-            log.info("매칭된 친구 수: {}", friends.size());
-
-            // ✅ 실제 Dog 엔티티를 모델에 직접 전달 (Thymeleaf가 처리할 수 있도록)
-            model.addAttribute("friends", friends);
-
-            // ✅ 주소 맵 생성
+            List<Dog> friends = new ArrayList<>();
             Map<Long, String> friendAddressMap = new HashMap<>();
-            for (Dog friend : friends) {
-                try {
-                    if (friend.getOwner() != null && friend.getOwner().getAddress() != null) {
-                        Address addr = friend.getOwner().getAddress();
-                        String city = addr.getCity() != null ? addr.getCity() : "";
-                        String county = addr.getCounty() != null ? addr.getCounty() : "";
-                        String town = addr.getTown() != null ? addr.getTown() : "";
+            Map<Long, Long> friendRequestIds = new HashMap<>();
 
-                        String fullAddress = sgisRegionService.getFullAddress(city, county, town);
-                        if (fullAddress != null && !fullAddress.trim().isEmpty()) {
-                            friendAddressMap.put(friend.getDno(), fullAddress);
+            if (selectedDog != null) {
+                model.addAttribute("selectedDogId", selectedDog.getDno());
+                model.addAttribute("selectedDogName", selectedDog.getDname());
+                log.info("선택된 강아지: {} (ID: {})", selectedDog.getDname(), selectedDog.getDno());
+
+                // ✅ 실제 친구 데이터 조회
+                friends = friendService.getMatchedFriends(selectedDog.getDno());
+                log.info("매칭된 친구 수: {}", friends.size());
+
+                // ✅ 주소 맵 생성
+                for (Dog friend : friends) {
+                    try {
+                        if (friend.getOwner() != null && friend.getOwner().getAddress() != null) {
+                            Address addr = friend.getOwner().getAddress();
+                            String city = addr.getCity() != null ? addr.getCity() : "";
+                            String county = addr.getCounty() != null ? addr.getCounty() : "";
+                            String town = addr.getTown() != null ? addr.getTown() : "";
+
+                            String fullAddress = sgisRegionService.getFullAddress(city, county, town);
+                            if (fullAddress != null && !fullAddress.trim().isEmpty()) {
+                                friendAddressMap.put(friend.getDno(), fullAddress);
+                            } else {
+                                friendAddressMap.put(friend.getDno(), city + " " + county);
+                            }
                         } else {
-                            friendAddressMap.put(friend.getDno(), city + " " + county);
+                            friendAddressMap.put(friend.getDno(), "위치 미공개");
                         }
-                    } else {
+                    } catch (Exception e) {
+                        log.warn("주소 처리 오류 (강아지 ID: {}): {}", friend.getDno(), e.getMessage());
                         friendAddressMap.put(friend.getDno(), "위치 미공개");
                     }
-                } catch (Exception e) {
-                    log.warn("주소 처리 오류 (강아지 ID: {}): {}", friend.getDno(), e.getMessage());
-                    friendAddressMap.put(friend.getDno(), "위치 미공개");
                 }
-            }
-            model.addAttribute("friendAddressMap", friendAddressMap);
 
-            // ✅ FriendRequest ID 맵 생성
-            Map<Long, Long> friendRequestIds = new HashMap<>();
-            for (Dog friend : friends) {
-                try {
-                    Long friendRequestId = findFriendRequestId(selectedDog, friend);
-                    if (friendRequestId != null) {
-                        friendRequestIds.put(friend.getDno(), friendRequestId);
-                        log.info("친구 {} - FriendRequest ID: {}", friend.getDname(), friendRequestId);
-                    } else {
-                        log.warn("친구 {} - FriendRequest ID를 찾을 수 없음", friend.getDname());
+                // ✅ FriendRequest ID 맵 생성
+                for (Dog friend : friends) {
+                    try {
+                        Long friendRequestId = findFriendRequestId(selectedDog, friend);
+                        if (friendRequestId != null) {
+                            friendRequestIds.put(friend.getDno(), friendRequestId);
+                            log.info("친구 {} - FriendRequest ID: {}", friend.getDname(), friendRequestId);
+                        } else {
+                            log.warn("친구 {} - FriendRequest ID를 찾을 수 없음", friend.getDname());
+                            friendRequestIds.put(friend.getDno(), null);
+                        }
+                    } catch (Exception e) {
+                        log.error("FriendRequest ID 조회 오류 (강아지 ID: {}): {}", friend.getDno(), e.getMessage());
                         friendRequestIds.put(friend.getDno(), null);
                     }
-                } catch (Exception e) {
-                    log.error("FriendRequest ID 조회 오류 (강아지 ID: {}): {}", friend.getDno(), e.getMessage());
-                    friendRequestIds.put(friend.getDno(), null);
                 }
+            } else {
+                // ✅ 강아지가 선택되지 않은 경우
+                model.addAttribute("selectedDogId", null);
+                model.addAttribute("selectedDogName", null);
+                log.info("선택된 강아지 없음 - 드롭다운에서 선택 대기");
             }
+
+            // ✅ 친구 데이터를 Thymeleaf에서 접근 가능한 형태로 변환
+            List<Map<String, Object>> friendsForThymeleaf = new ArrayList<>();
+            for (Dog friend : friends) {
+                Map<String, Object> friendData = new HashMap<>();
+                friendData.put("dno", friend.getDno());
+                friendData.put("dname", friend.getDname() != null ? friend.getDname() : "이름 미공개");
+
+                // ✅ 성별 정보 - doglabel 필드로 변환
+                Map<String, Object> ugenderData = new HashMap<>();
+                if (friend.getUgender() != null) {
+                    ugenderData.put("doglabel", friend.getUgender().Doglabel());
+                } else {
+                    ugenderData.put("doglabel", "성별 미공개");
+                }
+                friendData.put("ugender", ugenderData);
+
+                // ✅ 견종 정보
+                Map<String, Object> speciesData = new HashMap<>();
+                if (friend.getSpecies() != null && friend.getSpecies().getName() != null) {
+                    speciesData.put("name", friend.getSpecies().getName());
+                } else {
+                    speciesData.put("name", "견종 미공개");
+                }
+                friendData.put("species", speciesData);
+
+                // ✅ 이미지 정보
+                if (friend.getImage() != null && friend.getImage().getDiurl() != null && !friend.getImage().getDiurl().trim().isEmpty()) {
+                    Map<String, Object> imageData = new HashMap<>();
+                    imageData.put("diurl", friend.getImage().getDiurl());
+                    friendData.put("image", imageData);
+                } else {
+                    friendData.put("image", null);
+                }
+
+                friendsForThymeleaf.add(friendData);
+            }
+
+            model.addAttribute("friends", friendsForThymeleaf);
+            model.addAttribute("friendAddressMap", friendAddressMap);
             model.addAttribute("friendRequestIds", friendRequestIds);
 
             log.info("=== 친구 목록 조회 완료 ===");
