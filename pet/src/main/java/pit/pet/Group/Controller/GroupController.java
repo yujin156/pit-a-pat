@@ -23,7 +23,9 @@ import pit.pet.Group.Service.GroupMemberService;
 import pit.pet.Group.Service.GroupService;
 import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
+import pit.pet.Group.entity.GroupTableDTO;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,12 +134,12 @@ public class GroupController {
     public String groupList(Model model,
                             @AuthenticationPrincipal UserDetails principal) {
         // 🔥 전체 그룹 목록
-        List<GroupTable> groups = groupService.getAllGroups();
+        List<GroupTableDTO> groups = groupService.getAllGroups();
         model.addAttribute("groupList", groups);
 
         // 🔥 리더 이름 맵 만들기
         Map<Long, String> leaderNames = new HashMap<>();
-        for (GroupTable group : groups) {
+        for (GroupTableDTO group : groups) {
             Long leaderGmno = group.getGleader(); // GroupMemberTable의 PK
             groupMemberRepository.findById(leaderGmno).ifPresent(member -> {
                 leaderNames.put(group.getGno(), member.getDog().getDname());
@@ -166,29 +168,22 @@ public class GroupController {
 
     @GetMapping("/api/all")
     @ResponseBody
-    public List<GroupTable> getAllGroups() {
+    public List<GroupTableDTO> getAllGroups() {
         return groupService.getAllGroups();
     }
 
     @GetMapping("/api/my-groups")
     @ResponseBody
-    public List<GroupTable> getMyApprovedGroups(@AuthenticationPrincipal UserDetails principal) {
+    public List<GroupTableDTO> getMyGroups(@AuthenticationPrincipal UserDetails principal) {
         if (principal == null) {
-            // 🔥 비로그인 상태에서는 빈 배열 반환
-            return List.of();
+            return List.of();  // 로그인하지 않았다면 빈 배열 반환
         }
 
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        List<Dog> myDogs = dogRepository.findByOwner(me);
 
-        // ✅ "APPROVED" 상태인 멤버십만 찾기
-        List<GroupMemberTable> approvedMemberships = groupMemberService.findByDogsAndStatus(myDogs, "ACCEPTED");
-
-        // ✅ GroupTable만 DTO로 변환해서 반환
-        return approvedMemberships.stream()
-                .map(GroupMemberTable::getGroupTable)
-                .toList();
+        // `GroupService`에서 DTO로 변환된 그룹 목록 반환
+        return groupService.getMyGroups(me);
     }
 
     // 그룹 가입 신청 폼 (강아지 선택)

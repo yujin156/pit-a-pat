@@ -1,7 +1,9 @@
 package pit.pet.Group.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 import pit.pet.Group.entity.Keyword;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +45,7 @@ public class GroupTable {
     @Column(name = "g_img") //그룹 프로필 이미지
     private String gimg;
 
+    @JsonIgnore
     @Column(name = "g_uploaded_at") //그룹 생성 시간
     private LocalDateTime guploadedat;
 
@@ -52,7 +55,6 @@ public class GroupTable {
     private Keyword gkeyword;  // ✅ 반드시 너가 만든 Keyword!
 
     @OneToMany(mappedBy = "groupTable", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<GroupMemberTable> groupMembers = new ArrayList<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
