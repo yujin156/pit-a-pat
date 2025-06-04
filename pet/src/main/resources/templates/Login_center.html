@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" th:href="@{/css/Content.css}">
     <link rel="stylesheet" th:href="@{/css/Login_center.css}">
-d
 </head>
 <body>
 <div class="wrap" th:fragment="login">
@@ -122,41 +121,22 @@ d
             </div>
         </div>
 
-        <!-- 프로필 그리드 - 강아지별로 표시 -->
+        <!-- ✅ 프로필 그리드 - 클릭 기능 제거, 시각적 표시만 유지 -->
         <div class="profiles_grid">
-          <!--<div th:each="dog : ${dogs}" class="profile_item">
-                <div class="profile_image" th:if="${dog.image != null and dog.image.diurl != null}">
-                  <img th:src="@{${dog.image.diurl}}" th:alt="${dog.dname} + ' 프로필 이미지'">
-              </div>
-              <div class="profile_image profile_initial" th:if="${dog.image == null or dog.image.diurl == null}">
-                  <span th:text="${#strings.substring(dog.dname, 0, 1)}">강</span>
-              </div>
-                <div class="profile_name" th:text="${dog.dname}">강아지 이름</div>
-            </div>-->
+            <!-- 동적으로 렌더링됩니다 -->
         </div>
         <div class="u_name" th:text="${uname} + '님'">UserName님</div>
 
         <div class="divider"></div>
 
-<!--         강아지별 상태 관리-->
+        <!-- ✅ 강아지별 상태 관리 -->
         <div class="pet_statuses">
-            <!--<div th:each="dog : ${dogs}" class="pet_status">
-                <span class="status_label" th:text="${dog.dname}">강아지 이름</span>
-                <div class="status_select">
-                    <select class="status_dropdown" th:data-dog-id="${dog.dno}">
-                        <option value="온라인" th:selected="${dog.status == '온라인'}">온라인</option>
-                        <option value="밥 먹는 중" th:selected="${dog.status == '밥 먹는 중'}">밥 먹는 중</option>
-                        <option value="산책 중" th:selected="${dog.status == '산책 중'}">산책 중</option>
-                        <option value="잠자는 중" th:selected="${dog.status == '잠자는 중'}">잠자는 중</option>
-                        <option value="으르렁" th:selected="${dog.status == '으르렁'}">으르렁</option>
-                    </select>
-                </div>
-            </div> -->
+            <!-- 동적으로 렌더링됩니다 -->
         </div>
 
         <div class="divider"></div>
 
-        <!-- 가족 추가 버튼 수정 -->
+        <!-- ✅ 가족 추가 버튼 -->
         <a href="#" id="addFamilyBtn">
             <div class="add_family">
                 <div class="plus_btn">
@@ -182,7 +162,7 @@ d
     </div>
 </div>
 
-<!-- 친한 친구 즐겨찾기 -->
+<!-- ✅ 친한 친구 즐겨찾기 -->
 <div class="favorites-container" id="friendsContainer" sec:authorize="isAuthenticated()">
     <div class="favorites-header">
         <div class="favorites-title">친한 친구 즐겨찾기</div>
@@ -229,21 +209,16 @@ d
     </button>
 </div>
 
-<!-- 여기에 외부 모달 HTML이 포함됩니다 (AddFamily_Modal.js에서 생성) -->
-
-<!-- JavaScript 파일들 -->
-<script src="/js/AddFamily_Modal.js"></script>  <!-- 먼저 로드 -->
-<script src="/js/Login_center.js"></script>
-<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
-
 <script th:inline="javascript">
-    // DB에서 가져온 강아지 데이터
     window.dogsData = /*[[${dogs}]]*/ [];
     window.userName = /*[[${uname}]]*/ '';
     console.log('로그인 유저 정보:', window.userName);
     console.log('강아지 데이터:', window.dogsData);
-
 </script>
+
+<script th:src="@{/js/Common/DogProfileSelector.js}"></script>
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
 
 </body>
 </html>

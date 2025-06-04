@@ -1,114 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Friend</title>
+    <title>친구 프로필</title>
 
-    <link rel="stylesheet" href="../../static/css/Content.css">
-    <link rel="stylesheet" href="../../static/css/Friend_profile.css">
+    <link rel="stylesheet" th:href="@{/css/Content.css}">
+    <link rel="stylesheet" th:href="@{/css/Friend_profile.css}">
+    <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
+    <link rel="stylesheet" th:href="@{/css/Login_center.css}">
 </head>
 <body>
-<div class="friend_profile_wrap">
-    <h2 class="friend_profile_title">Friend</h2>
-    <p class="friend_profile_sub_title">좋아하는 강아지 친구들</p>
-    <div class="f_profile_container">
-        <div class="f_profile_left_btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="38.405" height="80.14" viewBox="0 0 38.405 80.14">
-                <path id="패스_83412" data-name="패스 83412" d="M31.673,72.175.5,36.337,31.673.5" transform="translate(2.5 3.733)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
-            </svg>
-        </div>
+<div class="layout-container">
+    <div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
 
-        <div class="f_profile">
-            <div class="f_profile_card">
-                <div class="profile_txt">
-                    <div class="profile_name_icon">
-                        <h3 class="profile_name">구름</h3>
-                        <div class="profile_hart_icon">
-                            <svg id="Animated_Heart" data-name="Animated Heart" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="39.46" height="34.444" viewBox="0 0 39.46 34.444">
-                                <defs>
-                                    <clipPath id="clip-path">
-                                        <path id="Heart_Mask" data-name="Heart Mask" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
-                                    </clipPath>
-                                </defs>
-                                <g id="Animated_Heart-2" data-name="Animated Heart" clip-path="url(#clip-path)">
-                                    <path id="Simple_Heart" data-name="Simple Heart" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
-                                    <path id="Heart_Liquid" data-name="Heart Liquid" d="M-5.756-8.178c3.752-7.616,8.77-9.917,26.474,0s22.426-10.5,28.105,0,2.336,40.287,2.336,40.287H-8.026S-9.508-.562-5.756-8.178Z" transform="translate(-0.875 2.396)" fill="#eda9dd"/>
-                                </g>
-                            </svg>
+    <div class="friend_profile_wrap">
+        <h2 class="friend_profile_title">Friend Profile</h2>
+        <p class="friend_profile_sub_title" th:text="${currentProfile.name} + '의 상세 프로필'">강아지의 상세 프로필</p>
+
+        <div class="f_profile_container">
+            <!-- 왼쪽 화살표 -->
+            <div class="f_profile_left_btn" th:classappend="${totalFriends <= 1 or currentIndex == 0} ? 'hidden' : ''">
+                <svg xmlns="http://www.w3.org/2000/svg" width="38.405" height="80.14" viewBox="0 0 38.405 80.14">
+                    <path d="M31.673,72.175.5,36.337,31.673.5" transform="translate(2.5 3.733)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+                </svg>
+            </div>
+
+            <div class="f_profile">
+                <div class="profile-slide active">
+                    <div class="f_profile_card">
+                        <div class="profile_txt">
+                            <div class="profile_name_icon">
+                                <h3 class="profile_name" th:text="${currentProfile.name}">강아지 이름</h3>
+                                <div class="profile_hart_icon">
+                                    <svg id="Animated_Heart" xmlns="http://www.w3.org/2000/svg" width="39.46" height="34.444" viewBox="0 0 39.46 34.444">
+                                        <defs>
+                                            <clipPath id="clip-path">
+                                                <path id="Heart_Mask" d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
+                                            </clipPath>
+                                        </defs>
+                                        <g clip-path="url(#clip-path)">
+                                            <path d="M37.966,6.043a10.377,10.377,0,0,0-14.687,0l-2,2-2-2A10.389,10.389,0,0,0,4.59,20.742l2,2,14.687,14.7,14.687-14.7,2-2a10.4,10.4,0,0,0,0-14.7Z" transform="translate(-1.549 -2.998)" fill="#eda9dd"/>
+                                            <path d="M-5.756-8.178c3.752-7.616,8.77-9.917,26.474,0s22.426-10.5,28.105,0,2.336,40.287,2.336,40.287H-8.026S-9.508-.562-5.756-8.178Z" transform="translate(-0.875 2.396)" fill="#eda9dd"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="profile_group_title" th:text="${currentProfile.group}">강아지 친구 모임</p>
+
+                            <!-- 기본 정보 키워드 -->
+                            <div class="profile_keyword_row">
+                                <label class="profile_pink" th:text="${currentProfile.location}">위치</label>
+                                <label class="profile_blue" th:text="${currentProfile.genderShort}">성별</label>
+                                <label class="profile_blue" th:text="${currentProfile.breed}">견종</label>
+                            </div>
+
+                            <!-- 성격 키워드 -->
+                            <div class="profile_keyword_row">
+                                <label th:each="keyword : ${currentProfile.keywords}"
+                                       class="profile_blue"
+                                       th:text="${keyword}">키워드</label>
+                            </div>
                         </div>
+                        <div class="profile_card_gradient"></div>
+
+                        <!-- 강아지 이미지 -->
+                        <div class="profile_card_img"
+                             th:if="${currentProfile.image != null}"
+                             th:style="'background-image: url(' + ${currentProfile.image} + ')'"></div>
+                        <div class="profile_card_img"
+                             th:if="${currentProfile.image == null}"
+                             style="background: linear-gradient(135deg, #387FEB, #6FA4FF); display: flex; align-items: center; justify-content: center; font-size: 80px; color: white; font-weight: bold;"
+                             th:text="${#strings.substring(currentProfile.name, 0, 1)}">🐕</div>
                     </div>
-                    <p class="profile_group_title">내향적 강아지 모임</p>
-                    <div class="profile_keyword_row">
-                        <label class="profile_pink">수유3동</label>
-                        <label class="profile_blue">수컷</label>
-                        <label class="profile_blue">비숑</label>
-                    </div>
-                    <div class="profile_keyword_row">
-                        <label class="profile_blue">내향적</label>
-                        <label class="profile_blue">엄마 껌딱지 겁쟁이</label>
-                        <label class="profile_blue">주변에 관심없는 나혼자 산다형</label>
+
+                    <div class="f_profile_info">
+                        <div class="profile_info_row">
+                            <label class="profile_pink">견종</label>
+                            <span class="profile_type" th:text="${currentProfile.breed}">견종</span>
+                            <label class="profile_white" th:text="${currentProfile.size}">크기</label>
+                            <div class="profile_star" id="favorite-star">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38.601 36.856">
+                                    <g transform="translate(1.5 1.5)">
+                                        <path d="M17.8,0l5.5,11.143,12.3,1.8L26.7,21.61l2.1,12.247-11-5.785-11,5.785L8.9,21.61,0,12.941l12.3-1.8Z"
+                                              fill="#B7B7B7" stroke="#B7B7B7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="profile_chat_icon"
+                                 th:if="${currentProfile.friendRequestId != null}"
+                                 th:data-friend-request-id="${currentProfile.friendRequestId}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M8,11a1,1,0,1,0,1,1A1,1,0,0,0,8,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,12,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,16,11ZM12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9A10,10,0,0,0,12,2Zm0,18H5.41l.93-.93a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.7A8,8,0,1,1,12,20Z"/>
+                                </svg>
+                            </div>
+                            <div class="profile_chat_icon disabled"
+                                 th:if="${currentProfile.friendRequestId == null}"
+                                 title="채팅 불가능">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="opacity: 0.5;">
+                                    <path d="M8,11a1,1,0,1,0,1,1A1,1,0,0,0,8,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,12,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,16,11ZM12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9A10,10,0,0,0,12,2Zm0,18H5.41l.93-.93a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.7A8,8,0,1,1,12,20Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="profile_info_row">
+                            <label class="profile_pink">성별</label>
+                            <span class="profile_gender" th:text="${currentProfile.gender}">성별</span>
+                        </div>
+                        <div class="profile_info_row">
+                            <label class="profile_pink">생일</label>
+                            <span class="profile_birthday" th:text="${currentProfile.birthday}">생일</span>
+                        </div>
+                        <div class="profile_gift">
+                            <label class="profile_send_gift">친구에게 선물 보내기</label>
+                            <div class="profile_gift_icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24.644" height="24.603" viewBox="0 0 24.644 24.603">
+                                    <g transform="translate(-1278.838 -491.139)">
+                                        <path d="M3.516,13.42H21.128v8.806a1.258,1.258,0,0,1-1.258,1.258H4.774a1.258,1.258,0,0,1-1.258-1.258Zm8.806,10.064V8.388M1,9.646A1.258,1.258,0,0,1,2.258,8.388H22.386a1.258,1.258,0,0,1,1.258,1.258v2.516a1.258,1.258,0,0,1-1.258,1.258H2.258A1.258,1.258,0,0,1,1,12.162ZM12.444,7.13c-.55-3.749-6.29-8.177-8.411-5.095-2,2.908,2.121,6.353,7.153,5.095" transform="translate(1278.838 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                                        <path d="M10,7.13c.55-3.749,6.29-8.177,8.411-5.095,2.005,2.908-2.121,6.353-7.153,5.095" transform="translate(1281.16 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <label class="profile_pink">강아지 소개</label>
+                        <p class="dog_intro" th:text="${currentProfile.intro}">강아지 소개</p>
+                        <button class="profile_white" id="delete-friend-btn">친구 삭제하기</button>
                     </div>
                 </div>
-                <div class="profile_card_gradient"></div>
-                <div class="profile_card_img"></div>
             </div>
 
-            <div class="f_profile_info">
-                <div class="profile_info_row">
-                    <label class="profile_pink">견종</label>
-                    <span class="profile_type">비숑</span>
-                    <label class="profile_white">소형견</label>
-                    <div class="profile_star" id="favorite-star">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38.601 36.856">
-                            <g id="Artboard" transform="translate(1.5 1.5)">
-                                <g id="star">
-                                    <path id="Shape" d="M17.8,0l5.5,11.143,12.3,1.8L26.7,21.61l2.1,12.247-11-5.785-11,5.785L8.9,21.61,0,12.941l12.3-1.8Z" fill="#B7B7B7" stroke="#B7B7B7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" fill-rule="evenodd"/>
-                                </g>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="profile_chat_icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="chat">
-                            <path d="M8,11a1,1,0,1,0,1,1A1,1,0,0,0,8,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,12,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,16,11ZM12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9A10,10,0,0,0,12,2Zm0,18H5.41l.93-.93a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.7A8,8,0,1,1,12,20Z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="profile_info_row">
-                    <label class="profile_pink">성별</label>
-                    <span class="profile_gender">수컷 (중성화O)</span>
-                </div>
-                <div class="profile_info_row">
-                    <label class="profile_pink">생일</label>
-                    <span class="profile_gender">2018년 7월 7일</span>
-                </div>
-                <div class="profile_gift">
-                    <label class="profile_send_gift">친구에게 선물 보내기</label>
-                    <div class="profile_gift_icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24.644" height="24.603" viewBox="0 0 24.644 24.603">
-                            <g id="그룹_162474" data-name="그룹 162474" transform="translate(-1278.838 -491.139)">
-                                <path id="패스_83409" data-name="패스 83409" d="M3.516,13.42H21.128v8.806a1.258,1.258,0,0,1-1.258,1.258H4.774a1.258,1.258,0,0,1-1.258-1.258Zm8.806,10.064V8.388M1,9.646A1.258,1.258,0,0,1,2.258,8.388H22.386a1.258,1.258,0,0,1,1.258,1.258v2.516a1.258,1.258,0,0,1-1.258,1.258H2.258A1.258,1.258,0,0,1,1,12.162ZM12.444,7.13c-.55-3.749-6.29-8.177-8.411-5.095-2,2.908,2.121,6.353,7.153,5.095" transform="translate(1278.838 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                <path id="패스_83410" data-name="패스 83410" d="M10,7.13c.55-3.749,6.29-8.177,8.411-5.095,2.005,2.908-2.121,6.353-7.153,5.095" transform="translate(1281.16 491.258)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-                <label class="profile_pink">강아지 소개</label>
-                <p class="dog_intro">
-                    닭고기 알러지가 있어요.
-                    산책은 주기적으로 하고 풍성한 머리가 포인트에요.
-                    옷 입는걸 싫어하고 대형견을 보면 짖어요.
-                    활발한 강아지나 아기 강아지는 조금 힘들어해요.
-                </p>
-                <button class="profile_white" id="delete-friend-btn">친구 삭제하기</button>
+            <!-- 오른쪽 화살표 -->
+            <div class="f_profile_right_btn" th:classappend="${totalFriends <= 1 or currentIndex >= totalFriends - 1} ? 'hidden' : ''">
+                <svg xmlns="http://www.w3.org/2000/svg" width="38.405" height="80.14" viewBox="0 0 38.405 80.14">
+                    <path d="M.5,72.175,31.673,36.337.5.5" transform="translate(3.732 3.733)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+                </svg>
             </div>
-        </div>
-
-        <div class="f_profile_right_btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="38.405" height="80.14" viewBox="0 0 38.405 80.14">
-                <path id="패스_83411" data-name="패스 83411" d="M.5,72.175,31.673,36.337.5.5" transform="translate(3.732 3.733)" fill="none" stroke="#387feb" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
-            </svg>
         </div>
     </div>
+
+    <div class="login-panel" th:insert="~{Login_center :: login}"></div>
 </div>
 
 <!-- 삭제 확인 모달 -->
@@ -126,6 +155,20 @@
 <!-- 토스트 알림 -->
 <div class="toast-notification" id="toast-message"></div>
 
-<script defer src="../../static/js/Friend_profile.js"></script>
+<!-- JavaScript 데이터 전달 -->
+<script th:inline="javascript">
+    // 모든 친구 프로필 데이터
+    const dogProfiles = /*[[${allProfiles}]]*/ [];
+
+    // 현재 인덱스
+    let currentDogIndex = /*[[${currentIndex}]]*/ 0;
+
+    console.log('친구 프로필 데이터:', dogProfiles);
+    console.log('현재 인덱스:', currentDogIndex);
+</script>
+
+<script defer th:src="@{/js/Friend_profile.js}"></script>
+<script th:src="@{/js/Side_menu.js}"></script>
+<script th:src="@{/js/Login_center.js}"></script>
 </body>
 </html>

@@ -305,7 +305,7 @@ public class MatchingController {
 
             List<Map<String, Object>> response = new ArrayList<>();
             for (String name : matched) {
-                response.add(Map.of("id", name, "name", name)); // id와 name 둘 다 name으로
+                response.add(Map.of("id", name, "name", name));
             }
 
             return ResponseEntity.ok(response);
@@ -355,7 +355,7 @@ public class MatchingController {
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> searchDogs(
             @RequestParam(name = "ugender", required = false) String gender,
-            @RequestParam(name = "speciesId", required = false) String speciesId    ,
+            @RequestParam(name = "speciesId", required = false) String speciesId, // breed -> speciesId로 수정
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String county,
             @RequestParam(required = false) String town,
@@ -369,10 +369,10 @@ public class MatchingController {
 
             if (isLoggedIn) {
                 dogs = matchingService.searchDogsForUser(
-                        gender,speciesId, city, county, town, keyword1, principal.getUsername(), limit);
+                        gender, speciesId, city, county, town, keyword1, principal.getUsername(), limit); // breed -> speciesId
             } else {
                 dogs = matchingService.searchDogsForGuest(
-                        gender,speciesId, city, county, town, keyword1, limit);
+                        gender, speciesId, city, county, town, keyword1, limit); // breed -> speciesId
             }
 
             List<Map<String, Object>> safeDogsData = new ArrayList<>();
