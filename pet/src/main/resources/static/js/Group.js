@@ -258,67 +258,116 @@ function createNewGroup(event) {
 
     const groupName = document.getElementById('groupName').value.trim();
     const groupInfo = document.getElementById('groupInfo').value.trim();
-    //const selectedDogId = document.getElementById('dogId').value;
+    // const selectedDogId = document.getElementById('dogId') ? document.getElementById('dogId').value : null; // dogId 처리 확인 필요
+    // selectedInterest 변수도 어딘가에서 값이 설정되어야 합니다.
 
-    // ✅ 이미지 파일 input 가져오기
     const fileInput = document.querySelector('input[type="file"][name="gimg"]');
 
-    // ✅ FormData로 모든 데이터 담기
     const formData = new FormData();
     formData.append('gname', groupName);
     formData.append('groupInfo', groupInfo);
-    formData.append('dogId', selectedDogId);
-    formData.append('interest', selectedInterest);
+    if (selectedDogId) { formData.append('dogId', selectedDogId); } // selectedDogId가 유효할 때만 추가
+    if (selectedInterest) { formData.append('interest', selectedInterest); } // selectedInterest가 유효할 때만 추가
+
     if (fileInput && fileInput.files.length > 0) {
-        formData.append('gimg', fileInput.files[0]); // ✅ 이미지 파일 추가!
+        formData.append('gimg', fileInput.files[0]);
     }
 
     fetch('/groups/api/create', {
         method: 'POST',
         body: formData
     })
-        .then(response => {
-            if (!response.ok) throw new Error('그룹 생성 실패!');
-            return response.text();
+        .then(async response => { // async 추가하여 에러 메시지 더 잘 처리
+            if (!response.ok) {
+                const errorText = await response.text(); // 에러 본문 읽기
+                console.error('그룹 생성 실패 응답:', errorText);
+                // 서버가 JSON 형태의 에러 메시지를 보낸다면 파싱 시도
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.message || '그룹 생성에 실패했습니다.');
+                } catch (e) {
+                    throw new Error(errorText || '그룹 생성에 실패했습니다.'); // 파싱 실패 시 텍스트 그대로 사용
+                }
+            }
+            return response.text(); // 성공 시 텍스트 응답 (서버 응답 형식에 따라 .json()으로 변경 가능)
         })
         .then(message => {
-            alert(message);
-            closeModal();
-            creatingGroup = false;
-            updateTabContent('my');
+            console.log('그룹 생성 성공:', message);
+            alert("그룹이 성공적으로 생성되었습니다!"); // 사용자에게 성공 알림
+
+            closeModal(); // 모달 닫기
+
+            fetchAndUpdateMyGroups();
+
         })
         .catch(error => {
-            console.error('그룹 생성 중 오류:', error);
-            creatingGroup = false;
+            console.error('그룹 생성 중 최종 오류:', error);
+            alert(error.message || '그룹 생성 중 오류가 발생했습니다.'); // 사용자에게 오류 알림
+        })
+        .finally(() => { // 성공하든 실패하든 항상 실행
+            creatingGroup = false; // 중복 요청 방지 플래그 해제
         });
 }
 
 function loadMyDogs() {
-    fetch('/groups/api/my-dogs')
+
+    fetch('/groups/api/my-dogs') // 또는 '/api/my-dogs' 일 수 있습니다.
         .then(response => response.json())
-        .then(dogs => {
+        .then(dogs => { // dogs는 DogDTO 객체의 배열입니다.
             const profileGrid = document.getElementById('profileGrid');
             profileGrid.innerHTML = '';
 
-            dogs.forEach(dog => {
+            if (!dogs || dogs.length === 0) {
+
+                profileGrid.innerHTML = '<p>등록된 강아지 정보가 없습니다.</p>';
+                return;
+            }
+
+            dogs.forEach(dog => { // 여기서 dog는 DogDTO의 필드를 가진 객체입니다.
+                // console.log(dog); // DogDTO 내용 확인용 (dno, dname, speciesName, avatarUrl)
+
                 const card = document.createElement('div');
-                card.classList.add('profile_card');
+
+                const isMainDog = false; // 예시: dog.isMain 이라는 필드가 DogDTO에 있다고 가정하거나, 로직으로 판단
+
+
                 card.innerHTML = `
-                    <img src="${dog.avatarUrl}" alt="${dog.dname}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
-                    <div>${dog.dname}</div>
-                `;
+        <div class="profile_card ${isMainDog ? 'selected' : ''}" 
+             data-profile-id="${dog.dno}"                         
+             onclick="ModalManager.selectProfile('${dog.dno}')"    
+             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl}');">
+            
+            ${!isMainDog ? `<div class="profile_card_menu" onclick="event.stopPropagation(); ModalManager.openProfileMenu('${dog.dno}')"></div>` : ''} 
+            
+            <div class="profile_info_overlay">
+                <div class="profile_name">${dog.dname}</div> 
+                <div class="profile_details">
+                    <span class="profile_detail_item">${dog.speciesName}</span> 
+                    <span class="profile_detail_item">${dog.size}</span> 
+                    <span class="profile_detail_item">${dog.gender}</span>
+                </div>
+            </div>
+        </div>
+    `;
 
-                card.addEventListener('click', () => {
+                card.firstElementChild.addEventListener('click', () => { // 생성된 .profile_card div에 이벤트 리스너 추가
                     document.querySelectorAll('.profile_card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
+                    card.firstElementChild.classList.add('selected'); // 실제 선택되는 요소에 selected 클래스 추가
                     selectedDogId = dog.dno;
-                    document.getElementById('completeBtn').disabled = false;
+                    if (document.getElementById('completeBtn')) {
+                        document.getElementById('completeBtn').disabled = false;
+                    }
                 });
-
                 profileGrid.appendChild(card);
             });
         })
-        .catch(error => console.error('내 강아지 불러오기 오류:', error));
+        .catch(error => {
+            console.error('내 강아지 불러오기 오류:', error);
+            const profileGrid = document.getElementById('profileGrid');
+            if (profileGrid) { // 오류 발생 시 사용자에게 알림
+                profileGrid.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
+            }
+        });
 }
 
 // function uploadImage() {
@@ -359,3 +408,27 @@ function viewGroup(groupId) {
     window.location.href = `/groups/${groupId}`;
 }
 function openGroupMenu(groupId) { alert(`${groupId} 그룹 메뉴를 열었습니다.`); }
+
+async function fetchAndUpdateMyGroups() {
+    try {
+        const response = await fetch('/groups/api/my-groups'); // 내 그룹 목록 API 경로
+        if (!response.ok) {
+            console.error('내 그룹 목록 다시 불러오기 실패:', await response.text());
+            // 실패 시 사용자에게 알림을 주거나, 이전 목록을 그대로 유지할 수 있습니다.
+            return; // 여기서 중단하거나, 이전 데이터를 유지
+        }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            myGroups = data; // 🌟 전역 myGroups 배열 업데이트!
+            console.log('✅ 내 그룹 목록 성공적으로 업데이트됨:', myGroups);
+            // 현재 'my' 탭이 활성화되어 있다면 화면도 바로 갱신
+            if (currentTab === 'my') {
+                updateTabContent('my');
+            }
+        } else {
+            console.error('내 그룹 목록 업데이트 실패: 서버 응답이 배열이 아님', data);
+        }
+    } catch (error) {
+        console.error('내 그룹 목록 다시 불러오는 중 오류:', error);
+    }
+}

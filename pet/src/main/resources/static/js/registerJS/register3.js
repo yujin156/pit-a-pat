@@ -42,6 +42,17 @@ input.addEventListener('input', () => {
                         }
                     });
                 };
+                // 마우스 올리면 배경색 변경
+                item.addEventListener('mouseover', () => {
+                    item.style.backgroundColor = '#f0f0f0';  // 마우스를 올렸을 때 색상 변경
+                    item.style.color = '#387feb';
+                });
+
+                item.addEventListener('mouseout', () => {
+                    item.style.backgroundColor = '';  // 마우스를 내리면 색상 원래대로
+                    item.style.color = '';
+                });
+
                 list.appendChild(item);
             });
         });

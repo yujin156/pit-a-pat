@@ -64,19 +64,23 @@ public class GroupMemberService {
      */
     public Long getLeaderGmno(Long gno, List<Dog> myDogs) {
         GroupTable group = groupRepository.findById(gno)
-                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다. ID: " + gno));
 
-        for (Dog dog : myDogs) {
-            Optional<GroupMemberTable> memberOpt = groupMemberRepository.findByGroupTableAndDog(group, dog);
-            if (memberOpt.isPresent()) {
-                Long gmno = memberOpt.get().getGmno();
-                if (group.getGleader().equals(gmno)) {
-                    return gmno; // ✅ 리더 맞음
-                }
-            }
+        Long leaderDogDno = group.getGleader(); // 그룹에 저장된 리더 강아지의 DNO
+        if (leaderDogDno == null) {
+            System.out.println("[GroupMemberSVC getLeaderGmno] Group (gno:" + gno + ") has no leader_dno set.");
+            return null;
         }
 
-        return null;
+        // 그룹의 모든 멤버를 순회하며, 리더 강아지 dno와 일치하는 dno를 가진 멤버를 찾습니다.
+        for (GroupMemberTable member : group.getGroupMembers()) { // group.getGroupMembers() 사용
+            if (member.getDog() != null && leaderDogDno.equals(member.getDog().getDno())) {
+                System.out.println("[GroupMemberSVC getLeaderGmno] Leader found for group (gno:" + gno + "). Member gmno: " + member.getGmno() + ", Dog dno: " + member.getDog().getDno());
+                return member.getGmno(); // 해당 멤버의 gmno 반환
+            }
+        }
+        System.out.println("[GroupMemberSVC getLeaderGmno] Could not find a group member whose dog's dno matches the group's leader_dno (" + leaderDogDno + ") for group (gno:" + gno + ").");
+        return null; // 리더에 해당하는 멤버를 찾지 못한 경우
     }
 
     public void handleJoinRequest(Long gmno, MemberStatus status, Long leaderGmno) {

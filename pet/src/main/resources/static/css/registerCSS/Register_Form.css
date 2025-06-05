@@ -149,6 +149,8 @@
     padding: 5%;
     display: flex;
     flex-direction: column;
+
+    margin-top: -20px;
 }
 
 .signUp_content {

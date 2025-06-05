@@ -3,6 +3,7 @@ package pit.pet.Board.Controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,38 +74,48 @@ public class BoardController {
         return "board/write";
     }
 
-    @PostMapping("/api/create")
+    @PostMapping("/api/create") // 또는 실제 게시글 생성 API 경로
     @ResponseBody
     public ResponseEntity<?> createPostApi(
-            @ModelAttribute BoardCreateRequest request,
-            // "newImages"를 "imageFiles"로 변경
-            @RequestParam(value = "newImages", required = false) List<MultipartFile> receivedImageFiles,
+            @ModelAttribute BoardCreateRequest request, // BoardCreateRequest에는 gno, content 등이 있어야 함
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> imageFiles,
             @AuthenticationPrincipal UserDetails principal) {
 
-        // 로그 및 변수명도 일관성 있게 변경하면 좋습니다.
-        System.out.println("🔥 받은 파일 (newImages): " + receivedImageFiles);
-        if (receivedImageFiles != null) {
-            receivedImageFiles.forEach(f -> System.out.println("  🔹 파일 이름: " + f.getOriginalFilename()));
-        } else {
-            System.out.println("🔥 받은 파일 (newImages)이 null입니다.");
+        System.out.println("🔥 게시글 생성 요청 - gno: " + request.getGno() + ", content: " + request.getContent());
+        if (imageFiles != null) {
+            imageFiles.forEach(f -> System.out.println("  🔹 받은 파일: " + f.getOriginalFilename()));
         }
 
-        // 로그인 유저 확인
         User me = userRepository.findByUemail(principal.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
 
-        // 대표 강아지 찾기
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
-
-        if (dno == null) {
-            return ResponseEntity.badRequest().body("대표 강아지를 찾을 수 없습니다.");
+        Long gnoFromRequest = request.getGno();
+        if (gnoFromRequest == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "그룹 번호(gno)가 필요합니다."));
         }
 
-        // 서비스 호출 시에도 변경된 변수명 사용
-        BoardTable saved = boardWriteService.createPost(request, receivedImageFiles, dno);
+        // 🌟 1. 해당 그룹에 글을 쓸 수 있는 사용자의 강아지 dno 결정 (댓글 로직과 동일하게)
+        Long dnoToUseForBoard;
+        try {
+            dnoToUseForBoard = boardCommentService.getDefaultDnoForGroup(gnoFromRequest, me.getUno());
+        } catch (IllegalArgumentException e) {
+            // getDefaultDnoForGroup에서 "이 그룹에 가입된 강아지가 없습니다." 등의 예외 발생 시
+            System.err.println("게시글 작성 권한 확인 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+        }
 
-        return ResponseEntity.ok(Map.of("bno", saved.getBno()));
+        if (dnoToUseForBoard == null) { // 혹시 모를 null 체크 (getDefaultDnoForGroup은 예외를 던지지만)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "이 그룹에 게시글을 작성할 수 있는 강아지가 없습니다."));
+        }
+
+        System.out.println("[CONTROLLER-BoardCreate] 게시글 작성에 사용될 최종 강아지 DNO: " + dnoToUseForBoard);
+
+        // 🌟 2. BoardCreateRequest DTO에서 dno 필드를 사용하지 않으므로,
+        //    BoardWriteService.createPost 호출 시 dnoToUseForBoard를 명시적으로 전달합니다.
+        //    BoardCreateRequest DTO에는 dno 필드가 없거나, 있어도 무시되도록 서비스에서 처리해야 합니다.
+        BoardTable savedBoard = boardWriteService.createPost(request, imageFiles, dnoToUseForBoard);
+
+        return ResponseEntity.ok(Map.of("bno", savedBoard.getBno(), "message", "게시글이 성공적으로 작성되었습니다."));
     }
 
     @GetMapping("/api/my-group-dogs")

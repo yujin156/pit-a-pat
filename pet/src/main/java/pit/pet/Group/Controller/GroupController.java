@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pit.pet.Account.Repository.DogRepository;
 import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.DogDTO;
 import pit.pet.Account.User.User;
 import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Service.BoardManageService;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -66,13 +68,10 @@ public class GroupController {
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         List<Dog> myDogs = dogRepository.findByOwner(me);
 
-        List<Map<String, Object>> dogDtos = myDogs.stream().map(dog -> {
-            Map<String, Object> dogMap = new HashMap<>();
-            dogMap.put("dno", dog.getDno());
-            dogMap.put("dname", dog.getDname());
-            dogMap.put("avatarUrl", dog.getImage() != null ? "/uploads/img/" + dog.getImage() : "/groups/images/default_avatar.jpg");
-            return dogMap;
-        }).toList();
+        // DogDTO를 사용하여 필요한 데이터만 반환
+        List<DogDTO> dogDtos = myDogs.stream()
+                .map(DogDTO::new)  // Dog 객체를 DogDTO로 변환
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(dogDtos);
     }
@@ -307,10 +306,24 @@ public class GroupController {
     }
 
     @GetMapping("/{gno}")
-    public String groupDetail(@PathVariable Long gno, Model model) {
+    public String groupDetail(@PathVariable Long gno, Model model, @AuthenticationPrincipal UserDetails principal) {
         GroupTable group = groupService.findById(gno);
 
         model.addAttribute("group", group);
+
+        if (principal != null) {
+            User me = userRepository.findByUemail(principal.getUsername()).orElse(null);
+            if (me != null) {
+                List<Dog> myDogs = dogRepository.findByOwner(me);
+                if (myDogs != null && !myDogs.isEmpty()) {
+                    // 대표 강아지를 첫 번째 강아지로 가정 (또는 Dog 엔티티에 isMain 같은 플래그가 있다면 그걸로 찾기)
+                    Dog representativeDog = myDogs.get(0);
+                    // DogDTO를 사용한다면 new DogDTO(representativeDog)를 모델에 추가
+                    model.addAttribute("myRepresentativeDog", representativeDog);
+                }
+            }
+        }
+
 
         return "Group/Group_board";
     }
