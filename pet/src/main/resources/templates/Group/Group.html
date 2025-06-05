@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/Group.css}">
 </head>
 
-<body data-authenticated="${isAuthenticated}">
+<body th:data-authenticated="${isAuthenticated}">
 <div class="group_wrap">
     <div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
     <h2 class="group_title">GROUP</h2>

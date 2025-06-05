@@ -20,26 +20,34 @@ let deleteImgIds = [];
 let isEditMode = false;
 let editingCommentCno = null
 
+let currentUserGroupStatus = null; // 현재 사용자의 그룹 내 상태를 저장할 변수 (LEADER, MEMBER, NOT_JOINED)
+let currentGno = null; // 현재 보고 있는 그룹의 gno 저장
+let selectedDogDnoForBoardApply = null; // 이 페이지의 가입 신청 모달에서 선택된 dno
+
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.querySelector('.group_board_setting');  // 메뉴 버튼 (SVG)
-    const menu = document.getElementById('menu'); // 메뉴
+    const menu = document.getElementById('group_menu'); // 메뉴
     const gno = window.location.pathname.split("/").pop();
 
-    const memberManagementTab = document.querySelector("#member-management");  // 가입대기자/멤버 관리 탭
-    const groupBoardLeft = document.querySelector(".group_board_left");  // group_board_left를 선택
+    const memberManagementTab = document.querySelector("#member-management");
+    const groupBoardWrap = document.querySelector(".group_board_left");
 
-    const groupBoard = document.querySelector(".group_board");  // 게시글 영역
-    const memberManagementContainer = document.querySelector(".member_management_container");  // 멤버 관리 영역
+    const boardMemberRow = document.querySelector(".board_member_row");
+    const memberManagementContainer = document.querySelector(".member_management_container");
+
+    const commentSubmitBtn = document.querySelector('.comment_submit');
+    currentGno = window.location.pathname.split("/").pop();
+
+    loadMyGroupDogs(gno);
 
     console.log('✅ gno:', gno);
 
     // "가입대기자/멤버 관리" 클릭 시
     memberManagementTab.addEventListener('click', function() {
         // 게시글 영역 숨기기
-        groupBoard.style.display = 'none';
+        boardMemberRow.style.display = 'none';
 
-        // 멤버 관리 영역 보이기
         memberManagementContainer.style.display = 'block';
     });
 
@@ -62,58 +70,73 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    fetch(`/groups/${gno}/menu-status`)
-        .then(response => response.json())
-        .then(data => {
-            const status = data.status;  // "LEADER", "MEMBER", "NOT_JOINED"
-            console.log("Status: ", status); // 상태 확인용
-            const gleader = data.gleader; // 리더의 gmno (null이면 리더 아님)
-
-            const memberManagement = document.getElementById("member-management");
-            const joinGroup = document.getElementById("join-group");
-            const leaveGroup = document.getElementById("leave-group");
-            const menu = document.getElementById("menu");
-
-            console.log("joinGroup style.display before: ", joinGroup.style.display); // 디버깅: 가입하기 버튼의 스타일 확인
-
-            // 기본적으로 모든 메뉴 항목 숨기기
-            memberManagement.style.display = "none";
-            joinGroup.style.display = "none";
-            leaveGroup.style.display = "none";
-            menu.style.display = "none"; // 메뉴 숨기기 (기본값으로 숨겨두기)
-
-            // 조건에 맞춰 메뉴 항목 보이기
-            if (status === "LEADER") {
-                memberManagement.style.display = "block";  // 리더에게만 '가입대기자/멤버 관리' 보임
-                joinGroup.style.display = "none";  // 리더는 가입하기 안 보임
-                leaveGroup.style.display = "none"; // 리더는 탈퇴하기 안 보임
-            } else if (status === "MEMBER") {
-                leaveGroup.style.display = "block";  // 멤버는 '탈퇴하기' 보임
-                joinGroup.style.display = "none";  // 멤버는 가입하기 안 보임
-            } else if (status === "NOT_JOINED") {
-                joinGroup.style.display = "block";  // 비가입자는 '가입하기' 보임
-                memberManagement.style.display = "none";  // 비가입자는 가입대기자/멤버 관리 안 보임
-                leaveGroup.style.display = "none";  // 비가입자는 탈퇴하기 안 보임
+    fetch(`/groups/${currentGno}/menu-status`)
+        .then(response => {
+            if (!response.ok) {
+                console.error('menu-status API 호출 실패:', response.status);
+                currentUserGroupStatus = "NOT_JOINED";
+                if (response.status === 401) {
+                    console.log("사용자 로그인되지 않음. 기능 제한.");
+                }
+                return null;
             }
-
-            // 디버깅: 가입하기 버튼 스타일 확인
-            console.log("joinGroup style.display after: ", joinGroup.style.display); // 디버깅: 가입하기 버튼의 스타일 확인
-
-            joinGroup.addEventListener('click', function () {
-                window.location.href = `/groups/${gno}/apply`;  // '가입하기' 페이지로 이동
-            });
-
-            leaveGroup.addEventListener('click', function () {
-                window.location.href = `/groups/${gno}/withdraw`;  // '탈퇴하기' 페이지로 이동
-            });
+            return response.json();
         })
-        .catch(error => console.error('메뉴 상태 조회 실패:', error));
+
+        .then(data => {
+            if (data) { // response.ok가 아니어서 data가 undefined일 수 있음
+                currentUserGroupStatus = data.status; // 전역 변수에 상태 저장
+                console.log("Current user group status:", currentUserGroupStatus);
+
+                // 기존 메뉴 버튼 표시 로직 (Leader, Member, Not_Joined에 따라)
+                const memberManagement = document.getElementById("member-management");
+                const joinGroup = document.getElementById("join-group"); // 사용자님 코드에서는 joinGroup으로 되어 있었습니다.
+                const leaveGroup = document.getElementById("leave-group");
+                const menu = document.getElementById("group_menu");
+
+                // 모든 버튼과 메뉴를 먼저 숨깁니다.
+                if(memberManagement) memberManagement.style.display = "none";
+                if(joinGroup) joinGroup.style.display = "none";
+                if(leaveGroup) leaveGroup.style.display = "none";
+                if(menu) menu.style.display = "none";
+
+
+                // --- 이 아래부터 사용자님이 제공해주신 코드 스니펫의 시작점과 유사합니다 ---
+                if (currentUserGroupStatus === "LEADER") {
+                    if(memberManagement) memberManagement.style.display = "block";
+
+                } else if (currentUserGroupStatus === "MEMBER") {
+                    if(leaveGroup) leaveGroup.style.display = "block";
+
+                } else if (currentUserGroupStatus === "NOT_JOINED") {
+                    if(joinGroup) joinGroup.style.display = "block";
+                    const newJoinButton = joinGroup.cloneNode(true);
+                    if (joinGroup.parentNode) {
+                        joinGroup.parentNode.replaceChild(newJoinButton, joinGroup);
+                    } else {
+                        console.error("'joinGroup' 버튼의 부모 노드를 찾을 수 없습니다.");
+                    }
+                    newJoinButton.addEventListener('click', function() {
+                        const groupNameElement = document.querySelector('.group_board_title_name');
+                        const groupName = groupNameElement ? groupNameElement.textContent : `그룹 (ID: ${currentGno})`;
+                        console.log(`"가입하기" 버튼 클릭됨 -> openApplyModalOnBoard(${currentGno}, "${groupName}") 호출`);
+                        openApplyModalOnBoard(currentGno, groupName);
+                    });
+                }
+            }
+            updateUIAccessBasedOnStatus();
+        })
+        .catch(error => {
+            console.error('메뉴 상태 조회 실패 또는 처리 중 오류:', error);
+            currentUserGroupStatus = "NOT_JOINED";
+            updateUIAccessBasedOnStatus();
+        });
 
     fetch(`/board/api/groups/${gno}/posts`)
         .then(response => response.json())
         .then(data => {
-            console.log(data); // 🔍 여기서 출력
-            posts = data; // 전역 posts 배열에 넣기
+            console.log(data);
+            posts = data;
             const container = document.querySelector('.board_member_row');
             posts.forEach((post, index) => {
                 const element = createPostElement(post, index);
@@ -133,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // ----- 올바른 수정 모드 로직 시작 -----
             const currentBno = formData.get('bno');
             if (!currentBno || isNaN(parseInt(currentBno))) {
-                console.error('❌ 수정 모드인데 bno가 유효하지 않음 (FormData에서 확인):', currentBno);
                 alert('수정할 게시글을 식별할 수 없습니다. 다시 시도해주세요.');
                 return;
             }
@@ -142,25 +164,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('deleteImgIds', id.toString());
                 });
             }
-            // newContent, newImages(새 파일)는 new FormData(this)가 이미 처리함
-            // ----- 올바른 수정 모드 로직 끝 -----
         } else {
-            // ----- 새 글 작성 모드 로직 시작 -----
-            // gno, content, dno, newImages 등 모든 필드는
-            // <form> 내에 name 속성을 가지고 있다면 new FormData(this)가 자동으로 처리합니다.
-            // 따라서 이 블록은 비워두거나, gno 등의 필수 값만 확인하는 코드를 넣을 수 있습니다.
-            const currentGno = formData.get('gno');
+            const currentGno = formData.get('gno'); // <input type="hidden" name="gno"> 에서 가져옴
             if (!currentGno) {
                 console.error('❌ 새 글 작성 모드인데 gno가 없습니다.');
                 alert('그룹 정보를 찾을 수 없습니다. 다시 시도해주세요.');
                 return;
             }
-            // ----- 새 글 작성 모드 로직 끝 -----
+            // currentUserGroupStatus를 여기서 한번 더 확인해서 비멤버면 return 하는 방어코드도 좋습니다.
+            if (currentUserGroupStatus !== "LEADER" && currentUserGroupStatus !== "MEMBER") {
+                alert("그룹 멤버만 게시글을 작성할 수 있습니다.");
+                return;
+            }
         }
 
-        console.log('🐞 formData 최종 확인 (전송 직전)');
         for (let pair of formData.entries()) {
-            console.log(pair[0] + ', 값: ' + pair[1] + (pair[1] instanceof File ? `, 파일명: ${pair[1].name}, 타입: ${pair[1].type}` : ''));
         }
 
         fetch(url, {
@@ -205,19 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 alert(errorMessage);
             });
-
-                // 클릭 이벤트 추가
-                memberManagement.addEventListener('click', function () {
-                    window.location.href = `/groups/${gno}/manage`;  // '가입대기자/멤버 관리' 페이지로 이동
-                });
-
-                joinGroup.addEventListener('click', function () {
-                    window.location.href = `/groups/${gno}/apply`;  // '가입하기' 페이지로 이동
-                });
-
-                leaveGroup.addEventListener('click', function () {
-                    window.location.href = `/groups/${gno}/withdraw`;  // '탈퇴하기' 페이지로 이동
-                });
 
     });
 
@@ -513,25 +518,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 열기 함수
     function openModal(postIndex) {
         const post = posts[postIndex];
-
         // ✅ 1️⃣ 먼저 댓글을 fetch로 가져옴
         fetch(`/board/api/comments/${post.bno}`)
             .then(response => response.json())
             .then(comments => {
-                console.log('받아온 댓글:', comments);
 
-                // ✅ 2️⃣ 댓글을 받아온 다음에 createModal 호출 (🔥 여기만 수정됨!)
                 const modal = createModal(post, postIndex, comments);
                 modal.setAttribute('data-bno', post.bno);
+                modal.setAttribute('data-gno', post.gno);
                 document.body.appendChild(modal);
 
-                // ✅ 3️⃣ 댓글 개수 동적으로 업데이트
+
+                const commentInputAreaInModal = modal.querySelector('.modal_comment_input');
+                if (commentInputAreaInModal) {
+                    if (currentUserGroupStatus === "LEADER" || currentUserGroupStatus === "MEMBER") {
+                        commentInputAreaInModal.style.display = 'block'; // 또는 원래대로
+                        // const inputField = commentInputAreaInModal.querySelector('.comment_input');
+                        // if (inputField) inputField.disabled = false;
+                    } else {
+                        commentInputAreaInModal.style.display = 'none'; // 숨기기
+                        // const inputField = commentInputAreaInModal.querySelector('.comment_input');
+                        // if (inputField) {
+                        //     inputField.disabled = true;
+                        //     inputField.placeholder = "그룹 멤버만 댓글 작성이 가능합니다.";
+                        // }
+                    }
+                }
+
                 const commentCountElement = document.querySelector(`.post_comment_count[data-post-id="${post.bno}"]`);
                 if (commentCountElement) {
                     commentCountElement.textContent = `댓글 ${comments.length}개 모두 보기`;
                 }
 
-                // ✅ 4️⃣ 모달 내 댓글 목록 초기화 및 추가
                 const commentContainer = modal.querySelector('.modal_comments');
                 commentContainer.innerHTML = '';
                 comments.forEach(comment => {
@@ -689,15 +707,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // 새 댓글 등록(POST)
             else {
+                const modal = e.target.closest('.post_modal');
                 const bno = modal.getAttribute('data-bno');
-                const dno = modal.getAttribute('data-dno'); // 필요시
+                const dno = modal.getAttribute('data-dno');
+                const gno = modal.getAttribute('data-gno');
+                // 'content' 변수는 이 스코프 어딘가에서 이미 값을 가지고 있어야 합니다.
+                // const content = input.value.trim(); 와 같이요.
+
+                // 👇👇👇 이 로그들을 반드시 추가하고 확인해주세요! 👇👇👇
+                console.log("--- 댓글 전송 직전 값 확인 ---");
+                console.log("bno:", bno);
+                console.log("dno:", dno);
+                console.log("content:", content); // content 변수가 정의된 부분 확인 필요
+                console.log("gno (from modal.getAttribute('data-gno')):", gno);
+                console.log("-----------------------------");
+
+                if (!gno) { // 만약을 위한 방어 코드 (이전에 넣으셨다면 그대로 두세요)
+                    alert('자바스크립트: gno 값이 없습니다! 모달의 data-gno 속성을 확인하세요.');
+                    console.error('자바스크립트: gno is null or undefined before fetch.');
+                    return;
+                }
+                // bno에 대한 방어 코드도 필요하다면 추가하세요.
+
                 fetch('/board/api/comments', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         bno: bno,
                         dno: dno,
-                        content: content
+                        content: content,
+                        gno: gno
                     })
                 })
                     .then(res => res.json())
@@ -1765,3 +1804,215 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('반려견 소셜 미팅 플랫폼 로드 완료! 🐾');
 });
+
+function updateUIAccessBasedOnStatus() {
+    const addPostButton = document.querySelector('.add_post_btn'); // 게시물 추가 버튼
+    // 게시물 모달 내 댓글 입력 관련 요소들은 모달이 열릴 때 처리하거나, 전역적으로 클래스를 부여해서 제어
+    const commentInputAreas = document.querySelectorAll('.modal_comment_input'); // 예시 선택자
+
+    if (currentUserGroupStatus === "LEADER" || currentUserGroupStatus === "MEMBER") {
+        // 멤버 또는 리더일 경우: 글쓰기, 댓글쓰기 가능
+        if (addPostButton) {
+            addPostButton.style.display = 'block'; // 또는 'flex', 'inline-block' 등 원래대로
+            // addPostButton.disabled = false; // 버튼일 경우
+        }
+        commentInputAreas.forEach(area => {
+            // const input = area.querySelector('input[type="text"]');
+            // const submitBtn = area.querySelector('button.comment_submit');
+            // if(input) input.disabled = false;
+            // if(submitBtn) submitBtn.style.display = 'block'; // 또는 원래대로
+            area.style.display = 'block'; // 댓글 입력 영역 전체를 보여줌
+        });
+    } else { // NOT_JOINED 또는 null (오류 발생 시)
+        // 비가입자일 경우: 글쓰기, 댓글쓰기 제한
+        if (addPostButton) {
+            addPostButton.style.display = 'none'; // 아예 숨기기
+            // addPostButton.disabled = true;
+        }
+        commentInputAreas.forEach(area => {
+            // const input = area.querySelector('input[type="text"]');
+            // const submitBtn = area.querySelector('button.comment_submit');
+            // if(input) {
+            //     input.disabled = true;
+            //     input.placeholder = "그룹 멤버만 댓글 작성이 가능합니다.";
+            // }
+            // if(submitBtn) submitBtn.style.display = 'none';
+            area.style.display = 'none'; // 댓글 입력 영역 전체를 숨김
+        });
+        // 추가적으로, 이미 렌더링된 댓글들의 수정/삭제 버튼도 숨기거나 비활성화 할 수 있습니다.
+        // document.querySelectorAll('.edit-comment-btn, .delete-comment-btn').forEach(btn => btn.style.display = 'none');
+    }
+}
+
+function openApplyModalOnBoard(gno, groupName) {
+    const applyModal = document.getElementById('applyToGroupModal');
+    const groupNameSpan = document.getElementById('applyModalTargetGroupName_board');
+    const submitBtn = document.getElementById('submitApplyBtn_board');
+    const profileGrid = document.getElementById('applyModalProfileGrid_board');
+
+    if (!applyModal || !groupNameSpan || !submitBtn || !profileGrid) {
+        console.error("가입 신청 모달(on board)의 일부 HTML 요소를 찾을 수 없습니다.");
+        return;
+    }
+
+    groupNameSpan.textContent = groupName || `그룹 (ID: ${gno})`;
+    submitBtn.disabled = true;
+    profileGrid.innerHTML = '<p>강아지 목록을 불러오는 중...</p>';
+
+    applyModal.style.display = 'flex';
+    loadMyDogsForApplyModalOnBoard(profileGrid, submitBtn);
+}
+
+function closeApplyModal() { // 이 함수는 그룹 만들기 모달의 close와 다르게 동작할 수 있으므로 이름 유지 또는 변경
+    const applyModal = document.getElementById('applyToGroupModal');
+    if (applyModal) {
+        applyModal.style.display = 'none';
+    }
+    selectedDogDnoForBoardApply = null;
+    const submitBtn = document.getElementById('submitApplyBtn_board');
+    if (submitBtn) {
+        submitBtn.textContent = '가입 신청하기';
+        submitBtn.disabled = true;
+    }
+    // 모달 내 선택된 카드 스타일 초기화
+    const profileGrid = document.getElementById('applyModalProfileGrid_board');
+    if(profileGrid) {
+        profileGrid.querySelectorAll('.profile_card.selected').forEach(card => card.classList.remove('selected'));
+    }
+}
+
+async function loadMyDogsForApplyModalOnBoard(dogsGridElement, submitButtonElement) {
+    // (이전 답변의 loadMyDogsForApplyModal 함수 내용과 거의 동일하게 구현)
+    // API 호출: /groups/api/my-dogs
+    // 성공 시: dogsGridElement에 profile_card 들을 생성하여 추가 (각 카드 클릭 시 handleDogSelectionForApplyModalOnBoard 호출)
+    // 실패 또는 강아지 없을 시: 적절한 메시지 표시 및 submitButtonElement 비활성화
+    try {
+        const response = await fetch('/groups/api/my-dogs');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`내 강아지 목록 로드 실패 (ApplyModal): ${response.status} ${errorText}`);
+        }
+        const dogs = await response.json();
+
+        dogsGridElement.innerHTML = '';
+        if (!dogs || dogs.length === 0) {
+            dogsGridElement.innerHTML = '<p>가입 신청에 사용할 등록된 강아지가 없습니다.</p>';
+            if(submitButtonElement) submitButtonElement.disabled = true;
+            return;
+        }
+
+        dogs.forEach(dog => {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'profile_card'; // 그룹 만들기 3단계와 동일한 CSS 클래스 사용 가능
+            cardDiv.dataset.dogDno = dog.dno;
+            cardDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl || '/images/default_dog_profile.png'}')`;
+            cardDiv.style.cursor = 'pointer';
+            cardDiv.innerHTML = `
+                <div class="profile_info_overlay">
+                    <div class="profile_name">${dog.dname}</div>
+                    <div class="profile_details">
+                        <span class="profile_detail_item">${dog.speciesName || ''}</span>
+                        <span class="profile_detail_item">${dog.size || ''}</span>
+                        <span class="profile_detail_item">${dog.gender || ''}</span>
+                    </div>
+                </div>
+            `;
+            cardDiv.addEventListener('click', function() {
+                handleDogSelectionForApplyModalOnBoard(dog.dno, this, dogsGridElement, submitButtonElement);
+            });
+            dogsGridElement.appendChild(cardDiv);
+        });
+    } catch (error) {
+        console.error("가입 신청 모달용 내 강아지 목록 로드 오류:", error);
+        dogsGridElement.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
+        if(submitButtonElement) submitButtonElement.disabled = true;
+    }
+}
+
+function handleDogSelectionForApplyModalOnBoard(dogDno, clickedCardElement, dogsGridElement, submitButtonElement) {
+    // (이전 답변의 handleDogSelectionForApplyModal 함수 내용과 거의 동일하게 구현)
+    // 모든 카드에서 'selected' 클래스 제거 -> 클릭된 카드에 'selected' 클래스 추가
+    // selectedDogDnoForBoardApply = dogDno;
+    // submitButtonElement.disabled = false;
+    if(dogsGridElement) {
+        dogsGridElement.querySelectorAll('.profile_card.selected').forEach(card => {
+            card.classList.remove('selected');
+        });
+    }
+    clickedCardElement.classList.add('selected');
+    selectedDogDnoForBoardApply = dogDno;
+    if(submitButtonElement) submitButtonElement.disabled = false;
+    console.log("가입 신청할 강아지 선택됨 (Board Apply Modal):", selectedDogDnoForBoardApply);
+}
+
+async function submitGroupApplicationOnBoard(event) { // 함수 이름 변경
+    const submitBtn = event.target;
+    // const gnoToApply = currentGno; // 전역 변수 currentGno 사용
+
+    if (!selectedDogDnoForBoardApply) {
+        alert("가입할 강아지를 선택해주세요.");
+        return;
+    }
+    if (!currentGno) { // currentGno가 설정되었는지 확인
+        alert("가입할 그룹 정보(GNO)가 없습니다.");
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '신청 중...';
+
+    const formData = new FormData();
+    formData.append('dogId', selectedDogDnoForBoardApply);
+
+    try {
+        const response = await fetch(`/groups/${currentGno}/apply`, { // currentGno 사용
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorMessage = '그룹 가입 신청에 실패했습니다.';
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorMessage = errorJson.message || errorJson.error || errorMessage;
+            } catch(e) {
+                if(errorText && errorText.length < 100) errorMessage = errorText;
+            }
+            throw new Error(errorMessage);
+        }
+
+        alert('그룹 가입 신청이 완료되었습니다. 리더의 승인을 기다려주세요.');
+        closeApplyModal();
+
+        // 중요: 가입 신청 후 메뉴 상태를 다시 로드하여 "가입하기" 버튼 등을 업데이트
+        // menu-status API를 다시 호출하고 UI를 갱신하는 함수가 있다면 호출
+        // 예: fetchMenuStatusAndUpdateAllRelatedUI();
+        // 가장 간단하게는 페이지를 새로고침하거나, menu-status만 다시 fetch하여 버튼 상태를 바꿀 수 있습니다.
+        // 여기서는 menu-status를 다시 fetch하여 버튼 상태와 currentUserGroupStatus를 업데이트하고,
+        // updateUIAccessBasedOnStatus()를 호출하는 것을 가정합니다.
+        fetch(`/groups/${currentGno}/menu-status`)
+            .then(res => {
+                if(!res.ok) return null;
+                return res.json();
+            })
+            .then(data => {
+                if(data) {
+                    currentUserGroupStatus = data.status;
+                    // 메뉴 버튼들 다시 설정 (DOMContentLoaded 내부 로직과 유사하게)
+                    const joinGroupBtn = document.getElementById("join-group");
+                    if(joinGroupBtn) joinGroupBtn.style.display = (currentUserGroupStatus === "NOT_JOINED" ? "block" : "none");
+                    // 가입 대기중이라는 텍스트/상태로 변경하는 로직이 있다면 추가
+                }
+                updateUIAccessBasedOnStatus();
+            });
+
+
+    } catch (error) {
+        console.error('그룹 가입 신청 중 오류:', error);
+        alert(error.message || '그룹 가입 신청 중 오류가 발생했습니다.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '가입 신청하기';
+    }
+}
