@@ -208,7 +208,6 @@ function createProfileModalHTML() {
 // ✅ 수정: showAddFamilyModal 함수 (Login_center.js에서 호출하는 함수)
 function showAddFamilyModal() {
 
-
     // 모달이 이미 존재하는지 확인
     let modal = document.getElementById('profileModal');
     if (!modal) {
@@ -596,7 +595,8 @@ function handleProfileComplete() {
         })
         .then(message => {
             // 기존 로컬 배열 추가 대신 서버 목록 새로고침!
-            if (typeof window.fetchAndRenderDogProfiles === 'function') {
+            if (typeof window.fetchAndRenderDogProfiles === 'function'  && typeof window.mypageFetchAndRenderDogProfiles == 'function') {
+                window.mypageFetchAndRenderDogProfiles();
                 window.fetchAndRenderDogProfiles();
             }
 
