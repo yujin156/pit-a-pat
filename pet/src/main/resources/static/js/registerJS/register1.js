@@ -104,21 +104,4 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
     });
-
-    document.querySelector('form.Big-form').addEventListener('submit', function(e) {
-        const pw = document.getElementById('password').value;
-        const pwCheck = document.getElementById('passwordCheck').value;
-        if (!pw || !pwCheck) {
-            alert('비밀번호를 모두 입력해주세요.');
-            e.preventDefault();
-            return false;
-        }
-        if (pw !== pwCheck) {
-            alert('비밀번호가 일치하지 않습니다.');
-            document.getElementById('passwordCheck').focus();
-            e.preventDefault();
-            return false;
-        }
-    });
-
 });
