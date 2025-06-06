@@ -1,9 +1,10 @@
-body {
+html, body {
     margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* 화면 세로 가운데 */
+    height: 100%; /* 화면 세로 가운데 */
 }
 
 .Big-form {
@@ -26,11 +27,11 @@ body {
     flex-wrap: wrap; /* 줄바꿈 허용 */
     justify-content: center; /* 가운데 정렬 */
     gap: 10px; /* 태그 사이 여백 */
-    margin-top: 150px;
+    margin-top: 0;
     max-width: 800px; /* 태그 영역의 최대 너비 (필요하면 조절) */
     margin-left: auto; /* 가운데 정렬 */
     margin-right: auto;
-    margin-bottom: 100px;
+    margin-bottom: 0;
 
     position: relative; /* 부모 위치 기준으로 */
     z-index: 1000;      /* 강제로 맨 위로 */

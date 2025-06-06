@@ -53,13 +53,14 @@ public class GroupService {
         if (request.getGimg() != null && !request.getGimg().isEmpty()) {
             try {
                 // 이 부분 나중에 클라우드 스토리지 경로로 바꿀것
-                String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/uploads/img";
+                String uploadDir = System.getProperty("user.dir") + "/pet/src/main/resources/static/uploads/img";
                 String filename = UUID.randomUUID() + "_" + request.getGimg().getOriginalFilename();
                 Path filepath = Paths.get(uploadDir, filename);
                 Files.createDirectories(filepath.getParent());
                 Files.copy(request.getGimg().getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("✅ 이미지 저장 경로: " + filepath.toAbsolutePath());
 
-                group.setGimg("/uploads/img/" + filename); // ⭐️ 여기만 이렇게 고쳐!
+                group.setGimg("/uploads/img/" + filename);
             } catch (Exception e) {
                 throw new RuntimeException("이미지 저장 실패", e);
             }
@@ -74,7 +75,7 @@ public class GroupService {
         groupMemberRepository.save(creator);
 
         // ✅ 리더 설정 후 최종 저장 (이미지, gcontent, guploadedat까지 전부 한번에 저장!)
-        group.setGleader(creator.getGmno());
+        group.setGleader(dog.getDno());
         return groupRepository.save(group);
     }
 
@@ -152,43 +153,49 @@ public class GroupService {
     }
 
     public String checkUserStatus(Long groupId, Long userId) {
-        // 그룹 존재 여부 확인
         GroupTable group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다. ID: " + groupId));
 
-        System.out.println("Group ID: " + groupId); // 그룹 ID 콘솔 출력
+        System.out.println("[SVC checkUserStatus] Group ID: " + groupId + ", User ID: " + userId);
 
-        // 1. 그룹 리더 확인 (dno는 리더 강아지의 dno, 주인의 userId와 비교)
-        Long leaderDno = group.getGleader();  // 리더 강아지의 dno
-        System.out.println("Leader DNO: " + leaderDno); // 리더 DNO 콘솔 출력
+        Long leaderDno = group.getGleader();
+        System.out.println("[SVC checkUserStatus] Group's stored leaderDno: " + leaderDno);
 
-        Optional<Dog> leaderDogOpt = dogRepository.findById(leaderDno);  // 강아지 ID로 강아지 찾기
-        if (leaderDogOpt.isPresent()) {
-            Dog leaderDog = leaderDogOpt.get();
-            System.out.println("Leader Dog Owner User ID: " + leaderDog.getOwner().getUno()); // 리더 강아지의 주인 userId 콘솔 출력
+        if (leaderDno == null) {
+            System.out.println("[SVC checkUserStatus] Stored leaderDno is NULL. Cannot determine leader via this DNO.");
+        } else {
+            Optional<Dog> leaderDogOpt = dogRepository.findById(leaderDno);
+            if (leaderDogOpt.isPresent()) {
+                Dog leaderDog = leaderDogOpt.get();
+                Long leaderDogOwnerUno = leaderDog.getOwner().getUno();
+                System.out.println("[SVC checkUserStatus] Leader Dog (dno:" + leaderDno + ") Owner's UNO: " + leaderDogOwnerUno);
 
-            // 리더 강아지의 주인의 userId와 비교
-            if (leaderDog.getOwner().getUno().equals(userId)) {
-                System.out.println("User is the LEADER");
-                return "LEADER";  // 리더인 경우
+                if (leaderDogOwnerUno.equals(userId)) {
+                    System.out.println("[SVC checkUserStatus] User IS THE LEADER.");
+                    return "LEADER";
+                } else {
+                    System.out.println("[SVC checkUserStatus] User is NOT the owner of the leader dog. Current user UNO: " + userId + ", Leader dog owner UNO: " + leaderDogOwnerUno);
+                }
+            } else {
+                System.out.println("[SVC checkUserStatus] Leader Dog (dno:" + leaderDno + ") NOT FOUND in dogRepository.");
             }
         }
 
-        // 2. 그룹 멤버 확인 (state가 ACCEPTED인 멤버만 멤버로 인정)
+        // 그룹 멤버 확인 로직 (기존과 동일하게 유지하되, 로그 추가 가능)
         boolean isMember = group.getGroupMembers().stream()
                 .anyMatch(member -> {
-                    boolean isMatchingUser = member.getDog().getOwner().getUno().equals(userId);
-                    System.out.println("Checking member - Dog Owner User ID: " + member.getDog().getOwner().getUno() + ", Is matching user: " + isMatchingUser);
-                    return isMatchingUser && member.getState() == MemberStatus.ACCEPTED; // 상태가 ACCEPTED인 멤버
+                    boolean isOwnerOfMemberDog = member.getDog().getOwner().getUno().equals(userId);
+                    // System.out.println("[SVC checkUserStatus] Checking member - Dog: " + member.getDog().getDname() + ", Owner UNO: " + member.getDog().getOwner().getUno() + ", Is current user: " + isOwnerOfMemberDog + ", Member State: " + member.getState());
+                    return isOwnerOfMemberDog && member.getState() == MemberStatus.ACCEPTED;
                 });
 
         if (isMember) {
-            System.out.println("User is a MEMBER");
-            return "MEMBER"; // ACCEPTED 상태인 멤버인 경우
+            System.out.println("[SVC checkUserStatus] User is a MEMBER (but not identified as leader).");
+            return "MEMBER";
         }
 
-        System.out.println("User is NOT JOINED");
-        return "NOT_JOINED"; // 비가입자일 경우
+        System.out.println("[SVC checkUserStatus] User is NOT_JOINED.");
+        return "NOT_JOINED";
     }
 
 

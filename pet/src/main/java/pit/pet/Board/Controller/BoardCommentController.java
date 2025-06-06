@@ -58,13 +58,12 @@ public class BoardCommentController {
     public ResponseEntity<?> updateCommentApi(@PathVariable Long cno,
                                               @RequestBody BoardCommentUpdateRequest request,
                                               @AuthenticationPrincipal UserDetails principal) {
-        // 로그인 유저의 대표 강아지 dno 가져오기
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
 
-        boardCommentService.updateCommentByApi(cno, request, dno);
+        // 서비스에서 권한을 확인하도록 dno를 직접 넘기지 않거나,
+        // 또는 실제 댓글 작성 강아지의 dno와 사용자 정보를 함께 넘겨 서비스에서 종합적으로 판단
+        boardCommentService.updateCommentByApi(cno, request, me); // 'me' (User 객체)를 넘겨서 서비스에서 판단하도록 변경
 
         return ResponseEntity.ok().build();
     }
@@ -84,10 +83,8 @@ public class BoardCommentController {
                                               @AuthenticationPrincipal UserDetails principal) {
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
 
-        boardCommentService.deleteCommentByApi(cno, dno);
+        boardCommentService.deleteCommentByApi(cno, me); // 'me' (User 객체)를 넘겨서 서비스에서 판단하도록 변경
 
         return ResponseEntity.ok().build();
     }
@@ -104,25 +101,32 @@ public class BoardCommentController {
     @ResponseBody
     public Map<String, Object> createCommentApi(@RequestBody BoardCommentCreateRequest request,
                                                 @AuthenticationPrincipal UserDetails principal) {
+        System.out.println("게시글 번호 (bno): " + request.getBno());
+        System.out.println("강아지 번호 (dno): " + request.getDno());
+        System.out.println("댓글 내용 (content): " + request.getContent());
+        System.out.println("그룹 번호 (gno): " + request.getGno());
+
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
 
-        // 🔥 대표 강아지 dno 자동 지정
-        List<Dog> myDogs = dogRepository.findByOwner(me);
-        Long dno = myDogs.isEmpty() ? null : myDogs.get(0).getDno();
-
-        if (dno == null) {
-            throw new IllegalStateException("강아지 정보가 없습니다!");
+        Long gnoFromRequest = request.getGno();
+        if (gnoFromRequest == null) {
+            throw new IllegalArgumentException("그룹 번호가 필요합니다. (요청에서 누락됨)");
         }
 
-        // 🔥 여기서 dno를 컨트롤러가 직접 지정
-        BoardCommentTable comment = boardCommentService.createComment(request, dno);
+        Long dnoToUseForComment = boardCommentService.getDefaultDnoForGroup(gnoFromRequest, me.getUno());
 
-        // 응답 JSON
+        BoardCommentTable comment = boardCommentService.createComment(request, dnoToUseForComment);
+
+
         Map<String, Object> result = new HashMap<>();
         result.put("bcno", comment.getBcno());
         result.put("bccomment", comment.getBccomment());
-        result.put("dogName", comment.getDog().getDname());
+        result.put("dogName", comment.getDog().getDname()); // dnoToUseForComment 강아지의 이름
+
+        result.put("dno", dnoToUseForComment);
+        result.put("gno", gnoFromRequest); // 요청받은 gno
+
         return result;
     }
 

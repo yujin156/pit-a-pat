@@ -147,7 +147,7 @@
 }
 
 /* 그룹 메뉴 */
-.menu {
+.group_menu {
     display: none;  /* 메뉴는 기본적으로 숨겨져 있음 */
     position: absolute;
     top: 100%; /* 부모 요소 바로 아래에 위치 (예: 30px 대신) */
@@ -162,20 +162,20 @@
 }
 
 /* 그룹 메뉴를 클릭했을 때만 나타나도록 */
-.group_board_setting:focus-within + .menu,
-.group_board_setting:hover + .menu {
+.group_board_setting:focus-within + .group_menu,
+.group_board_setting:hover + .group_menu {
     display: block; /* .group_board_setting이 클릭되면 .menu 표시 */
 }
 
 /* 메뉴 항목 div 스타일 */
-.menu div {
+.group_menu div {
     padding: 8px 12px; /* 패딩 조정 */
     cursor: pointer;
     white-space: nowrap; /* 텍스트가 한 줄로 표시되도록 */
     /* writing-mode: horizontal-tb; 기본값이므로 불필요할 수 있습니다. */
 }
 
-.menu div:hover {
+.group_menu div:hover {
     background-color: #f0f0f0;
 }
 
