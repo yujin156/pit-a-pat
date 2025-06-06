@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateUIAccessBasedOnStatus();
         });
 
-    fetch(`/board/api/groups/${gno}/posts`)
+    fetch(`/board/api/groups/${gno}/posts?ts=${Date.now()}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(isEditMode ? '✅ 게시글 수정 성공' : '✅ 게시글 작성 성공', data);
                 hideCreatePostModal();
                 const currentGnoForReload = formData.get('gno') || window.location.pathname.split("/").pop();
-                fetch(`/board/api/groups/${currentGnoForReload}/posts`)
+                fetch(`/board/api/groups/${currentGnoForReload}/posts?ts=${Date.now()}`)
                     .then(res => res.json())
                     .then(updatedPosts => {
                         posts = updatedPosts;
