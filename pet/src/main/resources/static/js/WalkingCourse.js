@@ -55,7 +55,7 @@ function createWalkingItem(data) {
             difficultyText = data.difficulty;
         }
     }
-    console.log(data.difficulty)
+
     const addressHTML = data.address ? `<p class="map_address">${data.address}</p>` : `<p class="map_address" data-lat="${data.startLat}" data-lng="${data.startLng}">주소 변환 중...</p>`;
 
     return `
@@ -209,13 +209,12 @@ $(document).on('click', '.review_button', function (e) {
 });
 
 function convertAllMissingAddresses() {
-    console.log("[DEBUG] convertAllMissingAddresses 실행됨");
+
     $('.map_address[data-lat][data-lng]').each(function(index) {
         const $el = $(this);
         const lat = parseFloat($el.data('lat'));
         const lng = parseFloat($el.data('lng'));
 
-        console.log(`[DEBUG] ${index}번 요소 좌표: lat=${lat}, lng=${lng}`);
 
         if (isNaN(lat) || isNaN(lng)) {
             console.warn(`[WARN] ${index}번 요소의 위경도가 잘못되었습니다.`);
@@ -225,7 +224,7 @@ function convertAllMissingAddresses() {
 
         reverseGeocode(lat, lng, (address) => {
             if (address) {
-                console.log(`[SUCCESS] 주소 변환 성공: ${lat}, ${lng} → ${address}`);
+
                 $el.text(address);
             } else {
                 console.warn(`[FAIL] 주소 변환 실패: ${lat}, ${lng}`);
@@ -383,7 +382,6 @@ function reverseGeocode(lat, lng, callback) {
             "Authorization": "KakaoAK b66705bd73aeccf2de2aea6e11be2d91"
         },
         success: function(res) {
-            console.log('[KAKAO 응답]', res); // <-- 여기 찍어봐!
             if (res.documents && res.documents.length > 0) {
                 const addr = res.documents[0].address;
                 let addressStr = '';
