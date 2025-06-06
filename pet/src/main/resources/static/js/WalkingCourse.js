@@ -1,8 +1,9 @@
-// 네이버 지도 초기화
-const map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.5665, 126.9780),
-    zoom: 11
-});
+const mapContainer = document.getElementById('map');
+const mapOption = {
+    center: new kakao.maps.LatLng(37.5665, 126.9780),
+    level: 3
+};
+const map = new kakao.maps.Map(mapContainer, mapOption);
 
 let allTrailsVisible = false;
 let currentPolylines = [];
@@ -125,7 +126,6 @@ function toggleAllTrails() {
         if (dogId) loadAiRecommendations(dogId);
     }
 }
-
 function drawTrailPath(trail) {
     currentPolylines.forEach(line => line.setMap(null));
     currentPolylines = [];
@@ -133,19 +133,19 @@ function drawTrailPath(trail) {
     fetch(`/api/trails/${trail.id}/path`)
         .then(r => r.ok ? r.json() : Promise.reject(r.status))
         .then(path => {
-            const coords = path.map(p => new naver.maps.LatLng(p.lat, p.lng));
-            const poly = new naver.maps.Polyline({
-                map,
+            const coords = path.map(p => new kakao.maps.LatLng(p.lat, p.lng));
+            const polyline = new kakao.maps.Polyline({
+                map: map,
                 path: coords,
                 strokeWeight: 4,
                 strokeColor: '#3366FF',
                 strokeOpacity: 0.8
             });
-            currentPolylines.push(poly);
+            currentPolylines.push(polyline);
 
-            const bounds = new naver.maps.LatLngBounds();
+            const bounds = new kakao.maps.LatLngBounds();
             coords.forEach(c => bounds.extend(c));
-            map.fitBounds(bounds);
+            map.setBounds(bounds);
         })
         .catch(err => console.error('경로 실패:', err));
 }
@@ -164,28 +164,41 @@ function loadTrailListFromServer() {
         .then(data => {
             walkingData = mapTrailData(data, "전체 코스");
             filteredData = [...walkingData];
-            renderWalkingList(false);
+            renderWalkingList(true);
+
+            // 지도에 마커 표시
+            data.forEach(trail => {
+                new kakao.maps.Marker({
+                    map: map,
+                    position: new kakao.maps.LatLng(trail.startLat, trail.startLng)
+                });
+                new kakao.maps.Marker({
+                    map: map,
+                    position: new kakao.maps.LatLng(trail.endLat, trail.endLng)
+                });
+            });
         })
         .catch(err => console.error('트레일 불러오기 실패:', err));
 }
 
-function loadAiRecommendations(dogId) {
-    $('#loadingSpinner').show();
-    fetch(`/api/recommend/by-review?dogId=${dogId}`)
-        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-        .then(data => {
-            filteredData = mapTrailData(data, "AI 추천 코스");
-            currentPage = 1;
-            renderWalkingList(false);
-        })
-        .catch(err => {
-            console.error('AI 추천 실패:', err);
-            alert("추천 로딩 실패");
-        })
-        .finally(() => {
-            $('#loadingSpinner').hide();
-        });
-}
+//
+// function loadAiRecommendations(dogId) {
+//     $('#loadingSpinner').show();
+//     fetch(`/api/recommend/by-review?dogId=${dogId}`)
+//         .then(r => r.ok ? r.json() : Promise.reject(r.status))
+//         .then(data => {
+//             filteredData = mapTrailData(data, "AI 추천 코스");
+//             currentPage = 1;
+//             renderWalkingList(false);
+//         })
+//         .catch(err => {
+//             console.error('AI 추천 실패:', err);
+//             alert("추천 로딩 실패");
+//         })
+//         .finally(() => {
+//             $('#loadingSpinner').hide();
+//         });
+// }
 
 
 $(document).on('click', '.review_button', function (e) {
@@ -223,7 +236,6 @@ function convertAllMissingAddresses() {
 }
 
 
-
 function renderWalkingList(append = false) {
     const walkingList = document.getElementById('walkingItemList');
 
@@ -251,7 +263,11 @@ function renderWalkingList(append = false) {
             });
         }
     });
+
+    // ⭐⭐⭐ 반드시 마지막에 호출!
+    convertAllMissingAddresses();
 }
+
 
 function updateLoadMoreButton() {
     const btn = document.getElementById('loadMoreBtn');
@@ -266,16 +282,48 @@ function updateLoadMoreButton() {
         btn.textContent = `더보기 (${remain}개 더)`;
     }
 }
-
+//
+// $(document).ready(() => {
+//     const dogId = $('#dogIdSelect').val();
+//     if (dogId) loadAiRecommendations(dogId);
+//     else loadTrailListFromServer();
+//
+//     $('#dogIdSelect').on('change', () => {
+//         const id = $('#dogIdSelect').val();
+//         loadAiRecommendations(id);
+//     });
+//
+//     $('#loadMoreBtn').on('click', () => {
+//         currentPage++;
+//         renderWalkingList(true);
+//     });
+//
+//     $('#postForm').on('submit', function (e) {
+//         e.preventDefault();
+//         const formData = new FormData(this);
+//         $.ajax({
+//             url: '/trail-posts',
+//             type: 'POST',
+//             data: formData,
+//             processData: false,
+//             contentType: false,
+//             success: function () {
+//                 alert("등록 완료");
+//                 $('#postModal').hide();
+//                 $('#postForm')[0].reset();
+//                 if (allTrailsVisible) loadTrailListFromServer();
+//                 const dogId = $('#dogIdSelect').val();
+//                 if (dogId) loadAiRecommendations(dogId);
+//             },
+//             error: function () {
+//                 alert("등록 실패");
+//             }
+//         });
+//     });
+//     convertAllMissingAddresses();
+// });
 $(document).ready(() => {
-    const dogId = $('#dogIdSelect').val();
-    if (dogId) loadAiRecommendations(dogId);
-    else loadTrailListFromServer();
-
-    $('#dogIdSelect').on('change', () => {
-        const id = $('#dogIdSelect').val();
-        loadAiRecommendations(id);
-    });
+    loadTrailListFromServer();
 
     $('#loadMoreBtn').on('click', () => {
         currentPage++;
@@ -296,8 +344,6 @@ $(document).ready(() => {
                 $('#postModal').hide();
                 $('#postForm')[0].reset();
                 if (allTrailsVisible) loadTrailListFromServer();
-                const dogId = $('#dogIdSelect').val();
-                if (dogId) loadAiRecommendations(dogId);
             },
             error: function () {
                 alert("등록 실패");
@@ -306,7 +352,6 @@ $(document).ready(() => {
     });
     convertAllMissingAddresses();
 });
-
 // ✅ 데이터 로딩 시 난이도 변환 적용
 function mapTrailData(data, subtitle = "전체 코스") {
     return data.map(t => {
@@ -326,3 +371,39 @@ function mapTrailData(data, subtitle = "전체 코스") {
         };
     });
 }
+function reverseGeocode(lat, lng, callback) {
+    $.ajax({
+        url: `https://dapi.kakao.com/v2/local/geo/coord2address.json`,
+        type: "GET",
+        data: {
+            x: lng,   // 경도
+            y: lat    // 위도
+        },
+        headers: {
+            "Authorization": "KakaoAK b66705bd73aeccf2de2aea6e11be2d91"
+        },
+        success: function(res) {
+            console.log('[KAKAO 응답]', res); // <-- 여기 찍어봐!
+            if (res.documents && res.documents.length > 0) {
+                const addr = res.documents[0].address;
+                let addressStr = '';
+                if (addr) {
+                    addressStr = addr.region_1depth_name + ' ' + addr.region_2depth_name + ' ' + addr.region_3depth_name;
+                } else if (res.documents[0].road_address) {
+                    const r = res.documents[0].road_address;
+                    addressStr = r.region_1depth_name + ' ' + r.region_2depth_name + ' ' + r.region_3depth_name;
+                } else {
+                    addressStr = "주소 변환 실패";
+                }
+                callback(addressStr);
+            } else {
+                callback("주소 변환 실패");
+            }
+        },
+        error: function(err) {
+            console.error('[KAKAO 에러]', err); // <-- 에러 메시지 꼭 확인!
+            callback("주소 변환 실패");
+        }
+    });
+}
+

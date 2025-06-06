@@ -6,12 +6,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import pit.pet.Account.User.Address;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -76,37 +75,64 @@ public class SgisRegionService {
                 .toList();
     }
 
-    public String getFullAddress(String cityCode, String countyCode, String townCode){
-        String townName = getNameByCode(countyCode, townCode);         // 읍면동 조회
-
-        return String.format("%s",townName);
-    }
-
-    // 코드로 지역명 조회하는 내부 메서드
-    private String getNameByCode(String parentCode, String targetCode) {
-        List<RegionDto> regions = fetchStage(parentCode);
-        return regions.stream()
-                .filter(region -> region.code().equals(targetCode))
-                .map(RegionDto::name)
-                .findFirst()
-                .orElse("알 수 없음");
-    }
     public List<RegionDto> getSido() {
-        return fetchStage(null);
+        return fetchStage(null); // null이면 시/도 전체
     }
 
+    // 시/군/구 리스트 (시/도 코드 필요)
     public List<RegionDto> getSigungu(String sidoCode) {
         return fetchStage(sidoCode);
     }
 
+    // 동(읍/면/동) 리스트 (시/군/구 코드 필요)
     public List<RegionDto> getDong(String sigunguCode) {
         return fetchStage(sigunguCode);
     }
 
+
+    // 시도 코드로 이름
+    public String getSidoName(String sidoCode) {
+        return fetchStage(null).stream()
+                .filter(r -> r.code().equals(sidoCode))
+                .map(RegionDto::name)
+                .findFirst().orElse("Unknown");
+    }
+
+    // 시군구 코드로 이름
+    public String getSigunguName(String sidoCode, String sigunguCode) {
+        return fetchStage(sidoCode).stream()
+                .filter(r -> r.code().equals(sigunguCode))
+                .map(RegionDto::name)
+                .findFirst().orElse("Unknown");
+    }
+
+    // 동 코드로 이름 (시군구코드로 리스트 → 동코드 매칭)
+    public String getDongName(String sigunguCode, String dongCode) {
+        return fetchStage(sigunguCode).stream()
+                .filter(r -> r.code().equals(dongCode))
+                .map(RegionDto::name)
+                .findFirst().orElse("Unknown");
+    }
+
+    // Address(코드만) → 풀주소 ("시도 시군구 읍면동")
+    public String toFullAddress(Address addr) {
+        String sido = getSidoName(addr.getCity());
+        String sigungu = getSigunguName(addr.getCity(), addr.getCounty());
+        String dong = getDongName(addr.getCounty(), addr.getTown());
+        return sido + " " + sigungu + " " + dong;
+    }
+    public String getFullAddress(String cityCode, String countyCode, String townCode) {
+        String sidoName = getSidoName(cityCode); // 시도 코드 → 이름
+        String sigunguName = getSigunguName(cityCode, countyCode); // 시도, 시군구 코드 → 이름
+        String dongName = getDongName(countyCode, townCode); // 시군구 코드, 동 코드 → 이름
+
+        // 이름을 조합해서 "시도 시군구 동" 형태로 반환
+        return String.format("%s %s %s", sidoName, sigunguName, dongName);
+    }
+    // 풀주소 → 위경도/코드 변환
     public RegionCodeResult getRegionCodesFromAddress(String fullAddress) {
         ensureToken();
 
-        // 1. 주소 → 위경도 변환
         URI geocodeUri = UriComponentsBuilder
                 .fromHttpUrl("https://sgisapi.kostat.go.kr/OpenAPI3/addr/geocode.json")
                 .queryParam("accessToken", cachedToken)
@@ -118,23 +144,13 @@ public class SgisRegionService {
         double x = geoResult.path("x").asDouble(); // 경도
         double y = geoResult.path("y").asDouble(); // 위도
 
-        // 2. 위경도 → 지역코드
-        URI rgeoUri = UriComponentsBuilder
-                .fromHttpUrl("https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocode.json")
-                .queryParam("accessToken", cachedToken)
-                .queryParam("x_coor", x)
-                .queryParam("y_coor", y)
-                .queryParam("addr_type", "20")
-                .build().encode().toUri();
+        return new RegionCodeResult(x, y);
+    }
 
-        JsonNode rgeoResp = rt.getForObject(rgeoUri, JsonNode.class);
-        String fullCode = rgeoResp.path("result").path("adm_cd").asText();
-
-        return new RegionCodeResult(
-                fullCode.substring(0, 2),
-                fullCode.substring(0, 5),
-                fullCode
-        );
+    // Address(코드만) → 위경도 변환 (통합)
+    public RegionCodeResult getGeoByAddress(Address addr) {
+        String fullAddress = toFullAddress(addr);
+        return getRegionCodesFromAddress(fullAddress);
     }
 
 }
