@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pit.pet.Account.Repository.DogRepository;
+import pit.pet.Account.User.Address;
 import pit.pet.Account.User.Dog;
 import pit.pet.Review.TrailPost;
 import pit.pet.Review.TrailPostRepository;
@@ -27,10 +28,23 @@ public class TrailAiRecommendService {
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new IllegalArgumentException("강아지를 찾을 수 없음"));
 
+        // 강아지 → 유저 → 주소(코드) 가져오기
+        Address address = dog.getOwner().getAddress();
+        if (address == null) {
+            throw new IllegalArgumentException("주소 정보가 없습니다.");
+        }
+
+        // 최신 게시글 등 필요한 로직 유지 (필요 없으면 제거)
         TrailPost recentPost = trailPostRepository.findTopByDogOrderByCreatedAtDesc(dog)
                 .orElseThrow(() -> new IllegalArgumentException("최근 게시글이 없음"));
 
-        RecommendRequestDto requestDto = new RecommendRequestDto(dogId);
+        // AI 서버에 전달할 Dto 생성 (코드만 넘김)
+        RecommendRequestDto requestDto = new RecommendRequestDto(
+                dogId,
+                address.getCity(),   // 시/도 코드
+                address.getCounty(), // 시/군/구 코드
+                address.getTown()    // 읍/면/동 코드
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -49,7 +63,6 @@ public class TrailAiRecommendService {
                 JsonNode root = objectMapper.readTree(response.getBody());
                 String bodyText = root.get("body").asText();
 
-                // 정상인지 확인
                 if (bodyText.contains("error")) {
                     throw new RuntimeException("Lambda 오류 응답: " + bodyText);
                 }
@@ -62,4 +75,5 @@ public class TrailAiRecommendService {
             throw new RuntimeException("Lambda 호출 실패: " + response.getStatusCode());
         }
     }
+
 }

@@ -71,41 +71,41 @@ function openModalForTrail(trail) {
     document.getElementById("modalTrailName").textContent = trail.name + " 리뷰 작성";
     $('#postModal').show();
 }
-
-document.getElementById('loadRecommendBtn').addEventListener('click', () => {
-    const dogId = $('#dogIdSelect').val();
-    if (!dogId) {
-        alert("강아지를 선택해주세요.");
-        return;
-    }
-
-    $('#loadingSpinner').show();
-    $('#recommend-list').empty();
-
-    fetch(`/api/recommend/by-review?dogId=${dogId}`)
-        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-        .then(trails => {
-            const listEl = document.getElementById('recommend-list');
-            listEl.innerHTML = '';
-
-            trails.forEach(trail => {
-                const li = document.createElement('li');
-                li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
-                li.addEventListener('click', () => {
-                    drawTrailPath(trail);
-                    openModalForTrail(trail);
-                });
-                listEl.appendChild(li);
-            });
-        })
-        .catch(err => {
-            console.error('AI 추천 실패:', err);
-            alert("추천 로딩 실패");
-        })
-        .finally(() => {
-            $('#loadingSpinner').hide();
-        });
-});
+//
+// document.getElementById('loadRecommendBtn').addEventListener('click', () => {
+//     const dogId = $('#dogIdSelect').val();
+//     if (!dogId) {
+//         alert("강아지를 선택해주세요.");
+//         return;
+//     }
+//
+//     $('#loadingSpinner').show();
+//     $('#recommend-list').empty();
+//
+//     fetch(`/api/recommend/by-review?dogId=${dogId}`)
+//         .then(r => r.ok ? r.json() : Promise.reject(r.status))
+//         .then(trails => {
+//             const listEl = document.getElementById('recommend-list');
+//             listEl.innerHTML = '';
+//
+//             trails.forEach(trail => {
+//                 const li = document.createElement('li');
+//                 li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+//                 li.addEventListener('click', () => {
+//                     drawTrailPath(trail);
+//                     openModalForTrail(trail);
+//                 });
+//                 listEl.appendChild(li);
+//             });
+//         })
+//         .catch(err => {
+//             console.error('AI 추천 실패:', err);
+//             alert("추천 로딩 실패");
+//         })
+//         .finally(() => {
+//             $('#loadingSpinner').hide();
+//         });
+// });
 
 
 function loadTrailList() {
@@ -182,32 +182,32 @@ $(document).ready(function () {
         loadAiRecommendations(dogId);
     }
 });
-
-function loadAiRecommendations(dogId) {
-    $('#loadingSpinner').show();
-    $('#recommend-list').empty();
-
-    fetch(`/api/recommend/by-review?dogId=${dogId}`)
-        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-        .then(trails => {
-            const listEl = document.getElementById('recommend-list');
-            listEl.innerHTML = '';
-
-            trails.forEach(trail => {
-                const li = document.createElement('li');
-                li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
-                li.addEventListener('click', () => {
-                    drawTrailPath(trail);
-                    openModalForTrail(trail);
-                });
-                listEl.appendChild(li);
-            });
-        })
-        .catch(err => {
-            console.error('AI 추천 실패:', err);
-            alert("추천 로딩 실패");
-        })
-        .finally(() => {
-            $('#loadingSpinner').hide();
-        });
-}
+//
+// function loadAiRecommendations(dogId) {
+//     $('#loadingSpinner').show();
+//     $('#recommend-list').empty();
+//
+//     fetch(`/api/recommend/by-review?dogId=${dogId}`)
+//         .then(r => r.ok ? r.json() : Promise.reject(r.status))
+//         .then(trails => {
+//             const listEl = document.getElementById('recommend-list');
+//             listEl.innerHTML = '';
+//
+//             trails.forEach(trail => {
+//                 const li = document.createElement('li');
+//                 li.textContent = `${trail.name} (${trail.lengthKm.toFixed(1)}km / ⭐${(trail.averageRating || 0).toFixed(1)})`;
+//                 li.addEventListener('click', () => {
+//                     drawTrailPath(trail);
+//                     openModalForTrail(trail);
+//                 });
+//                 listEl.appendChild(li);
+//             });
+//         })
+//         .catch(err => {
+//             console.error('AI 추천 실패:', err);
+//             alert("추천 로딩 실패");
+//         })
+//         .finally(() => {
+//             $('#loadingSpinner').hide();
+//         });
+// }

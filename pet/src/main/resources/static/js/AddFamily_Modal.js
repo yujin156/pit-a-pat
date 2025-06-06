@@ -207,7 +207,7 @@ function createProfileModalHTML() {
 
 // ✅ 수정: showAddFamilyModal 함수 (Login_center.js에서 호출하는 함수)
 function showAddFamilyModal() {
-    console.log('🚀 AddFamily 모달 열기');
+
 
     // 모달이 이미 존재하는지 확인
     let modal = document.getElementById('profileModal');
@@ -233,12 +233,12 @@ function showAddFamilyModal() {
     // 첫 단계로 리셋
     resetToFirstStep();
 
-    console.log('✅ AddFamily 모달 열림');
+
 }
 
 // ✅ 수정: closeAddFamilyModal 함수 (Login_center.js에서 호출하는 함수)
 function closeAddFamilyModal() {
-    console.log('🔒 AddFamily 모달 닫기');
+
     const modal = document.getElementById('profileModal');
     if (modal) {
         modal.style.display = 'none';
@@ -309,10 +309,10 @@ function setupProfileModalEvents() {
     const searchBtn = document.querySelector('.search_btn');
 
     if (searchBtn && breedInput) {
-        console.log("🔗 검색 이벤트 연결됨");
+
         searchBtn.addEventListener('click', () => {
             const keyword = breedInput.value.trim();
-            console.log("🔍 검색어:", keyword);
+
 
             if (!keyword) {
                 alert("검색어를 입력하세요.");
@@ -325,17 +325,60 @@ function setupProfileModalEvents() {
                     return res.json();
                 })
                 .then(data => {
+                    // 이전 자동완성 리스트 제거
+                    let oldList = document.getElementById('breed-list');
+                    if (oldList) oldList.remove();
+
                     if (!data || data.length === 0) {
                         alert("일치하는 견종이 없습니다.");
                         breedInput.dataset.speciesId = "";
                         return;
                     }
 
-                    const matched = data[0];
-                    breedInput.value = matched.name;
-                    breedInput.dataset.speciesId = matched.id;
-                    alert(`✅ 견종 선택됨: ${matched.name}`);
+                    // 자동완성 리스트 만들기
+                    const ul = document.createElement('ul');
+                    ul.id = 'breed-list';
+                    ul.style.position = 'absolute';
+                    ul.style.background = 'white';
+                    ul.style.border = '1px solid #ccc';
+                    ul.style.zIndex = '1000';
+                    ul.style.padding = '0';
+                    ul.style.margin = '0';
+                    ul.style.listStyle = 'none';
+
+                    // input 바로 밑에 위치시키기
+                    const rect = breedInput.getBoundingClientRect();
+                    ul.style.top = window.scrollY + rect.bottom + 'px';
+                    ul.style.left = window.scrollX + rect.left + 'px';
+                    ul.style.width = rect.width + 'px';
+
+                    // 리스트 채우기
+                    data.forEach(dog => {
+                        const li = document.createElement('li');
+                        li.textContent = dog.name;
+                        li.style.padding = '8px 12px';
+                        li.style.cursor = 'pointer';
+                        li.addEventListener('mouseover', () => li.style.background = '#f0f0f0');
+                        li.addEventListener('mouseout', () => li.style.background = '');
+                        li.addEventListener('click', () => {
+                            breedInput.value = dog.name;
+                            breedInput.dataset.speciesId = dog.id;
+                            ul.remove(); // 리스트 닫기
+                        });
+                        ul.appendChild(li);
+                    });
+
+                    document.body.appendChild(ul);
+
+                    // input, 리스트 이외 클릭시 리스트 닫기
+                    document.addEventListener('mousedown', function handleOutsideClick(e) {
+                        if (!ul.contains(e.target) && e.target !== breedInput) {
+                            ul.remove();
+                            document.removeEventListener('mousedown', handleOutsideClick);
+                        }
+                    });
                 })
+
                 .catch(err => {
                     console.error("견종 검색 실패:", err);
                     alert("견종 검색 중 오류가 발생했습니다.");
@@ -375,7 +418,6 @@ function setupProfileModalEvents() {
                 this.classList.add('selected');
                 selectedKeywords.push(keyword);
             }
-            console.log('선택된 키워드:', selectedKeywords);
         });
     });
 
@@ -620,57 +662,7 @@ function loadKeywordsFromServer() {
         });
 }
 
-// 견종 검색 기능 (컨트롤러 호출)
-window.addEventListener('DOMContentLoaded', () => {
-    const breedInput = document.getElementById('dogBreed');
-    const searchBtn = document.querySelector('.search_btn');
-    console.log("🐶 breedInput:", breedInput);
-    console.log("🔍 searchBtn:", searchBtn);
-    if (searchBtn && breedInput) {
-        searchBtn.addEventListener('click', () => {
-            const keyword = breedInput.value.trim();
 
-            console.log("✅ [디버깅] 입력된 키워드:", keyword);
-
-            if (!keyword) {
-                alert("검색어를 입력하세요.");
-                return;
-            }
-
-            const encodedKeyword = encodeURIComponent(keyword);
-            console.log("✅ [디버깅] 인코딩된 키워드:", encodedKeyword);
-
-            fetch(`/api/search?keyword=${encodedKeyword}`)
-                .then(res => {
-                    console.log("✅ [디버깅] fetch 응답 상태코드:", res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    console.log("✅ [디버깅] 응답 데이터:", data);
-
-                    if (!data || data.length === 0) {
-                        alert("일치하는 견종이 없습니다.");
-                        breedInput.dataset.speciesId = "";
-                        return;
-                    }
-
-                    const matched = data[0];
-                    console.log("✅ [디버깅] 첫 번째 매칭된 견종:", matched);
-
-                    breedInput.value = matched.name;
-                    breedInput.dataset.speciesId = matched.id;
-
-                    alert(`✅ 견종 선택됨: ${matched.name}`);
-                })
-                .catch(err => {
-                    console.error("❌ [에러] 견종 검색 실패:", err);
-                    alert("견종 검색 중 오류가 발생했습니다.");
-                });
-        });
-
-
-    }
-});
 
 
 
