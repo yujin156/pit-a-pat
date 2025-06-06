@@ -1,111 +1,21 @@
 /* ============================================
-   공통 애니메이션 키프레임
-   ============================================ */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes heartBeat {
-    0% { transform: scale(1); }
-    25% { transform: scale(1.3); }
-    50% { transform: scale(1.1); }
-    75% { transform: scale(1.25); }
-    100% { transform: scale(1); }
-}
-
-@keyframes bookmarkSave {
-    0% { transform: scale(1) translateY(0); }
-    50% { transform: scale(1.2) translateY(-2px); }
-    100% { transform: scale(1) translateY(0); }
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
-}
-
-/* ============================================
-   공통 호버 효과
-   ============================================ */
-.hover-scale {
-    transition: transform 0.2s ease;
-}
-
-.hover-scale:hover {
-    transform: scale(1.05);
-}
-
-.hover-lift {
-    transition: all 0.2s ease;
-}
-
-.hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.hover-grow {
-    transition: transform 0.2s ease;
-}
-
-.hover-grow:hover {
-    transform: scale(1.1);
-}
-
-/* ============================================
-   메인 레이아웃
+   메인 레이아웃 - 반응형 개선
    ============================================ */
 .group_board_wrap {
-    width: 1460px;
-    margin: 30px auto;
-    padding: 0 20px;
+    max-width: 1460px;
+    margin: 15px 320px 0 120px; /* 기본: 왼쪽 120px, 오른쪽 320px */
     display: flex;
     gap: 30px;
     animation: fadeIn 0.8s ease;
 }
 
 .group_board_left {
-    width: 960px;
+    width: 75%;
     height: auto;
 }
 
 .group_board_right {
-    width: 470px;
+    width: 25%;
     height: fit-content;
 }
 
@@ -442,631 +352,6 @@
     background: none;
     border: none;
     text-align: left;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
-    transition: background 0.2s;
-}
-
-.post_menu_options button:hover {
-    background-color: #f8f8f8;
-}
-
-/* ============================================
-   게시물 아이콘 영역 (하트, 북마크 등)
-   ============================================ */
-.board_svg_row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px 10px;
-}
-
-.post_right_nav {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-/* 아이콘 공통 스타일 */
-.post_heart_icon,
-.post_comment_icon,
-.post_share_icon,
-.post_bookmark_icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    border: none;
-    background: none;
-    padding: 8px;
-    border-radius: 50%;
-}
-
-.post_heart_icon:hover,
-.post_comment_icon:hover,
-.post_share_icon:hover,
-.post_bookmark_icon:hover {
-    transform: scale(1.2);
-    background: #f8f9fa;
-}
-
-/* 하트 아이콘 */
-.post_heart_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.post_heart_icon.liked svg {
-    fill: #ff3040;
-    stroke: #ff3040;
-    animation: heartBeat 0.6s ease-in-out;
-}
-
-/* 북마크 아이콘 */
-.post_bookmark_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.post_bookmark_icon.bookmarked svg {
-    fill: #212121;
-    stroke: #212121;
-    animation: bookmarkSave 0.4s ease-in-out;
-}
-
-/* 댓글 아이콘 */
-.post_comment_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-}
-
-/* 공유 아이콘 */
-.post_share_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-}
-
-/* 게시물 내용 */
-.post_content_section {
-    padding: 0 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.post_who_like {
-    font-size: 14px;
-    font-weight: 600;
-    color: #212121;
-}
-
-.post_content {
-    font-size: 14px;
-    color: #212121;
-}
-
-.post_username {
-    font-weight: 600;
-    margin-right: 8px;
-    color: #212121;
-}
-
-.post_text {
-    line-height: 1.4;
-    color: #666666;
-}
-
-.post_comment_count {
-    font-size: 14px;
-    color: #8e8e8e;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.post_comment_count:hover {
-    color: #387FEB;
-}
-
-/* ============================================
-   멤버 관리 컴포넌트
-   ============================================ */
-.member_management_container {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    animation: scaleIn 0.5s ease;
-}
-
-/* 탭 헤더 */
-.member_management_container .tab_header {
-    display: flex;
-    background: #f8f9fa;
-    padding: 0;
-}
-
-.member_management_container .tab_button {
-    flex: 1;
-    padding: 15px;
-    background: transparent;
-    border: none;
-    font-size: 14px;
-    color: #B7B7B7;
-    cursor: pointer;
-    border-radius: 12px 12px 0 0;
-    transition: all 0.2s ease;
-}
-
-.member_management_container .tab_button:hover {
-    background: #F5F6F8;
-    color: #666666;
-}
-
-.member_management_container .tab_button.active {
-    background: #ffffff;
-    color: #212121;
-    font-weight: 500;
-    transform: translateY(-1px);
-}
-
-/* 검색바 */
-.member_management_container .search_header {
-    padding: 15px 20px;
-    background: #ffffff;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.sort_header{
-    display: flex;
-    padding: 20px;
-    justify-content: space-between;
-}
-
-
-.member_management_container .search_input {
-    flex: 1;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background: #f8f9fa;
-    font-size: 14px;
-    color: #212121;
-    margin-right: 10px;
-    transition: all 0.2s ease;
-}
-
-.member_management_container .search_input:focus {
-    outline: none;
-    border-color: #387FEB;
-    box-shadow: 0 0 0 3px #e3f2fd;
-}
-
-.member_management_container .search_input::placeholder {
-    color: #8e8e8e;
-}
-
-.member_management_container .sort_select {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    background: #ffffff;
-    font-size: 13px;
-    color: #B7B7B7;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.member_management_container .sort_select:hover {
-    background: #F5F6F8;
-    color: #212121;
-}
-
-/* 탭 컨텐츠 */
-.member_management_container .member_management_tap,
-.member_management_container .member_accept_tap {
-    display: none;
-}
-
-.member_management_container .member_management_tap.active,
-.member_management_container .member_accept_tap.active {
-    display: block;
-    animation: fadeIn 0.4s ease;
-}
-
-/* 멤버 아이템 */
-.member_management_container .member_contain {
-    background-color: #F5F6F8;
-    border-radius: 20px;
-    padding: 15px 20px;
-    margin: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: all 0.2s ease;
-    animation: slideUp 0.4s ease;
-}
-
-.member_management_container .member_contain:hover {
-    background-color: #e3f2fd;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.member_management_container .member_profile_img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.2s ease;
-}
-
-.member_management_container .member_profile_img:hover {
-    transform: scale(1.05);
-}
-
-.member_management_container .member_profile_name {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 500;
-    color: #212121;
-}
-
-/* 리더 아이콘 */
-.member_management_container .leder_icon {
-    display: flex;
-    align-items: center;
-    background: #387feb;
-    border-radius: 13.5px;
-    padding: 6px 12px;
-    margin-right: 10px;
-    transition: all 0.2s ease;
-    animation: scaleIn 0.5s ease;
-}
-
-.member_management_container .leder_icon:hover {
-    background: #2968c7;
-    transform: scale(1.05);
-}
-
-.member_management_container .crown_icon {
-    margin-right: 5px;
-    display: flex;
-    align-items: center;
-}
-
-.member_management_container .crown_icon svg {
-    width: 15px;
-    height: 9px;
-}
-
-.member_management_container .leder_icon span {
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 500;
-    font-family: Arial, sans-serif;
-}
-
-/* 설정 버튼 */
-.member_management_container .member_setting_icon {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: #8e8e8e;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-}
-
-/* 승인/거절 버튼 */
-.member_management_container .member_accept,
-.member_management_container .member_refusal {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-left: 5px;
-    transition: all 0.2s ease;
-}
-
-.member_management_container .member_accept {
-    background: #007AFF;
-    color: #ffffff;
-}
-
-.member_management_container .member_accept:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.member_management_container .member_refusal {
-    background: #FF69B4;
-    color: #ffffff;
-}
-
-.member_management_container .member_refusal:hover {
-    background: #e91e63;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* 멤버 초대하기 */
-.member_management_container .add_member {
-    background-color: #F5F6F8;
-    border-radius: 20px;
-    padding: 15px 20px;
-    margin: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 2px dashed #ddd;
-}
-
-.member_management_container .add_member:hover {
-    background-color: #e3f2fd;
-    border-color: #387FEB;
-    transform: translateY(-1px);
-}
-
-.member_management_container .add_member_profile_icon {
-    width: 50px;
-    height: 50px;
-    background-color: #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.member_management_container .add_member:hover .add_member_profile_icon {
-    transform: scale(1.1);
-}
-
-.member_management_container .add_member_profile_icon svg {
-    width: 24px;
-    height: 24px;
-    color: #B7B7B7;
-    transition: color 0.2s ease;
-}
-
-.member_management_container .add_member:hover .add_member_profile_icon svg {
-    color: #387FEB;
-}
-
-.member_management_container .add_member_invitation {
-    flex: 1;
-    font-size: 16px;
-    color: #666666;
-    transition: color 0.2s ease;
-}
-
-.member_management_container .add_member:hover .add_member_invitation {
-    color: #387FEB;
-}
-
-/* ============================================
-   캘린더 영역
-   ============================================ */
-.group_board_calendar {
-    background: #ffffff;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    margin-bottom: 20px;
-    animation: slideUp 0.6s ease 0.3s both;
-}
-
-.calendar_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.calendar_header span {
-    font-size: 20px;
-    color: #212121;
-    font-weight: 600;
-}
-
-.calendar_actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.add_schedule_btn_icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 8px;
-    border-radius: 50%;
-    color: #387FEB;
-}
-
-.add_schedule_btn_icon:hover {
-    background: #e3f2fd;
-    transform: scale(1.1);
-}
-
-/* 로딩 스피너 */
-.calendar_loading,
-.events_loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px;
-    color: #8e8e8e;
-    font-size: 14px;
-}
-
-.loading_spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #f0f0f0;
-    border-top: 2px solid #387FEB;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* 캘린더 네비게이션 */
-.calendar_navigation {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    padding: 0 10px;
-}
-
-.calendar_nav_btn {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-    color: #B7B7B7;
-}
-
-.calendar_nav_btn:hover {
-    background-color: #f8f9fa;
-    color: #387FEB;
-    transform: scale(1.1);
-}
-
-.calendar_current_month {
-    font-size: 16px;
-    font-weight: 600;
-    color: #387FEB;
-}
-
-/* 캘린더 그리드 */
-.board_calendar {
-    background: #F5F6F8;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.calendar_grid {
-    width: 100%;
-}
-
-.calendar_days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 8px;
-}
-
-.calendar_days span {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: #8e8e8e;
-    padding: 8px 4px;
-}
-
-.calendar_dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    min-height: 200px;
-}
-
-.calendar_date {
-    text-align: center;
-    font-size: 13px;
-    padding: 8px 4px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    position: relative;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid transparent;
-}
-
-.calendar_date:hover {
-    background-color: #e3f2fd;
-    border-color: #387FEB;
-    transform: scale(1.05);
-}
-
-.calendar_date.today {
-    background-color: #4285f4;
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
-    animation: scaleIn 0.3s ease;
-}
-
-.calendar_date.has_event {
-    background-color: #fff3e0;
-    color: #e65100;
-    font-weight: 600;
-}
-
-.calendar_date.other_month {
-    color: #ccc;
-    background-color: transparent;
-}
-
-.calendar_date.other_month:hover {
-    background-color: #f8f9fa;
-}
-
-/* Google 인증 섹션 */
-.google_auth_section {
-    text-align: center;
-    padding: 15px 0;
-    border-top: 1px solid #f0f0f0;
-}
-
-.google_signin_btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #4285f4;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
@@ -2135,43 +1420,78 @@
 }
 
 /* ============================================
-   반응형 디자인
+   반응형 디자인 - 개선된 버전
    ============================================ */
-@media (max-width: 1500px) {
+
+/* 대형 데스크톱 (1920px 이상) */
+@media (min-width: 1920px) {
     .group_board_wrap {
-        width: 100%;
-        max-width: 1200px;
-        padding: 0 15px;
+        max-width: 1600px;
+        margin: 15px 320px 0 140px; /* 여백 증가 */
+    }
+}
+
+/* 표준 데스크톱 (1600px - 1919px) */
+@media (min-width: 1600px) and (max-width: 1919px) {
+    .group_board_wrap {
+        max-width: 1460px;
+        margin: 15px 340px 0 130px;
+    }
+}
+
+/* 중간 데스크톱 (1400px - 1599px) */
+@media (min-width: 1400px) and (max-width: 1599px) {
+    .group_board_wrap {
+        max-width: 1300px;
+        margin: 15px 320px 0 120px; /* 기본 여백 유지 */
     }
 
     .group_board_left {
-        width: 65%;
+        width: 70%;
+    }
+
+    .group_board_right {
+        width: 30%;
+    }
+}
+
+/* 소형 데스크톱 (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .group_board_wrap {
+        max-width: 1100px;
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 약간 줄임 */
+        gap: 25px;
+    }
+
+    .group_board_left {
+        width: 68%;
     }
 
     .group_board_right {
         width: 32%;
     }
+
+    .group_board_title_name {
+        font-size: 22px;
+    }
+
+    .board_post_img {
+        height: 450px;
+    }
 }
 
-@media (max-width: 1024px) {
+/* 큰 태블릿 및 소형 노트북 (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
     .group_board_wrap {
-        flex-direction: column;
-        padding: 0 15px;
+        max-width: 900px;
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 더 줄임 */
+        gap: 20px;
+        flex-direction: column; /* 세로 배치로 변경 */
     }
 
     .group_board_left,
     .group_board_right {
         width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .group_board_wrap {
-        margin: 15px auto;
-    }
-
-    .group_board_title_box {
-        padding: 15px 20px;
     }
 
     .group_board_title_name {
@@ -2179,7 +1499,98 @@
     }
 
     .board_post_img {
+        height: 400px;
+    }
+
+    /* 오른쪽 섹션들을 세로로 재배치 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* 캘린더만 위에 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 아래쪽으로 배치 */
+    .group_board_schedule,
+    .group_chat_list_box {
+        order: 2;
+    }
+
+    /* 일정과 채팅을 가로로 나란히 배치 */
+    .bottom_sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .group_board_schedule {
+        grid-column: 1;
+    }
+
+    .group_chat_list_box {
+        grid-column: 2;
+    }
+}
+
+/* 중간 태블릿 (768px - 1023px) */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .group_board_wrap {
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 대폭 줄임 */
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 18px 22px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .group_board_title_name {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .board_post_img {
         height: 350px;
+    }
+
+    /* 오른쪽 섹션들 배치 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 먼저 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 가로로 나란히 아래 배치 */
+    .bottom_sections_container {
+        order: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .group_board_schedule {
+        grid-column: 1;
+    }
+
+    .group_chat_list_box {
+        grid-column: 2;
     }
 
     .board_member_row,
@@ -2189,11 +1600,454 @@
         padding: 15px;
     }
 
+    /* 멤버 프로필 크기 조정 */
+    .board_my_profile,
+    .board_member_img {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* 캘린더 그리드 간격 조정 */
+    .calendar_dates {
+        min-height: 180px;
+    }
+
+    .calendar_date {
+        padding: 6px 3px;
+        min-height: 28px;
+        font-size: 12px;
+    }
+}
+
+/* 작은 태블릿 (600px - 767px) */
+@media (min-width: 600px) and (max-width: 700px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 대폭 줄임: 150px → 60px */
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 15px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .group_board_title_name {
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+
+    .group_board_member_count {
+        font-size: 13px;
+    }
+
+    .board_post_img {
+        height: 280px;
+    }
+
+    /* 오른쪽 섹션들 배치 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 먼저 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 세로로 아래 배치 (작은 화면이므로) */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 12px;
+    }
+
+    /* 멤버 프로필 더 작게 */
+    .board_my_profile,
+    .board_member_img {
+        width: 45px;
+        height: 45px;
+    }
+
+    /* 캘린더 더 컴팩트하게 */
+    .calendar_dates {
+        min-height: 150px;
+    }
+
+    .calendar_date {
+        padding: 4px 2px;
+        min-height: 24px;
+        font-size: 11px;
+    }
+
+    /* 스케줄 리스트 컴팩트 */
+    .board_schedule_list {
+        padding: 10px;
+    }
+
+    .schedule_title {
+        font-size: 12px;
+    }
+
+    .schedule_date {
+        font-size: 11px;
+    }
+}
+
+/* 큰 모바일 (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 더 줄임: 80px → 40px */
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 12px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .group_board_title_name {
+        font-size: 15px;
+    }
+
+    .group_board_member_count {
+        font-size: 12px;
+    }
+
+    .board_post_img {
+        height: 250px;
+    }
+
+    /* 오른쪽 섹션들 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 10px;
+    }
+
+    /* 멤버 프로필 최소 크기 */
+    .board_my_profile,
+    .board_member_img {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* 작은 화면에서 캘린더 */
+    .calendar_header span {
+        font-size: 16px;
+    }
+
+    .calendar_dates {
+        min-height: 120px;
+    }
+
+    .calendar_date {
+        padding: 3px 1px;
+        min-height: 20px;
+        font-size: 10px;
+    }
+
+    /* 채팅 리스트 컴팩트 */
+    .group_chatting_room_img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .group_chatting_title {
+        font-size: 13px;
+    }
+
+    .group_chatting_member_count {
+        font-size: 11px;
+    }
+}
+
+/* 작은 모바일 (320px - 479px) */
+@media (min-width: 320px) and (max-width: 479px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 최소화: 40px → 20px */
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .group_board_title_name {
+        font-size: 14px;
+    }
+
+    .group_board_member_count {
+        font-size: 11px;
+    }
+
+    .board_post_img {
+        height: 200px;
+    }
+
+    /* 오른쪽 섹션들 순서 명시 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 8px;
+    }
+
+    /* 최소 크기 프로필 */
+    .board_my_profile,
+    .board_member_img {
+        width: 35px;
+        height: 35px;
+    }
+
+    /* 매우 컴팩트한 캘린더 */
+    .calendar_header span {
+        font-size: 14px;
+    }
+
+    .calendar_dates {
+        min-height: 100px;
+        gap: 1px;
+    }
+
+    .calendar_date {
+        padding: 2px 1px;
+        min-height: 18px;
+        font-size: 9px;
+    }
+
+    /* 최소 크기 채팅 */
+    .group_chatting_room {
+        padding: 8px;
+    }
+
+    .group_chatting_room_img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .group_chatting_title {
+        font-size: 12px;
+    }
+
+    .group_chatting_member_count {
+        font-size: 10px;
+    }
+}
+
+/* 극소형 모바일 (최대 319px) */
+@media (max-width: 319px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 최소: 20px → 10px */
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 8px 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .group_board_title_name {
+        font-size: 13px;
+    }
+
+    .group_board_member_count {
+        font-size: 10px;
+    }
+
+    .board_post_img {
+        height: 180px;
+    }
+
+    /* 오른쪽 섹션들 순서 명시 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 6px;
+    }
+
+    /* 극소형 프로필 */
+    .board_my_profile,
+    .board_member_img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .calendar_dates {
+        min-height: 80px;
+    }
+
+    .calendar_date {
+        padding: 1px;
+        min-height: 16px;
+        font-size: 8px;
+    }
+}
+
+/* ============================================
+   모달 반응형 스타일
+   ============================================ */
+
+/* 데스크톱 모달 */
+@media (min-width: 1024px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 85%;
+        max-width: 600px;
+    }
+
+    .post_modal .modal_content {
+        max-width: 1000px;
+    }
+}
+
+/* 태블릿 모달 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 90%;
+        max-width: 500px;
+        margin: 20px;
+        max-height: 85vh;
+    }
+
+    .post_modal .modal_content {
+        flex-direction: column;
+        max-height: 90vh;
+        max-width: 700px;
+    }
+
+    .modal_left {
+        min-height: 250px;
+        max-height: 45vh;
+    }
+
+    .modal_right {
+        width: 100%;
+        max-height: 45vh;
+    }
+
+    .modal_image {
+        border-radius: 15px 15px 0 0;
+    }
+}
+
+/* 모바일 모달 */
+@media (max-width: 767px) {
     .create_post_modal_content,
     .event_modal_content {
         width: 95%;
-        margin: 20px;
+        margin: 10px;
         max-height: 95vh;
+        border-radius: 12px;
     }
 
     .create_post_modal_header,
@@ -2208,6 +2062,7 @@
     .create_post_modal_footer,
     .event_modal_footer {
         flex-direction: column;
+        gap: 10px;
     }
 
     .create_post_btn_cancel,
@@ -2215,29 +2070,795 @@
     .event_btn_cancel,
     .event_btn_save {
         width: 100%;
+        padding: 14px 20px;
     }
 
     .image_upload_placeholder {
         padding: 40px 15px;
     }
 
-    /* 모달 반응형 */
+    /* 모바일 게시물 모달 */
     .post_modal .modal_content {
         flex-direction: column;
         max-height: 95vh;
+        margin: 10px;
+        border-radius: 12px;
     }
 
     .modal_left {
-        min-height: 300px;
-        max-height: 50vh;
+        min-height: 200px;
+        max-height: 40vh;
     }
 
     .modal_right {
         width: 100%;
-        max-height: 45vh;
+        max-height: 55vh;
     }
 
     .modal_image {
-        border-radius: 15px 15px 0 0;
+        border-radius: 12px 12px 0 0;
     }
+
+    .modal_header,
+    .modal_content_area,
+    .modal_actions {
+        padding: 12px 15px;
+    }
+}
+
+/* 작은 모바일 모달 */
+@media (max-width: 480px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 98%;
+        margin: 5px;
+        max-height: 98vh;
+        border-radius: 8px;
+    }
+
+    .create_post_modal_header h3,
+    .event_modal_header h3 {
+        font-size: 16px;
+    }
+
+    .create_post_modal_header,
+    .create_post_modal_body,
+    .create_post_modal_footer,
+    .event_modal_header,
+    .event_modal_body,
+    .event_modal_footer {
+        padding: 12px;
+    }
+
+    .image_upload_placeholder {
+        padding: 30px 10px;
+    }
+
+    .image_upload_placeholder span {
+        font-size: 14px;
+    }
+
+    .image_upload_placeholder p {
+        font-size: 12px;
+    }
+
+    /* 작은 모바일 게시물 모달 */
+    .post_modal .modal_content {
+        margin: 5px;
+        border-radius: 8px;
+    }
+
+    .modal_header,
+    .modal_content_area,
+    .modal_actions {
+        padding: 10px 12px;
+    }
+}
+
+/* ============================================
+   공통 애니메이션 키프레임
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1.1); }
+    75% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+@keyframes bookmarkSave {
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.2) translateY(-2px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* ============================================
+   공통 호버 효과
+   ============================================ */
+.hover-scale {
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.hover-lift {
+    transition: all 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hover-grow {
+    transition: transform 0.2s ease;
+}
+
+.hover-grow:hover {
+    transform: scale(1.1);
+}
+
+/* ============================================
+   게시물 아이콘 영역 (하트, 북마크 등)
+   ============================================ */
+.board_svg_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px 10px;
+}
+
+.post_right_nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 아이콘 공통 스타일 */
+.post_heart_icon,
+.post_comment_icon,
+.post_share_icon,
+.post_bookmark_icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: none;
+    background: none;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.post_heart_icon:hover,
+.post_comment_icon:hover,
+.post_share_icon:hover,
+.post_bookmark_icon:hover {
+    transform: scale(1.2);
+    background: #f8f9fa;
+}
+
+/* 하트 아이콘 */
+.post_heart_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.post_heart_icon.liked svg {
+    fill: #ff3040;
+    stroke: #ff3040;
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* 북마크 아이콘 */
+.post_bookmark_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.post_bookmark_icon.bookmarked svg {
+    fill: #212121;
+    stroke: #212121;
+    animation: bookmarkSave 0.4s ease-in-out;
+}
+
+/* 댓글 아이콘 */
+.post_comment_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: transparent;
+    stroke-width: 2;
+}
+
+/* 공유 아이콘 */
+.post_share_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: transparent;
+    stroke-width: 2;
+}
+
+/* 게시물 내용 */
+.post_content_section {
+    padding: 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.post_who_like {
+    font-size: 14px;
+    font-weight: 600;
+    color: #212121;
+}
+
+.post_content {
+    font-size: 14px;
+    color: #212121;
+}
+
+.post_username {
+    font-weight: 600;
+    margin-right: 8px;
+    color: #212121;
+}
+
+.post_text {
+    line-height: 1.4;
+    color: #666666;
+}
+
+.post_comment_count {
+    font-size: 14px;
+    color: #8e8e8e;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.post_comment_count:hover {
+    color: #387FEB;
+}
+
+/* ============================================
+   멤버 관리 컴포넌트
+   ============================================ */
+.member_management_container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: scaleIn 0.5s ease;
+}
+
+/* 탭 헤더 */
+.member_management_container .tab_header {
+    display: flex;
+    background: #f8f9fa;
+    padding: 0;
+}
+
+.member_management_container .tab_button {
+    flex: 1;
+    padding: 15px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    color: #B7B7B7;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: all 0.2s ease;
+}
+
+.member_management_container .tab_button:hover {
+    background: #F5F6F8;
+    color: #666666;
+}
+
+.member_management_container .tab_button.active {
+    background: #ffffff;
+    color: #212121;
+    font-weight: 500;
+    transform: translateY(-1px);
+}
+
+/* 검색바 */
+.member_management_container .search_header {
+    padding: 15px 20px;
+    background: #ffffff;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sort_header{
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+}
+
+
+.member_management_container .search_input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #f8f9fa;
+    font-size: 14px;
+    color: #212121;
+    margin-right: 10px;
+    transition: all 0.2s ease;
+}
+
+.member_management_container .search_input:focus {
+    outline: none;
+    border-color: #387FEB;
+    box-shadow: 0 0 0 3px #e3f2fd;
+}
+
+.member_management_container .search_input::placeholder {
+    color: #8e8e8e;
+}
+
+.member_management_container .sort_select {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 13px;
+    color: #B7B7B7;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.member_management_container .sort_select:hover {
+    background: #F5F6F8;
+    color: #212121;
+}
+
+/* 탭 컨텐츠 */
+.member_management_container .member_management_tap,
+.member_management_container .member_accept_tap {
+    display: none;
+}
+
+.member_management_container .member_management_tap.active,
+.member_management_container .member_accept_tap.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+/* 멤버 아이템 */
+.member_management_container .member_contain {
+    background-color: #F5F6F8;
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.2s ease;
+    animation: slideUp 0.4s ease;
+}
+
+.member_management_container .member_contain:hover {
+    background-color: #e3f2fd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.member_management_container .member_profile_img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.2s ease;
+}
+
+.member_management_container .member_profile_img:hover {
+    transform: scale(1.05);
+}
+
+.member_management_container .member_profile_name {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+}
+
+/* 리더 아이콘 */
+.member_management_container .leder_icon {
+    display: flex;
+    align-items: center;
+    background: #387feb;
+    border-radius: 13.5px;
+    padding: 6px 12px;
+    margin-right: 10px;
+    transition: all 0.2s ease;
+    animation: scaleIn 0.5s ease;
+}
+
+.member_management_container .leder_icon:hover {
+    background: #2968c7;
+    transform: scale(1.05);
+}
+
+.member_management_container .crown_icon {
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.member_management_container .crown_icon svg {
+    width: 15px;
+    height: 9px;
+}
+
+.member_management_container .leder_icon span {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: Arial, sans-serif;
+}
+
+/* 설정 버튼 */
+.member_management_container .member_setting_icon {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #8e8e8e;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+/* 승인/거절 버튼 */
+.member_management_container .member_accept,
+.member_management_container .member_refusal {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: all 0.2s ease;
+}
+
+.member_management_container .member_accept {
+    background: #007AFF;
+    color: #ffffff;
+}
+
+.member_management_container .member_accept:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.member_management_container .member_refusal {
+    background: #FF69B4;
+    color: #ffffff;
+}
+
+.member_management_container .member_refusal:hover {
+    background: #e91e63;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 멤버 초대하기 */
+.member_management_container .add_member {
+    background-color: #F5F6F8;
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px dashed #ddd;
+}
+
+.member_management_container .add_member:hover {
+    background-color: #e3f2fd;
+    border-color: #387FEB;
+    transform: translateY(-1px);
+}
+
+.member_management_container .add_member_profile_icon {
+    width: 50px;
+    height: 50px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.member_management_container .add_member:hover .add_member_profile_icon {
+    transform: scale(1.1);
+}
+
+.member_management_container .add_member_profile_icon svg {
+    width: 24px;
+    height: 24px;
+    color: #B7B7B7;
+    transition: color 0.2s ease;
+}
+
+.member_management_container .add_member:hover .add_member_profile_icon svg {
+    color: #387FEB;
+}
+
+.member_management_container .add_member_invitation {
+    flex: 1;
+    font-size: 16px;
+    color: #666666;
+    transition: color 0.2s ease;
+}
+
+.member_management_container .add_member:hover .add_member_invitation {
+    color: #387FEB;
+}
+
+/* ============================================
+   캘린더 영역
+   ============================================ */
+.group_board_calendar {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+    animation: slideUp 0.6s ease 0.3s both;
+}
+
+.calendar_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.calendar_header span {
+    font-size: 20px;
+    color: #212121;
+    font-weight: 600;
+}
+
+.calendar_actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.add_schedule_btn_icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 8px;
+    border-radius: 50%;
+    color: #387FEB;
+}
+
+.add_schedule_btn_icon:hover {
+    background: #e3f2fd;
+    transform: scale(1.1);
+}
+
+/* 로딩 스피너 */
+.calendar_loading,
+.events_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.loading_spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f0f0f0;
+    border-top: 2px solid #387FEB;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* 캘린더 네비게이션 */
+.calendar_navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+
+.calendar_nav_btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    color: #B7B7B7;
+}
+
+.calendar_nav_btn:hover {
+    background-color: #f8f9fa;
+    color: #387FEB;
+    transform: scale(1.1);
+}
+
+.calendar_current_month {
+    font-size: 16px;
+    font-weight: 600;
+    color: #387FEB;
+}
+
+/* 캘린더 그리드 */
+.board_calendar {
+    background: #F5F6F8;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.calendar_grid {
+    width: 100%;
+}
+
+.calendar_days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.calendar_days span {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8e8e8e;
+    padding: 8px 4px;
+}
+
+.calendar_dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    min-height: 200px;
+}
+
+.calendar_date {
+    text-align: center;
+    font-size: 13px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+}
+
+.calendar_date:hover {
+    background-color: #e3f2fd;
+    border-color: #387FEB;
+    transform: scale(1.05);
+}
+
+.calendar_date.today {
+    background-color: #4285f4;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+    animation: scaleIn 0.3s ease;
+}
+
+.calendar_date.has_event {
+    background-color: #fff3e0;
+    color: #e65100;
+    font-weight: 600;
+}
+
+.calendar_date.other_month {
+    color: #ccc;
+    background-color: transparent;
+}
+
+.calendar_date.other_month:hover {
+    background-color: #f8f9fa;
+}
+
+/* Google 인증 섹션 */
+.google_auth_section {
+    text-align: center;
+    padding: 15px 0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.google_signin_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #4285f4;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px
 }
