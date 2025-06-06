@@ -52,50 +52,41 @@
         </div>
 
 
-
         <!-- 멤버 프로필 스크롤 -->
-        <div class="board_member_row">
-            <div class="board_member_list">
-                <div class="board_my_profile"></div>
-                <div class="board_add_post">
-                    <div class="add_post_btn" th:attr="data-group-id=${group.gno}">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21"
-                             height="21" viewBox="0 0 21 21">
-                            <defs>
-                                <clipPath id="clip">
-                                    <use xlink:href="#fill"/>
-                                </clipPath>
-                                <clipPath id="clip-2">
-                                    <use xlink:href="#fill-2"/>
-                                </clipPath>
-                            </defs>
-                            <g id="그룹_162393" data-name="그룹 162393" transform="translate(0 0)">
-                                <circle id="타원_9369" data-name="타원 9369" cx="10.5" cy="10.5" r="10.5"
-                                        transform="translate(0 0)" fill="#387feb"/>
-                                <g id="그룹_162314" data-name="그룹 162314" transform="translate(5.907 5.905)">
-                                    <g id="사각형_147863" data-name="사각형 147863" transform="translate(0 4.084)" fill="none"
-                                       stroke="#fff" stroke-width="2">
-                                        <rect id="fill" width="9.189" height="1.021" rx="0.51" stroke="none"/>
-                                        <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
-                                              fill="none" clip-path="url(#clip)"/>
-                                    </g>
-                                    <g id="사각형_147864" data-name="사각형 147864" transform="translate(5.105 0) rotate(90)"
-                                       fill="none" stroke="#fff" stroke-width="2">
-                                        <rect id="fill-2" width="9.189" height="1.021" rx="0.51" stroke="none"/>
-                                        <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
-                                              fill="none" clip-path="url(#clip-2)"/>
-                                    </g>
-                                </g>
+        <div class="board_add_post">
+            <div class="add_post_btn" th:attr="data-group-id=${group.gno}">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21"
+                     height="21" viewBox="0 0 21 21">
+                    <defs>
+                        <clipPath id="clip">
+                            <use xlink:href="#fill"/>
+                        </clipPath>
+                        <clipPath id="clip-2">
+                            <use xlink:href="#fill-2"/>
+                        </clipPath>
+                    </defs>
+                    <g id="그룹_162393" data-name="그룹 162393" transform="translate(0 0)">
+                        <circle id="타원_9369" data-name="타원 9369" cx="10.5" cy="10.5" r="10.5"
+                                transform="translate(0 0)" fill="#387feb"/>
+                        <g id="그룹_162314" data-name="그룹 162314" transform="translate(5.907 5.905)">
+                            <g id="사각형_147863" data-name="사각형 147863" transform="translate(0 4.084)" fill="none"
+                               stroke="#fff" stroke-width="2">
+                                <rect id="fill" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                                <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
+                                      fill="none" clip-path="url(#clip)"/>
                             </g>
-                        </svg>
-                        <span class="add_post_name">게시물 추가</span>
-                    </div>
-                </div> <!-- 여기까지 글쓰기 추가 -->
-                <div class="board_member_img"></div>
-                <div class="board_member_img"></div>
-                <div class="board_member_img"></div>
-                <div class="board_member_img"></div>
+                            <g id="사각형_147864" data-name="사각형 147864" transform="translate(5.105 0) rotate(90)"
+                               fill="none" stroke="#fff" stroke-width="2">
+                                <rect id="fill-2" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                                <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
+                                      fill="none" clip-path="url(#clip-2)"/>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <span class="add_post_name">게시물 추가</span>
             </div>
+
         </div>
 
         <!-- 게시물들이 JavaScript에서 동적으로 생성됩니다 -->
@@ -124,14 +115,19 @@
                     <span class="member_profile_name">구름</span>
                     <div class="leder_icon">
                         <div class="crown_icon">
-                            <svg id="그룹_162528" data-name="그룹 162528" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15.605" height="8.92" viewBox="0 0 15.605 8.92">
+                            <svg id="그룹_162528" data-name="그룹 162528" xmlns="http://www.w3.org/2000/svg"
+                                 xmlns:xlink="http://www.w3.org/1999/xlink" width="15.605" height="8.92"
+                                 viewBox="0 0 15.605 8.92">
                                 <defs>
                                     <clipPath id="clip-path">
-                                        <rect id="사각형_147995" data-name="사각형 147995" width="15.605" height="8.92" transform="translate(0 0)" fill="#f5f6f8"/>
+                                        <rect id="사각형_147995" data-name="사각형 147995" width="15.605" height="8.92"
+                                              transform="translate(0 0)" fill="#f5f6f8"/>
                                     </clipPath>
                                 </defs>
                                 <g id="그룹_162527" data-name="그룹 162527" clip-path="url(#clip-path)">
-                                    <path id="패스_83456" data-name="패스 83456" d="M11.217,4.14,8,.12a.218.218,0,0,0-.39,0L4.387,4.14a.742.742,0,0,1-.86.23L.347,3.1a.2.2,0,0,0-.1-.02.236.236,0,0,0-.16.06.255.255,0,0,0-.08.25l1.34,5.34a.246.246,0,0,0,.24.19h12.44a.255.255,0,0,0,.24-.19h-.01L15.6,3.39a.255.255,0,0,0-.08-.25.245.245,0,0,0-.26-.04l-3.18,1.27a.75.75,0,0,1-.86-.23" fill="#f5f6f8"/>
+                                    <path id="패스_83456" data-name="패스 83456"
+                                          d="M11.217,4.14,8,.12a.218.218,0,0,0-.39,0L4.387,4.14a.742.742,0,0,1-.86.23L.347,3.1a.2.2,0,0,0-.1-.02.236.236,0,0,0-.16.06.255.255,0,0,0-.08.25l1.34,5.34a.246.246,0,0,0,.24.19h12.44a.255.255,0,0,0,.24-.19h-.01L15.6,3.39a.255.255,0,0,0-.08-.25.245.245,0,0,0-.26-.04l-3.18,1.27a.75.75,0,0,1-.86-.23"
+                                          fill="#f5f6f8"/>
                                 </g>
                             </svg>
                         </div>
@@ -161,7 +157,8 @@
                 <div class="add_member">
                     <div class="add_member_profile_icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.583 35.583">
-                            <path d="M10.379,12.413H7.413V9.448a1.483,1.483,0,0,0-2.965,0v2.965H1.483a1.483,1.483,0,1,0,0,2.965H4.448v2.965a1.483,1.483,0,0,0,2.965,0V15.379h2.965a1.483,1.483,0,1,0,0-2.965ZM26.688,13.9a4.448,4.448,0,1,0-1.349-8.688,7.316,7.316,0,0,1,1.334,4.24,7.46,7.46,0,0,1-1.334,4.24A4.433,4.433,0,0,0,26.688,13.9Zm-7.413,0a4.448,4.448,0,1,0-4.448-4.448A4.429,4.429,0,0,0,19.274,13.9Zm0,2.965c-2.965,0-8.9,1.483-8.9,4.448v1.483a1.487,1.487,0,0,0,1.483,1.483H26.688a1.487,1.487,0,0,0,1.483-1.483V21.309C28.17,18.344,22.24,16.861,19.274,16.861Zm9.815.237a5.486,5.486,0,0,1,2.046,4.211v2.224a4.054,4.054,0,0,1-.074.741h3.781a.734.734,0,0,0,.741-.741V21.309C35.583,19.026,32.07,17.617,29.09,17.1Z" transform="translate(0 2.413)" fill="#b7b7b7"/>
+                            <path d="M10.379,12.413H7.413V9.448a1.483,1.483,0,0,0-2.965,0v2.965H1.483a1.483,1.483,0,1,0,0,2.965H4.448v2.965a1.483,1.483,0,0,0,2.965,0V15.379h2.965a1.483,1.483,0,1,0,0-2.965ZM26.688,13.9a4.448,4.448,0,1,0-1.349-8.688,7.316,7.316,0,0,1,1.334,4.24,7.46,7.46,0,0,1-1.334,4.24A4.433,4.433,0,0,0,26.688,13.9Zm-7.413,0a4.448,4.448,0,1,0-4.448-4.448A4.429,4.429,0,0,0,19.274,13.9Zm0,2.965c-2.965,0-8.9,1.483-8.9,4.448v1.483a1.487,1.487,0,0,0,1.483,1.483H26.688a1.487,1.487,0,0,0,1.483-1.483V21.309C28.17,18.344,22.24,16.861,19.274,16.861Zm9.815.237a5.486,5.486,0,0,1,2.046,4.211v2.224a4.054,4.054,0,0,1-.074.741h3.781a.734.734,0,0,0,.741-.741V21.309C35.583,19.026,32.07,17.617,29.09,17.1Z"
+                                  transform="translate(0 2.413)" fill="#b7b7b7"/>
                         </svg>
                     </div>
                     <span class="add_member_invitation">멤버 초대하기</span>
@@ -421,11 +418,12 @@
 <!-- 그룹 가입 강아지 모달 -->
 <div class="modal_overlay" id="applyToGroupModal" style="display: none;" onclick="closeApplyModal()">
     <div class="modal_container" onclick="event.stopPropagation()">
-        <div class="modal_step" id="applyModalStep_board"> <div class="modal_header">
-            <h2 class="modal_title">그룹 가입 신청</h2>
-            <p class="modal_subtitle">이 그룹에 어떤 강아지로 가입하시겠어요?</p>
-            <p>가입 대상 그룹: <span id="applyModalTargetGroupName_board"></span></p>
-        </div>
+        <div class="modal_step" id="applyModalStep_board">
+            <div class="modal_header">
+                <h2 class="modal_title">그룹 가입 신청</h2>
+                <p class="modal_subtitle">이 그룹에 어떤 강아지로 가입하시겠어요?</p>
+                <p>가입 대상 그룹: <span id="applyModalTargetGroupName_board"></span></p>
+            </div>
             <div class="profile_selection_section">
                 <div class="profile_grid" id="applyModalProfileGrid_board">
                     <p>강아지 목록을 불러오는 중...</p>
@@ -433,7 +431,9 @@
             </div>
             <div class="modal_buttons">
                 <button type="button" class="btn_secondary" onclick="closeApplyModal()">취소</button>
-                <button type="button" class="btn_primary" id="submitApplyBtn_board" onclick="submitGroupApplicationOnBoard(event)" disabled>가입 신청하기</button>
+                <button type="button" class="btn_primary" id="submitApplyBtn_board"
+                        onclick="submitGroupApplicationOnBoard(event)" disabled>가입 신청하기
+                </button>
             </div>
         </div>
     </div>
