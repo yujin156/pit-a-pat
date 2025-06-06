@@ -7,29 +7,25 @@
   <title>MATCH - 우리집 강아지 친구 만들어주기</title>
   <link rel="stylesheet" th:href="@{/css/Content.css}">
   <link rel="stylesheet" th:href="@{/css/Match.css}">
-  <link rel="stylesheet" th:href="@{/css/Match_profile.css}">
   <link rel="stylesheet" th:href="@{/css/Side_menu.css}">
   <link rel="stylesheet" th:href="@{/css/Login_center.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-
 <div class="layout-container">
-  <!-- Sidebar -->
   <div class="side-menu" th:insert="~{Side_menu :: sidebar}"></div>
-
-  <!-- Main Content -->
   <div class="main_content">
-    <!-- Page Header -->
+
     <div class="match-header">
       <h1>MATCH</h1>
       <p>우리집 강아지 친구 만들어주기</p>
     </div>
 
-    <!-- 1. 프로필 선택 (로그인 + 강아지 2마리 이상일 때만) -->
+    <!-- ✅ 프로필 선택 드롭다운 (로그인 + 강아지 2마리 이상일 때만 표시) -->
     <div class="profile-selector"
          th:if="${isLoggedIn != null and isLoggedIn and showProfileSelector != null and showProfileSelector}"
          sec:authorize="isAuthenticated()">
-      <label for="myDogSelect">내 프로필 선택:</label>
+      <label for="myDogSelect">내 강아지 선택:</label>
       <select id="myDogSelect" class="profile-select">
         <option value="">어떤 강아지로 매칭할까요?</option>
         <option th:each="dog : ${userDogs}"
@@ -38,9 +34,8 @@
       </select>
     </div>
 
-    <!-- 2. 상세검색과 키워드 선택 -->
+    <!-- ✅ 검색 필터와 키워드 섹션 -->
     <div class="filter-and-keyword-section">
-      <!-- 검색 필터 영역 (왼쪽) -->
       <div class="search-filter-section">
         <h2>상세 검색</h2>
         <div class="filter-row">
@@ -49,15 +44,11 @@
             <option value="수컷">수컷</option>
             <option value="암컷">암컷</option>
           </select>
-
-          <!-- 견종 검색 (자동완성) -->
           <div class="species-search-container">
             <input type="text" id="speciesInput" class="filter-input" placeholder="견종 검색 (예: 비숑, 포메라니안)" autocomplete="off"/>
             <div id="speciesAutocompleteList" class="autocomplete-list"></div>
             <input type="hidden" id="selectedSpeciesId" />
           </div>
-
-          <!-- 지역 선택 3단계 드롭다운 -->
           <div class="location-filters">
             <select id="cityFilter" class="filter-select">
               <option value="">시/도 선택</option>
@@ -75,17 +66,13 @@
           <button id="resetBtn" class="action-btn secondary">초기화</button>
         </div>
       </div>
-
-      <!-- 키워드 선택 영역 (오른쪽) -->
       <div class="keyword-section">
         <h2>관심 키워드 선택</h2>
         <p class="keyword-info">
           선택된 키워드: <span id="selectedCount">0</span>개
-          <span th:if="${isLoggedIn == null or !isLoggedIn}"> (키워드 선택은 로그인후 이용해주세요)</span>
-          <span th:if="${isLoggedIn != null and isLoggedIn}"> (원하는 키워들 선택해주세요)</span>
+          <span th:if="${isLoggedIn == null or !isLoggedIn}"> (키워드 선택은 로그인 후 이용해주세요)</span>
+          <span th:if="${isLoggedIn != null and isLoggedIn}"> (원하는 키워드를 선택해주세요)</span>
         </p>
-
-        <!-- 키워드 그리드 -->
         <div class="keyword-grid">
           <button class="keyword-btn"
                   th:each="keyword : ${keywords}"
@@ -93,29 +80,29 @@
                   th:data-keyword="${keyword.dktag}"
                   th:text="${keyword.dktag}">키워드</button>
         </div>
-
-        <!-- 키워드 액션 버튼 -->
         <div class="keyword-actions">
           <button id="showAllBtn" class="action-btn secondary">ALL</button>
         </div>
       </div>
     </div>
 
-    <!-- 3. 매칭 영역 (카드 스택만) -->
+    <!-- ✅ 스와이퍼 매칭 영역 (무한 루프 적용) -->
     <div class="matching-section">
-      <div class="card-stack-container">
-        <div class="card-stack" id="cardStack">
-          <!-- 강아지 카드들이 여기에 동적으로 생성됩니다 -->
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper" id="cardStack">
+          <!-- 강아지 카드 .swiper-slide 들이 동적으로 들어감 -->
         </div>
-      </div>
-
-      <!-- 스와이프 안내 텍스트 -->
-      <div class="swipe-instructions">
-        <p>💡 카드를 좌우로 드래그하거나 키보드 화살표키로 다음 프로필을 볼 수 있어요!</p>
+        <!-- ✅ 페이지네이션 제거 (CSS에서 display: none 처리) -->
+        <div class="swiper-pagination"></div>
       </div>
     </div>
 
-    <!-- 매칭 성사 모달 -->
+    <!-- ✅ 스와이프 안내 -->
+    <div class="swipe-instructions">
+      <p>💡 카드를 좌우로 드래그하거나 키보드 화살표키로 다음 프로필을 볼 수 있어요!</p>
+    </div>
+
+    <!-- ✅ 매칭 성사 모달 -->
     <div class="match-modal" id="matchModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -140,39 +127,55 @@
       </div>
     </div>
 
-    <!-- 로딩 스피너 -->
+    <!-- ✅ 로딩 스피너 -->
     <div class="loading-spinner hidden" id="loadingSpinner">
       <div class="spinner"></div>
       <p>매칭 중...</p>
     </div>
   </div>
 
-  <!-- Login Panel -->
+  <!-- ✅ 로그인 패널 -->
   <div class="login-panel" th:insert="~{Login_center :: login}"></div>
 </div>
+
+<!-- ✅ 스와이퍼 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- ✅ 데이터 전달 스크립트 (수정) -->
 <script th:inline="javascript">
   console.log('=== Match.html 데이터 로드 시작 ===');
 
-  const rawMatchingDogs = /*[[${matchingDogs}]]*/ [];
+  // ✅ 서버에서 전달받은 데이터 (빈 배열로 초기화 - AJAX로 로드)
   const rawUserDogs = /*[[${userDogs}]]*/ [];
   const rawKeywords = /*[[${keywords}]]*/ [];
   const rawIsLoggedIn = /*[[${isLoggedIn}]]*/ false;
   const rawShowProfileSelector = /*[[${showProfileSelector}]]*/ false;
 
+  // ✅ 전역 matchData 객체 생성
   window.matchData = {
-    dogs: Array.isArray(rawMatchingDogs) ? rawMatchingDogs : [],
+    dogs: [], // 빈 배열로 시작 (AJAX로 로드)
     userDogs: Array.isArray(rawUserDogs) ? rawUserDogs : [],
     keywords: Array.isArray(rawKeywords) ? rawKeywords : [],
     isLoggedIn: Boolean(rawIsLoggedIn),
     showProfileSelector: Boolean(rawShowProfileSelector)
   };
 
+  // ✅ DogProfileSelector용 전역 변수
+  window.dogsData = window.matchData.userDogs;
+
   console.log('최종 matchData:', window.matchData);
+  console.log('로그인 상태:', window.matchData.isLoggedIn);
+  console.log('프로필 선택기 표시:', window.matchData.showProfileSelector);
+  console.log('사용자 강아지 수:', window.matchData.userDogs.length);
+  console.log('키워드 수:', window.matchData.keywords.length);
+  console.log('=== 데이터 로드 완료 ===');
 </script>
+
+<!-- ✅ JavaScript 파일들 -->
 <script th:src="@{/js/Common/DogProfileSelector.js}"></script>
 <script th:src="@{/js/MatchJS/Match.js}"></script>
-<script th:src="@{/js/MatchJS/Match_profile.js}"></script>
 <script th:src="@{/js/Side_menu.js}"></script>
 <script th:src="@{/js/Login_center.js}"></script>
+
 </body>
 </html>

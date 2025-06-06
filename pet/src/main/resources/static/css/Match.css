@@ -3,23 +3,47 @@
     display: flex;
 }
 
+/* ✅ main_content 레이아웃 수정 - 로그인센터에 가려지지 않도록 */
 .main_content {
-    width: 100%;
-    height: auto;
+    flex: 1;
     margin-left: 120px;
     margin-right: 325px;
     padding: 40px;
     min-height: calc(100vh - 80px);
     background-color: #f8f9fa;
+    transition: margin 0.3s ease;
+    max-width: calc(100vw - 445px); /* ✅ 최대 너비 설정으로 가로 스크롤 방지 */
+    overflow-x: hidden; /* ✅ 가로 스크롤 완전 차단 */
 }
 
-@media (max-width: 1024px) {
+/* ===== 반응형 레이아웃 ===== */
+@media (max-width: 1200px) {
     .main_content {
+        margin-left: 120px;
         margin-right: 25px;
+        max-width: calc(100vw - 145px);
     }
 }
 
-/* ===== 페이지 헤더 (왼쪽 정렬) ===== */
+@media (max-width: 768px) {
+    .main_content {
+        margin-left: 0;
+        margin-right: 25px;
+        padding: 20px;
+        max-width: calc(100vw - 25px);
+    }
+}
+
+@media (max-width: 480px) {
+    .main_content {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 15px;
+        max-width: 100vw;
+    }
+}
+
+/* ===== 페이지 헤더 ===== */
 .match-header {
     text-align: left;
     margin-bottom: 40px;
@@ -36,6 +60,24 @@
     font-size: 18px;
     color: #7f8c8d;
     margin: 0;
+}
+
+@media (max-width: 768px) {
+    .match-header h1 {
+        font-size: 36px;
+    }
+    .match-header p {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .match-header h1 {
+        font-size: 28px;
+    }
+    .match-header p {
+        font-size: 14px;
+    }
 }
 
 /* ===== 프로필 선택 영역 ===== */
@@ -73,6 +115,24 @@
     border-color: #387FEB;
     outline: none;
     box-shadow: 0 0 0 3px rgba(56, 127, 235, 0.1);
+}
+
+@media (max-width: 768px) {
+    .profile-selector {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .profile-selector label {
+        min-width: auto;
+        margin-bottom: 10px;
+    }
+
+    .profile-select {
+        min-width: 200px;
+        width: 100%;
+    }
 }
 
 /* ===== 검색 필터와 키워드 가로 배치 ===== */
@@ -127,9 +187,11 @@
     gap: 10px;
     justify-content: flex-start;
 }
+
 .species-search-container {
     position: relative;
 }
+
 #speciesAutocompleteList {
     position: absolute;
     top: 100%;
@@ -142,7 +204,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     max-height: 200px;
     overflow-y: auto;
-    display: none; /* 기본은 숨김 */
+    display: none;
 }
 
 #speciesAutocompleteList.show {
@@ -158,6 +220,7 @@
 #speciesAutocompleteList div:hover {
     background-color: #f2f2f2;
 }
+
 /* 키워드 선택 영역 (오른쪽) */
 .keyword-section {
     flex: 1;
@@ -286,7 +349,58 @@
     transform: translateY(-2px);
 }
 
-/* ===== 매칭 영역 (가로 3카드 슬라이드) ===== */
+/* ===== 반응형 필터 섹션 ===== */
+@media (max-width: 1200px) {
+    .filter-and-keyword-section {
+        flex-direction: column;
+        gap: 20px;
+        padding: 25px;
+    }
+
+    .search-filter-section {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 20px;
+    }
+
+    .keyword-section {
+        padding-left: 0;
+        padding-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-and-keyword-section {
+        padding: 20px;
+    }
+
+    .keyword-grid {
+        gap: 6px;
+    }
+
+    .keyword-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-and-keyword-section {
+        padding: 15px;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-btn, .filter-btn {
+        width: 100%;
+    }
+}
+
+/* ===== 스와이퍼 매칭 영역 ===== */
 .matching-section {
     position: relative;
     display: flex;
@@ -294,94 +408,302 @@
     align-items: center;
     gap: 40px;
     margin-top: 40px;
+    width: 100%;
+    overflow: hidden; /* ✅ 추가: 가로 스크롤 방지 */
 }
 
-.card-stack-container {
-    position: relative;
+/* ===== 스와이퍼 컨테이너 수정 ===== */
+.swiper {
     width: 100%;
-    max-width: 1200px;
+    height: 650px;
+    padding: 20px 0;
+    overflow: hidden; /* ✅ 추가: 스와이퍼 오버플로우 숨김 */
+}
+
+.swiper-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: transparent;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: auto !important;
+}
+
+/* ✅ 페이지네이션 점 숨기기 */
+.swiper-pagination {
+    display: none !important;
+}
+
+/* ===== 매칭 페이지 전용 강아지 카드 스타일 ===== */
+.matching-section .dog-card {
+    width: 400px;
     height: 600px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-radius: 25px;
+    background: white;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
-}
-
-.card-stack {
     position: relative;
+    margin: 0 auto;
+}
+
+/* 카드 호버 효과 */
+.matching-section .dog-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* 카드 이미지 - 전체 배경으로 사용 */
+.matching-section .card-image {
     width: 100%;
-    height: 550px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f0f0f0;
+    position: relative;
 }
 
-/* 네비게이션 버튼 */
-.card-nav-btn {
+.matching-section .card-image.default-bg {
+    background: linear-gradient(135deg, #387FEB, #6FA4FF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px;
+    color: white;
+    font-weight: bold;
+}
+
+/* ✅ 카드 콘텐츠 - 오버레이 방식 (왼쪽 정렬로 수정) */
+.matching-section .card-content {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(56, 127, 235, 0.8);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent,
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.8) 80%,
+    rgba(0, 0, 0, 0.95) 100%);
+    color: white;
+    padding: 50px 30px 30px;
+    border-radius: 0 0 25px 25px;
+    text-align: left; /* ✅ 왼쪽 정렬 */
+}
+
+.matching-section .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.matching-section .dog-name {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    flex-grow: 1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: left; /* ✅ 왼쪽 정렬 */
+}
+
+/* ===== HOME 스타일과 동일한 하트 버튼 ===== */
+.matching-section .heart-btn {
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
+    width: 55px;
+    height: 55px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-}
-
-.card-nav-btn:hover {
-    background: rgba(56, 127, 235, 1);
-    transform: translateY(-50%) scale(1.1);
-}
-
-.card-nav-btn.prev {
-    left: 20px;
-}
-
-.card-nav-btn.next {
-    right: 20px;
-}
-
-/* 액션 버튼들 */
-.action-buttons {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-}
-
-.action-button {
-    width: 70px;
-    height: 70px;
-    border: none;
-    border-radius: 50%;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
 }
 
-.next-button {
-    background: #387FEB;
-    color: white;
-}
-
-.next-button:hover {
-    background: #2c6cd6;
+.matching-section .heart-btn:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.25);
     transform: scale(1.1);
 }
 
-/* 매칭 결과 모달 */
+/* ✅ HOME과 동일한 하트 SVG 스타일 */
+.matching-section .heart-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: #F5F6F8; /* ✅ HOME과 동일한 기본 색상 */
+    stroke: white;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+/* ✅ 좋아요된 하트 - HOME과 동일한 핑크색 */
+.matching-section .heart-btn.liked svg {
+    fill: #EDA9DD !important;
+    stroke: #EDA9DD !important;
+}
+
+.matching-section .heart-btn.disabled {
+    background: rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.matching-section .heart-btn.disabled svg {
+    fill: #B7B7B7;
+    stroke: #B7B7B7;
+}
+
+.matching-section .heart-btn.animate {
+    animation: matchHeartPulse 0.6s ease-in-out;
+}
+
+@keyframes matchHeartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* ===== 강아지 정보 및 키워드 (왼쪽 정렬) ===== */
+.matching-section .dog-info {
+    font-size: 18px;
+    margin-bottom: 20px;
+    opacity: 0.95;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    text-align: left; /* ✅ 왼쪽 정렬 */
+}
+
+.matching-section .dog-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start; /* ✅ 왼쪽 정렬 */
+}
+
+.matching-section .keyword-tag {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(56, 127, 235, 0.9);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+/* ===== 반응형 카드 크기 ===== */
+@media (max-width: 1200px) {
+    .matching-section .dog-card {
+        width: 360px;
+        height: 540px;
+    }
+
+    .swiper {
+        height: 600px;
+    }
+
+    .matching-section .dog-name {
+        font-size: 32px;
+    }
+
+    .matching-section .card-content {
+        padding: 40px 25px 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .swiper {
+        height: 550px;
+        padding: 10px 0;
+    }
+
+    .matching-section .dog-card {
+        width: 320px;
+        height: 480px;
+    }
+
+    .matching-section .card-content {
+        padding: 30px 20px 20px;
+    }
+
+    .matching-section .dog-name {
+        font-size: 28px;
+    }
+
+    .matching-section .heart-btn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .matching-section .heart-btn svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .matching-section .dog-info {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .matching-section .keyword-tag {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .swiper {
+        height: 500px;
+    }
+
+    .matching-section .dog-card {
+        width: 280px;
+        height: 420px;
+    }
+
+    .matching-section .card-header {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .matching-section .dog-name {
+        font-size: 24px;
+    }
+
+    .matching-section .heart-btn {
+        width: 45px;
+        height: 45px;
+    }
+
+    .matching-section .heart-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .matching-section .dog-keywords {
+        gap: 6px;
+    }
+
+    .matching-section .keyword-tag {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .matching-section .card-content {
+        padding: 25px 15px 15px;
+    }
+}
+
+/* ===== 매칭 결과 모달 ===== */
 .match-modal {
     position: fixed;
     top: 0;
@@ -482,7 +804,11 @@
     border: 2px solid #e9ecef;
 }
 
-/* 로딩 스피너 */
+.modal-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== 로딩 스피너 ===== */
 .loading-spinner {
     position: fixed;
     top: 50%;
@@ -521,7 +847,7 @@
     margin: 0;
 }
 
-/* 스와이프 안내 */
+/* ===== 스와이프 안내 ===== */
 .swipe-instructions {
     text-align: center;
     color: #7f8c8d;
@@ -533,7 +859,14 @@
     margin: 0;
 }
 
-/* 빈 상태 스타일 */
+@media (max-width: 768px) {
+    .swipe-instructions {
+        font-size: 14px;
+        margin-top: 15px;
+    }
+}
+
+/* ===== 빈 상태 스타일 ===== */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -564,7 +897,7 @@
     line-height: 1.5;
 }
 
-/* 키워드 스크롤바 스타일 */
+/* ===== 키워드 스크롤바 스타일 ===== */
 .keyword-grid::-webkit-scrollbar {
     width: 6px;
 }
@@ -583,82 +916,52 @@
     background: #2c6cd6;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 1200px) {
-    .main_content {
-        margin-left: 0;
-        padding: 20px;
-    }
-
-    .filter-and-keyword-section {
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .keyword-section, .search-filter-section {
-        border: none;
-        padding: 0;
-    }
-
-    .card-stack-container {
-        max-width: 90%;
-    }
+/* ===== 프로필 선택 안내 스타일 ===== */
+.profile-selection-guide {
+    text-align: center;
+    padding: 80px 20px;
+    color: #7f8c8d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    min-height: 400px;
+    justify-content: center;
 }
 
-@media (max-width: 768px) {
-    .match-header h1 {
-        font-size: 36px;
-    }
-
-    .match-header p {
-        font-size: 16px;
-    }
-
-    .profile-selector {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .profile-selector label {
-        min-width: auto;
-        margin-bottom: 10px;
-    }
-
-    .filter-and-keyword-section {
-        padding: 20px;
-    }
-
-    .keyword-grid {
-        gap: 6px;
-    }
-
-    .keyword-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-
-    .card-nav-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-    }
-
-    .card-nav-btn.prev {
-        left: 10px;
-    }
-
-    .card-nav-btn.next {
-        right: 10px;
-    }
+.guide-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.7;
 }
 
-@media (max-width: 480px) {
-    .filter-and-keyword-section {
-        padding: 15px;
-    }
+.profile-selection-guide h3 {
+    font-size: 28px;
+    color: #387FEB;
+    margin: 0;
+}
 
-    .action-button {
-        width: 60px;
-        height: 60px;
-    }
+.profile-selection-guide p {
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+    max-width: 400px;
+}
+
+.guide-btn {
+    padding: 15px 30px;
+    background: #387FEB;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.guide-btn:hover {
+    background: #2c6cd6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
 }

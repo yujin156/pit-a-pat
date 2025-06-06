@@ -48,7 +48,6 @@ h3{
     margin: 0;
     padding: 0;
     font-weight: normal;
-    color: #212121;
 }
 
 .login_box{
@@ -283,7 +282,6 @@ h3{
     border: 2px solid #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     display: flex;
-    align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
 }
