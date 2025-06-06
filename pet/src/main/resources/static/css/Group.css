@@ -1,16 +1,11 @@
-/*===================================================
-   그룹 페이지 스타일시트
-===================================================*/
 
-/* 기본 레이아웃
-   ===================================================*/
-
+/* 메인 그룹 컨텐츠 래퍼 - 기본 데스크톱 */
 .group_wrap {
-    width: 1460px;
-    margin-top: 30px;
-    padding: 0 20px;
-    margin-left: 120px;
-    margin-right: 325px;
+    flex: 1;
+    max-width: 1460px;
+    padding: 30px 20px;
+    margin: 0 320px 0 120px;
+    animation: fadeIn 0.8s ease;
 }
 
 /* 타이틀 섹션
@@ -727,61 +722,115 @@
     background: #ccc;
 }
 
-/* 모달 변형
-   ===================================================*/
+/* ============================================
+   웹용 반응형 브레이크포인트 (기본 스타일은 변경하지 않음)
+   ============================================ */
 
-#step3 .modal_container {
-    max-width: 600px;
+/* 대형 데스크톱 (1920px 이상) */
+@media (min-width: 1920px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
-/* 반응형 디자인
-   ===================================================*/
+/* 중형 데스크톱 (1600px - 1919px) */
+@media (max-width: 1919px) and (min-width: 1600px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+}
 
-@media (max-width: 1460px) {
-    .profile_grid {
+/* 표준 데스크톱 (1200px - 1599px) */
+@media (max-width: 1599px) and (min-width: 1200px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 소형 데스크톱 (1024px - 1199px) */
+@media (max-width: 1199px) and (min-width: 1024px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 노트북 (900px - 1023px) */
+@media (max-width: 1023px) and (min-width: 900px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .header_section {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* 작은 노트북 (768px - 899px) */
+@media (max-width: 899px) and (min-width: 768px) {
+    .group_wrap {
+        margin: 0 320px 0 120px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .header_section {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .search_section {
+        justify-content: center;
+    }
 }
 
-@media (max-width: 768px) {
-    .profile_grid {
+/* 최소 웹 화면 (768px 미만) */
+@media (max-width: 767px) {
+    .group_wrap {
+        margin: 0;
+        padding: 15px;
+    }
+
+    .groups_grid,
+    .recommended_grid {
         grid-template-columns: 1fr;
-        gap: 12px;
     }
 
-    .profile_card {
-        height: 200px;
+    .header_section {
+        flex-direction: column;
+        gap: 15px;
+        padding-top: 60px;
     }
 
-    .profile_name {
-        font-size: 14px;
+    .search_section {
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .profile_details {
-        font-size: 11px;
-        gap: 4px;
-    }
-
-    .profile_detail_item {
-        font-size: 9px;
-    }
-}
-
-@media (max-width: 480px) {
-    .profile_card {
-        height: 180px;
-    }
-
-    .profile_name {
-        font-size: 13px;
-    }
-
-    .profile_info_overlay {
-        padding: 20px 10px 10px;
-    }
-
-    .main_profile_badge {
-        font-size: 9px;
-        padding: 3px 6px;
+    .search_box input {
+        width: 100%;
     }
 }
