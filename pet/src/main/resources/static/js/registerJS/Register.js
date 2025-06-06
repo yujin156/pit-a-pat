@@ -136,6 +136,27 @@ function nextStep() {
     if (currentStep === 2) {
         const activeIframe = document.querySelector('.content_step.active iframe');
         const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
+
+        const email = iframeDoc.getElementById('email')?.value.trim();
+        if (!email.includes('@')) {
+            alert('올바른 이메일 형식을 입력해주세요. (예: example@example.com)');
+            iframeDoc.getElementById('email').focus();
+            return;
+        }
+
+        const pw = iframeDoc.getElementById('password')?.value;
+        const pwCheck = iframeDoc.getElementById('passwordCheck')?.value;
+
+        if (!pw || !pwCheck) {
+            alert('비밀번호를 모두 입력해주세요.');
+            return;
+        }
+        if (pw !== pwCheck) {
+            alert('비밀번호가 일치하지 않습니다.');
+            iframeDoc.getElementById('passwordCheck').focus();
+            return;
+        }
+
         const dogCount = iframeDoc.getElementById('dogCount')?.value;
         if (!dogCount) {
             alert('🐶 강아지 마리 수를 선택해주세요!');
