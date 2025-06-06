@@ -518,8 +518,9 @@ function deleteItem(type, id) {
             })
             .then(msg => {
                 alert(msg);
-                if (typeof window.mypageFetchAndRenderDogProfiles === 'function') {
-                    window.mypageFetchAndRenderDogProfiles(); // 목록 다시 불러오기
+                if (typeof window.fetchAndRenderDogProfiles === 'function'  && typeof window.mypageFetchAndRenderDogProfiles == 'function') {
+                    window.mypageFetchAndRenderDogProfiles();
+                    window.fetchAndRenderDogProfiles();
                 }
             })
             .catch(err => {
@@ -644,4 +645,5 @@ window.showDogProfileMenu = showDogProfileMenu;
 window.addDogProfile = addDogProfile;
 window.renderDogProfiles = renderDogProfiles;
 window.fetchAndRenderPosts = fetchAndRenderPosts;
+window.mypageFetchAndRenderDogProfiles = mypageFetchAndRenderDogProfiles;
 console.log('MyPage JavaScript 파일 로드 완료');
