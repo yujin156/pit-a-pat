@@ -53,40 +53,41 @@
 
 
         <!-- 멤버 프로필 스크롤 -->
-        <div class="board_add_post">
-            <div class="add_post_btn" th:attr="data-group-id=${group.gno}">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21"
-                     height="21" viewBox="0 0 21 21">
-                    <defs>
-                        <clipPath id="clip">
-                            <use xlink:href="#fill"/>
-                        </clipPath>
-                        <clipPath id="clip-2">
-                            <use xlink:href="#fill-2"/>
-                        </clipPath>
-                    </defs>
-                    <g id="그룹_162393" data-name="그룹 162393" transform="translate(0 0)">
-                        <circle id="타원_9369" data-name="타원 9369" cx="10.5" cy="10.5" r="10.5"
-                                transform="translate(0 0)" fill="#387feb"/>
-                        <g id="그룹_162314" data-name="그룹 162314" transform="translate(5.907 5.905)">
-                            <g id="사각형_147863" data-name="사각형 147863" transform="translate(0 4.084)" fill="none"
-                               stroke="#fff" stroke-width="2">
-                                <rect id="fill" width="9.189" height="1.021" rx="0.51" stroke="none"/>
-                                <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
-                                      fill="none" clip-path="url(#clip)"/>
-                            </g>
-                            <g id="사각형_147864" data-name="사각형 147864" transform="translate(5.105 0) rotate(90)"
-                               fill="none" stroke="#fff" stroke-width="2">
-                                <rect id="fill-2" width="9.189" height="1.021" rx="0.51" stroke="none"/>
-                                <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
-                                      fill="none" clip-path="url(#clip-2)"/>
+        <div class="board_member_row">
+            <div class="board_add_post">
+                <div class="add_post_btn" th:attr="data-group-id=${group.gno}">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21"
+                         height="21" viewBox="0 0 21 21">
+                        <defs>
+                            <clipPath id="clip">
+                                <use xlink:href="#fill"/>
+                            </clipPath>
+                            <clipPath id="clip-2">
+                                <use xlink:href="#fill-2"/>
+                            </clipPath>
+                        </defs>
+                        <g id="그룹_162393" data-name="그룹 162393" transform="translate(0 0)">
+                            <circle id="타원_9369" data-name="타원 9369" cx="10.5" cy="10.5" r="10.5"
+                                    transform="translate(0 0)" fill="#387feb"/>
+                            <g id="그룹_162314" data-name="그룹 162314" transform="translate(5.907 5.905)">
+                                <g id="사각형_147863" data-name="사각형 147863" transform="translate(0 4.084)" fill="none"
+                                   stroke="#fff" stroke-width="2">
+                                    <rect id="fill" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                                    <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
+                                          fill="none" clip-path="url(#clip)"/>
+                                </g>
+                                <g id="사각형_147864" data-name="사각형 147864" transform="translate(5.105 0) rotate(90)"
+                                   fill="none" stroke="#fff" stroke-width="2">
+                                    <rect id="fill-2" width="9.189" height="1.021" rx="0.51" stroke="none"/>
+                                    <path d="M0,0.020987749099731445h9.18889045715332M8.18889045715332,0v1.0209877490997314M9.18889045715332,1h-9.18889045715332M1,1.0209877490997314v-1.0209877490997314"
+                                          fill="none" clip-path="url(#clip-2)"/>
+                                </g>
                             </g>
                         </g>
-                    </g>
-                </svg>
-                <span class="add_post_name">게시물 추가</span>
+                    </svg>
+                    <span class="add_post_name">게시물 추가</span>
+                </div>
             </div>
-
         </div>
 
         <!-- 게시물들이 JavaScript에서 동적으로 생성됩니다 -->
