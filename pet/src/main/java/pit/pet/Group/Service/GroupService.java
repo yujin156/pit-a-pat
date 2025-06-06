@@ -53,13 +53,14 @@ public class GroupService {
         if (request.getGimg() != null && !request.getGimg().isEmpty()) {
             try {
                 // 이 부분 나중에 클라우드 스토리지 경로로 바꿀것
-                String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/uploads/img";
+                String uploadDir = System.getProperty("user.dir") + "/pet/src/main/resources/static/uploads/img";
                 String filename = UUID.randomUUID() + "_" + request.getGimg().getOriginalFilename();
                 Path filepath = Paths.get(uploadDir, filename);
                 Files.createDirectories(filepath.getParent());
                 Files.copy(request.getGimg().getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("✅ 이미지 저장 경로: " + filepath.toAbsolutePath());
 
-                group.setGimg("/uploads/img/" + filename); // ⭐️ 여기만 이렇게 고쳐!
+                group.setGimg("/uploads/img/" + filename);
             } catch (Exception e) {
                 throw new RuntimeException("이미지 저장 실패", e);
             }
