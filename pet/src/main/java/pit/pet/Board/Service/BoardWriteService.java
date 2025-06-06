@@ -41,7 +41,7 @@ public class BoardWriteService {
     private final GroupRepository groupRepository; // ✅ 그룹 리포지토리로 대체
     private String saveImage(MultipartFile image) {
         try {
-            String uploadDir = "C:/Users/user1/Desktop/pit-a-pat/pet/src/main/resources/static/uploads/img";
+            String uploadDir = System.getProperty("user.dir") + "/pet/src/main/resources/static/uploads/img";
             String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path filepath = Paths.get(uploadDir, filename);
             Files.createDirectories(filepath.getParent());
