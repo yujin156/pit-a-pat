@@ -53,7 +53,6 @@
     position: relative; /* 자식인 .menu의 absolute 포지셔닝 기준점 */
     width: 28px; /* SVG 아이콘 크기에 맞게 조정될 수 있음 */
     display: inline-block; /* 혹은 flex 등, 내용에 맞게 */
-    /* align-content: center; 이 속성은 flex 컨테이너에 주로 사용됩니다. */
 }
 
 /* 그룹 메뉴 */
@@ -82,7 +81,6 @@
     padding: 8px 12px; /* 패딩 조정 */
     cursor: pointer;
     white-space: nowrap; /* 텍스트가 한 줄로 표시되도록 */
-    /* writing-mode: horizontal-tb; 기본값이므로 불필요할 수 있습니다. */
 }
 
 .group_menu div:hover {
@@ -104,7 +102,6 @@
 }
 
 /* 관리페이지 */
-
 .member_management_container {
     display: none; /* 기본적으로 숨겨두기 */
 }
@@ -125,87 +122,37 @@
     animation: slideUp 0.6s ease 0.1s both;
 }
 
-.board_member_list {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-}
-
-/* 스크롤바 스타일 */
-.board_member_list::-webkit-scrollbar {
-    height: 4px;
-}
-
-.board_member_list::-webkit-scrollbar-track {
-    background: #f8f9fa;
-    border-radius: 2px;
-}
-
-.board_member_list::-webkit-scrollbar-thumb {
-    background: #ddd;
-    border-radius: 2px;
-}
-
-/* 프로필 이미지 공통 스타일 */
-.board_my_profile,
-.board_member_img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 3px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-size: cover;
-    background-position: center;
-    background: #ffffff;
-}
-
-.board_member_img {
-    margin-left: 15px;
-}
-
-.board_my_profile:hover,
-.board_member_img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 /* 게시물 추가 버튼 */
 .board_add_post {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
+    border: 2px dashed #387FEB; /* 파란색 점선으로 변경 */
+    padding: 20px;
+    border-radius: 10px;
     min-width: 80px;
-    margin-left: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease; /* 배경색 전환 효과 추가 */
+}
+
+/* 호버시 배경색 변경 */
+.board_add_post:hover {
+    background-color: #f0f7ff; /* 연한 파란색 배경 */
 }
 
 .add_post_btn {
-    border-radius: 50%;
+    border-radius: 10px;
     border: none;
-    display: flex;
+    display: flex !important;
+    flex-direction: row;
+    gap: 10px;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.add_post_btn:hover {
-    transform: translateY(-2px);
-    animation: bounce 0.6s ease;
+    width: 100%;
 }
 
 .add_post_name {
     font-size: 15px;
-    text-align: center;
     color: #B7B7B7;
-    font-weight: 500;
     cursor: pointer;
     transition: color 0.2s ease;
 }
@@ -242,19 +189,6 @@
     gap: 12px;
 }
 
-.post_profile_img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-
 .post_profile_img:hover {
     transform: scale(1.05);
 }
@@ -274,963 +208,6 @@
 
 .board_write_user {
     font-size: 15px;
-    color: #212121;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.board_write_time {
-    font-size: 12px;
-    color: #8e8e8e;
-}
-
-.post_menu_btn {
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.2s ease;
-    padding: 8px;
-    border-radius: 50%;
-    border: none;
-    background: none;
-
-    z-index: 1000;
-}
-
-.post_menu_btn:hover {
-    background: #f8f9fa;
-    transform: scale(1.1);
-}
-
-/* 게시물 이미지 */
-.board_post_img {
-    width: 100%;
-    height: 500px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    overflow: hidden;
-}
-
-.board_post_img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.board_post_img:hover img {
-    transform: scale(1.02);
-}
-
-.post_menu_btn {
-    position: relative;
-    display: inline-block;
-    width: 28px;
-}
-
-.post_menu_options {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 30px; /* 버튼보다 아래로! */
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    z-index: 400;
-    min-width: 100px;
-    overflow: hidden;
-}
-
-.post_menu_options button {
-    display: block;
-    width: 100%;
-    padding: 10px 12px;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.google_signin_btn:hover {
-    background: #3367d6;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* ============================================
-   일정 리스트 영역
-   ============================================ */
-.group_board_schedule {
-    background: #ffffff;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    margin-bottom: 20px;
-    animation: slideUp 0.6s ease 0.4s both;
-}
-
-.group_board_schedule_title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.group_board_schedule_title span:first-child {
-    font-size: 20px;
-    color: #212121;
-    font-weight: 600;
-}
-
-.more_btn {
-    font-size: 12px;
-    color: #8e8e8e;
-    cursor: pointer;
-    font-weight: 500;
-    transition: color 0.2s ease;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.more_btn:hover {
-    color: #387FEB;
-    background: #f8f9fa;
-}
-
-.board_schedule {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.board_schedule_list {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background-color: #F5F6F8;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-    margin-bottom: 8px;
-    animation: slideUp 0.4s ease;
-}
-
-.board_schedule_list:hover {
-    background-color: #e3f2fd;
-    border-color: #387FEB;
-    transform: translateY(-1px);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.schedule_doc {
-    width: 8px;
-    height: 8px;
-    background-color: #EDA9DD;
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: scaleIn 0.3s ease;
-}
-
-.schedule_info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.schedule_date {
-    font-size: 12px;
-    color: #8e8e8e;
-}
-
-.schedule_title {
-    font-size: 13px;
-    font-weight: 500;
-    color: #212121;
-}
-
-.no_events {
-    text-align: center;
-    padding: 30px 20px;
-    color: #8e8e8e;
-}
-
-.create_event_btn {
-    background: linear-gradient(45deg, #387FEB, #2968c7);
-    color: #ffffff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-    transition: all 0.2s ease;
-}
-
-.create_event_btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* ============================================
-   그룹 채팅 영역
-   ============================================ */
-.group_chat_list_box {
-    background: #ffffff;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    animation: slideUp 0.6s ease 0.5s both;
-}
-
-.group_chat_title_row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.group_chat_title {
-    font-size: 20px;
-    color: #212121;
-    font-weight: 600;
-}
-
-.group_chat_add_btn_icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 8px;
-    border-radius: 50%;
-    color: #387FEB;
-}
-
-.group_chat_add_btn_icon:hover {
-    background: #e3f2fd;
-    transform: scale(1.1);
-}
-
-.group_chatting_room {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: 8px;
-    border: 1px solid transparent;
-    animation: slideUp 0.4s ease;
-}
-
-.group_chatting_room:hover {
-    background-color: #f8f9fa;
-    border-color: #e0e0e0;
-    transform: translateY(-1px);
-}
-
-.group_chatting_room_img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #fd79a8, #e84393);
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
-    background-image: url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=45&h=45&fit=crop&crop=face');
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.2s ease;
-}
-
-.group_chatting_room:hover .group_chatting_room_img {
-    transform: scale(1.05);
-}
-
-/* 개별 채팅방 이미지 */
-.group_chatting_room:nth-child(2) .group_chatting_room_img {
-    background-image: url('https://images.unsplash.com/photo-1552053831-71594a27632d?w=45&h=45&fit=crop&crop=face');
-}
-
-.group_chatting_room:nth-child(3) .group_chatting_room_img {
-    background-image: url('https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=45&h=45&fit=crop&crop=face');
-}
-
-.group_chatting_room:nth-child(4) .group_chatting_room_img {
-    background-image: url('https://images.unsplash.com/photo-1574293876203-46753ed3d387?w=45&h=45&fit=crop&crop=face');
-}
-
-.group_chatting_info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.group_chatting_title {
-    font-size: 15px;
-    color: #212121;
-    font-weight: 500;
-}
-
-.group_chatting_member_count {
-    font-size: 12px;
-    color: #B7B7B7;
-}
-
-/* ============================================
-   모달 공통 스타일
-   ============================================ */
-.post_modal,
-.create_post_modal,
-.event_modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.post_modal.show,
-.create_post_modal.show,
-.event_modal.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal_overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(2px);
-    padding: 20px;
-    animation: fadeIn 0.3s ease;
-}
-
-/* ============================================
-   게시물 보기 모달
-   ============================================ */
-.post_modal .modal_content {
-    background: #ffffff;
-    border-radius: 15px;
-    max-width: 1000px;
-    max-height: 90vh;
-    width: 100%;
-    display: flex;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: scaleIn 0.4s ease;
-}
-
-.modal_close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 32px;
-    height: 32px;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 20px;
-    z-index: 10001;
-    transition: all 0.2s ease;
-    border: none;
-}
-
-.modal_close:hover {
-    background: rgba(0, 0, 0, 0.7);
-    transform: scale(1.1);
-}
-
-.modal_left {
-    flex: 1;
-    min-height: 500px;
-    max-height: 80vh;
-}
-
-.modal_image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px 0 0 15px;
-    overflow: hidden;
-}
-
-.modal_main_image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.modal_main_image:hover {
-    transform: scale(1.02);
-}
-
-.modal_right {
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid #f0f0f0;
-}
-
-.modal_header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.modal_user_info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.modal_profile {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-
-.modal_profile:hover {
-    transform: scale(1.05);
-}
-
-.modal_profile img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.modal_user_details {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.modal_username {
-    font-weight: 600;
-    font-size: 14px;
-    color: #212121;
-}
-
-.modal_time {
-    font-size: 12px;
-    color: #8e8e8e;
-}
-
-.modal_menu_btn {
-    font-size: 16px;
-    color: #8e8e8e;
-    cursor: pointer;
-    padding: 8px;
-    background: none;
-    border: none;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-}
-
-.modal_menu_btn:hover {
-    background: #f8f9fa;
-    color: #212121;
-}
-
-.modal_content_area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.modal_post_content {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    animation: slideUp 0.4s ease;
-}
-
-.modal_profile_small {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-
-.modal_profile_small:hover {
-    transform: scale(1.05);
-}
-
-.modal_profile_small img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.modal_text {
-    flex: 1;
-}
-
-.modal_post_username {
-    font-weight: 600;
-    margin-right: 8px;
-    font-size: 14px;
-    color: #212121;
-}
-
-.modal_post_text {
-    font-size: 14px;
-    line-height: 1.4;
-    color: #666666;
-}
-
-.modal_comments {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.comment_item {
-    display: flex;
-    gap: 12px;
-    animation: slideUp 0.3s ease;
-}
-
-.comment_profile {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #74b9ff, #0984e3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-
-.comment_profile:hover {
-    transform: scale(1.05);
-}
-
-.comment_profile img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.comment_text {
-    flex: 1;
-}
-
-.comment_username {
-    font-weight: 600;
-    margin-right: 8px;
-    font-size: 13px;
-    color: #212121;
-}
-
-.comment_actions {
-    float:right;
-    margin-left:10px;
-}
-
-.comment_menu_btn {
-    position: relative;
-    cursor: pointer;
-    margin-left: 8px;
-}
-.comment_menu_toggle {
-    width: 24px;
-    height: 24px;
-    fill: #888;
-    vertical-align: middle;
-}
-.comment_menu_options {
-    display: none;
-    position: absolute;
-    top: 22px;
-    right: 0;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    z-index: 100;
-    padding: 4px 0;
-}
-.comment_menu_options button {
-    display: block;
-    width: 80px;
-    background: none;
-    border: none;
-    padding: 8px 16px;
-    text-align: left;
-    cursor: pointer;
-    color: #555;
-}
-.comment_menu_options button:hover {
-    background: #f7f7f7;
-}
-
-.modal_actions {
-    border-top: 1px solid #f0f0f0;
-    padding: 15px 20px;
-}
-
-.modal_buttons {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-.modal_heart_icon,
-.modal_comment_icon,
-.modal_share_icon,
-.modal_bookmark_icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    border: none;
-    background: none;
-    padding: 8px;
-    border-radius: 50%;
-}
-
-.modal_heart_icon:hover,
-.modal_comment_icon:hover,
-.modal_share_icon:hover,
-.modal_bookmark_icon:hover {
-    transform: scale(1.2);
-    background: #f8f9fa;
-}
-
-/* 모달 하트 아이콘 */
-.modal_heart_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.modal_heart_icon.liked svg {
-    fill: #ff3040;
-    stroke: #ff3040;
-    animation: heartBeat 0.6s ease-in-out;
-}
-
-/* 모달 북마크 아이콘 */
-.modal_bookmark_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.modal_bookmark_icon.bookmarked svg {
-    fill: #212121;
-    stroke: #212121;
-    animation: bookmarkSave 0.4s ease-in-out;
-}
-
-.modal_likes {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #212121;
-}
-
-.modal_comment_input {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.comment_input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    padding: 8px 0;
-    background: transparent;
-    color: #212121;
-    transition: all 0.2s ease;
-}
-
-.comment_input::placeholder {
-    color: #8e8e8e;
-}
-
-.comment_input:focus {
-    border-bottom: 1px solid #387FEB;
-}
-
-.comment_submit {
-    background: none;
-    border: none;
-    color: #387FEB;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 8px 0;
-    transition: color 0.2s ease;
-}
-
-.comment_submit:hover {
-    color: #2968c7;
-}
-
-/* ============================================
-   게시글 작성 모달
-   ============================================ */
-.create_post_modal_content {
-    background: #ffffff;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: scaleIn 0.4s ease;
-}
-
-.create_post_modal_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    border-bottom: 1px solid #f0f0f0;
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    border-radius: 15px 15px 0 0;
-}
-
-.create_post_modal_header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #212121;
-}
-
-.create_post_modal_close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #8e8e8e;
-    cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-
-.create_post_modal_close:hover {
-    background: #f8f9fa;
-    color: #212121;
-    transform: scale(1.1);
-}
-
-.create_post_modal_body {
-    padding: 20px;
-}
-
-.image_upload_section {
-    margin-bottom: 20px;
-}
-
-.image_preview_container {
-    position: relative;
-    border: 2px dashed #ddd;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.image_preview_container:hover {
-    border-color: #387FEB;
-    background-color: #f8f9fa;
-}
-
-.image_upload_placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.image_upload_placeholder:hover {
-    background-color: #f8f9fa;
-}
-
-.upload_icon {
-    margin-bottom: 15px;
-    opacity: 0.6;
-    transition: all 0.2s ease;
-}
-
-.image_upload_placeholder:hover .upload_icon {
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-.image_upload_placeholder span {
-    font-size: 16px;
-    font-weight: 500;
-    color: #212121;
-    margin-bottom: 8px;
-}
-
-.image_upload_placeholder p {
-    font-size: 14px;
-    color: #8e8e8e;
-    margin: 0;
-}
-
-.image_preview {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.2s ease;
-}
-
-.image_preview:hover {
-    transform: scale(1.02);
-}
-
-.image_actions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-    padding: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.image_preview_container:hover .image_actions {
-    opacity: 1;
-}
-
-.btn_change_image,
-.btn_remove_image {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn_change_image {
-    background: rgba(255, 255, 255, 0.9);
-    color: #212121;
-}
-
-.btn_change_image:hover {
-    background: #ffffff;
-    transform: translateY(-1px);
-}
-
-.btn_remove_image {
-    background: rgba(255, 107, 107, 0.9);
-    color: #ffffff;
-}
-
-.btn_remove_image:hover {
-    background: #387FEB;
-    transform: translateY(-1px);
-}
-
-.create_post_form_group {
-    margin-bottom: 20px;
-    animation: slideUp 0.4s ease;
-}
-
-.create_post_form_group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #212121;
-    font-size: 14px;
-}
-
-.create_post_form_group textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #f0f0f0;
-    box-sizing: border-box;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    resize: vertical;
-    min-height: 100px;
-    line-height: 1.5;
     color: #212121;
 }
 
@@ -1420,959 +397,225 @@
 }
 
 /* ============================================
-   반응형 디자인 - 개선된 버전
+   일정 리스트 영역
    ============================================ */
-
-/* 대형 데스크톱 (1920px 이상) */
-@media (min-width: 1920px) {
-    .group_board_wrap {
-        max-width: 1600px;
-        margin: 15px 320px 0 140px; /* 여백 증가 */
-    }
+.group_board_schedule {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+    animation: slideUp 0.6s ease 0.4s both;
 }
 
-/* 표준 데스크톱 (1600px - 1919px) */
-@media (min-width: 1600px) and (max-width: 1919px) {
-    .group_board_wrap {
-        max-width: 1460px;
-        margin: 15px 340px 0 130px;
-    }
-}
-
-/* 중간 데스크톱 (1400px - 1599px) */
-@media (min-width: 1400px) and (max-width: 1599px) {
-    .group_board_wrap {
-        max-width: 1300px;
-        margin: 15px 320px 0 120px; /* 기본 여백 유지 */
-    }
-
-    .group_board_left {
-        width: 70%;
-    }
-
-    .group_board_right {
-        width: 30%;
-    }
-}
-
-/* 소형 데스크톱 (1200px - 1399px) */
-@media (min-width: 1200px) and (max-width: 1399px) {
-    .group_board_wrap {
-        max-width: 1100px;
-        margin: 15px 320px 0 120px; /* 오른쪽 여백 약간 줄임 */
-        gap: 25px;
-    }
-
-    .group_board_left {
-        width: 68%;
-    }
-
-    .group_board_right {
-        width: 32%;
-    }
-
-    .group_board_title_name {
-        font-size: 22px;
-    }
-
-    .board_post_img {
-        height: 450px;
-    }
-}
-
-/* 큰 태블릿 및 소형 노트북 (1024px - 1199px) */
-@media (min-width: 1024px) and (max-width: 1199px) {
-    .group_board_wrap {
-        max-width: 900px;
-        margin: 15px 320px 0 120px; /* 오른쪽 여백 더 줄임 */
-        gap: 20px;
-        flex-direction: column; /* 세로 배치로 변경 */
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_name {
-        font-size: 20px;
-    }
-
-    .board_post_img {
-        height: 400px;
-    }
-
-    /* 오른쪽 섹션들을 세로로 재배치 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    /* 캘린더만 위에 배치 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정과 채팅을 아래쪽으로 배치 */
-    .group_board_schedule,
-    .group_chat_list_box {
-        order: 2;
-    }
-
-    /* 일정과 채팅을 가로로 나란히 배치 */
-    .bottom_sections {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .group_board_schedule {
-        grid-column: 1;
-    }
-
-    .group_chat_list_box {
-        grid-column: 2;
-    }
-}
-
-/* 중간 태블릿 (768px - 1023px) */
-@media (min-width: 700px) and (max-width: 1023px) {
-    .group_board_wrap {
-        margin: 15px 320px 0 120px; /* 오른쪽 여백 대폭 줄임 */
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_box {
-        padding: 18px 22px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .group_board_title_name {
-        font-size: 18px;
-        margin-bottom: 5px;
-    }
-
-    .board_post_img {
-        height: 350px;
-    }
-
-    /* 오른쪽 섹션들 배치 순서 조정 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    /* 캘린더를 먼저 배치 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정과 채팅을 가로로 나란히 아래 배치 */
-    .bottom_sections_container {
-        order: 2;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-    }
-
-    .group_board_schedule {
-        grid-column: 1;
-    }
-
-    .group_chat_list_box {
-        grid-column: 2;
-    }
-
-    .board_member_row,
-    .group_board_calendar,
-    .group_board_schedule,
-    .group_chat_list_box {
-        padding: 15px;
-    }
-
-    /* 멤버 프로필 크기 조정 */
-    .board_my_profile,
-    .board_member_img {
-        width: 50px;
-        height: 50px;
-    }
-
-    /* 캘린더 그리드 간격 조정 */
-    .calendar_dates {
-        min-height: 180px;
-    }
-
-    .calendar_date {
-        padding: 6px 3px;
-        min-height: 28px;
-        font-size: 12px;
-    }
-}
-
-/* 작은 태블릿 (600px - 767px) */
-@media (min-width: 600px) and (max-width: 700px) {
-    .group_board_wrap {
-        margin: 15px 0 0 120px; /* 오른쪽 여백 대폭 줄임: 150px → 60px */
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_box {
-        padding: 15px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .group_board_title_name {
-        font-size: 16px;
-        margin-bottom: 0;
-    }
-
-    .group_board_member_count {
-        font-size: 13px;
-    }
-
-    .board_post_img {
-        height: 280px;
-    }
-
-    /* 오른쪽 섹션들 배치 순서 조정 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    /* 캘린더를 먼저 배치 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정과 채팅을 세로로 아래 배치 (작은 화면이므로) */
-    .group_board_schedule {
-        order: 2;
-    }
-
-    .group_chat_list_box {
-        order: 3;
-    }
-
-    .board_member_row,
-    .group_board_calendar,
-    .group_board_schedule,
-    .group_chat_list_box {
-        padding: 12px;
-    }
-
-    /* 멤버 프로필 더 작게 */
-    .board_my_profile,
-    .board_member_img {
-        width: 45px;
-        height: 45px;
-    }
-
-    /* 캘린더 더 컴팩트하게 */
-    .calendar_dates {
-        min-height: 150px;
-    }
-
-    .calendar_date {
-        padding: 4px 2px;
-        min-height: 24px;
-        font-size: 11px;
-    }
-
-    /* 스케줄 리스트 컴팩트 */
-    .board_schedule_list {
-        padding: 10px;
-    }
-
-    .schedule_title {
-        font-size: 12px;
-    }
-
-    .schedule_date {
-        font-size: 11px;
-    }
-}
-
-/* 큰 모바일 (480px - 599px) */
-@media (min-width: 480px) and (max-width: 599px) {
-    .group_board_wrap {
-        margin: 15px 0 0 120px; /* 오른쪽 여백 더 줄임: 80px → 40px */
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_box {
-        padding: 12px 15px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-    }
-
-    .group_board_title_name {
-        font-size: 15px;
-    }
-
-    .group_board_member_count {
-        font-size: 12px;
-    }
-
-    .board_post_img {
-        height: 250px;
-    }
-
-    /* 오른쪽 섹션들 순서 조정 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    /* 캘린더를 맨 위에 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정을 중간에 */
-    .group_board_schedule {
-        order: 2;
-    }
-
-    /* 채팅을 맨 아래에 */
-    .group_chat_list_box {
-        order: 3;
-    }
-
-    .board_member_row,
-    .group_board_calendar,
-    .group_board_schedule,
-    .group_chat_list_box {
-        padding: 10px;
-    }
-
-    /* 멤버 프로필 최소 크기 */
-    .board_my_profile,
-    .board_member_img {
-        width: 40px;
-        height: 40px;
-    }
-
-    /* 작은 화면에서 캘린더 */
-    .calendar_header span {
-        font-size: 16px;
-    }
-
-    .calendar_dates {
-        min-height: 120px;
-    }
-
-    .calendar_date {
-        padding: 3px 1px;
-        min-height: 20px;
-        font-size: 10px;
-    }
-
-    /* 채팅 리스트 컴팩트 */
-    .group_chatting_room_img {
-        width: 35px;
-        height: 35px;
-    }
-
-    .group_chatting_title {
-        font-size: 13px;
-    }
-
-    .group_chatting_member_count {
-        font-size: 11px;
-    }
-}
-
-/* 작은 모바일 (320px - 479px) */
-@media (min-width: 320px) and (max-width: 479px) {
-    .group_board_wrap {
-        margin: 15px 0 0 120px; /* 오른쪽 여백 최소화: 40px → 20px */
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_box {
-        padding: 10px 12px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-
-    .group_board_title_name {
-        font-size: 14px;
-    }
-
-    .group_board_member_count {
-        font-size: 11px;
-    }
-
-    .board_post_img {
-        height: 200px;
-    }
-
-    /* 오른쪽 섹션들 순서 명시 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    /* 캘린더를 맨 위에 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정을 중간에 */
-    .group_board_schedule {
-        order: 2;
-    }
-
-    /* 채팅을 맨 아래에 */
-    .group_chat_list_box {
-        order: 3;
-    }
-
-    .board_member_row,
-    .group_board_calendar,
-    .group_board_schedule,
-    .group_chat_list_box {
-        padding: 8px;
-    }
-
-    /* 최소 크기 프로필 */
-    .board_my_profile,
-    .board_member_img {
-        width: 35px;
-        height: 35px;
-    }
-
-    /* 매우 컴팩트한 캘린더 */
-    .calendar_header span {
-        font-size: 14px;
-    }
-
-    .calendar_dates {
-        min-height: 100px;
-        gap: 1px;
-    }
-
-    .calendar_date {
-        padding: 2px 1px;
-        min-height: 18px;
-        font-size: 9px;
-    }
-
-    /* 최소 크기 채팅 */
-    .group_chatting_room {
-        padding: 8px;
-    }
-
-    .group_chatting_room_img {
-        width: 30px;
-        height: 30px;
-    }
-
-    .group_chatting_title {
-        font-size: 12px;
-    }
-
-    .group_chatting_member_count {
-        font-size: 10px;
-    }
-}
-
-/* 극소형 모바일 (최대 319px) */
-@media (max-width: 319px) {
-    .group_board_wrap {
-        margin: 15px 0 0 120px; /* 오른쪽 여백 최소: 20px → 10px */
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .group_board_left,
-    .group_board_right {
-        width: 100%;
-    }
-
-    .group_board_title_box {
-        padding: 8px 10px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-
-    .group_board_title_name {
-        font-size: 13px;
-    }
-
-    .group_board_member_count {
-        font-size: 10px;
-    }
-
-    .board_post_img {
-        height: 180px;
-    }
-
-    /* 오른쪽 섹션들 순서 명시 */
-    .group_board_right {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    /* 캘린더를 맨 위에 */
-    .group_board_calendar {
-        order: 1;
-    }
-
-    /* 일정을 중간에 */
-    .group_board_schedule {
-        order: 2;
-    }
-
-    /* 채팅을 맨 아래에 */
-    .group_chat_list_box {
-        order: 3;
-    }
-
-    .board_member_row,
-    .group_board_calendar,
-    .group_board_schedule,
-    .group_chat_list_box {
-        padding: 6px;
-    }
-
-    /* 극소형 프로필 */
-    .board_my_profile,
-    .board_member_img {
-        width: 30px;
-        height: 30px;
-    }
-
-    .calendar_dates {
-        min-height: 80px;
-    }
-
-    .calendar_date {
-        padding: 1px;
-        min-height: 16px;
-        font-size: 8px;
-    }
-}
-
-/* ============================================
-   모달 반응형 스타일
-   ============================================ */
-
-/* 데스크톱 모달 */
-@media (min-width: 1024px) {
-    .create_post_modal_content,
-    .event_modal_content {
-        width: 85%;
-        max-width: 600px;
-    }
-
-    .post_modal .modal_content {
-        max-width: 1000px;
-    }
-}
-
-/* 태블릿 모달 */
-@media (min-width: 768px) and (max-width: 1023px) {
-    .create_post_modal_content,
-    .event_modal_content {
-        width: 90%;
-        max-width: 500px;
-        margin: 20px;
-        max-height: 85vh;
-    }
-
-    .post_modal .modal_content {
-        flex-direction: column;
-        max-height: 90vh;
-        max-width: 700px;
-    }
-
-    .modal_left {
-        min-height: 250px;
-        max-height: 45vh;
-    }
-
-    .modal_right {
-        width: 100%;
-        max-height: 45vh;
-    }
-
-    .modal_image {
-        border-radius: 15px 15px 0 0;
-    }
-}
-
-/* 모바일 모달 */
-@media (max-width: 767px) {
-    .create_post_modal_content,
-    .event_modal_content {
-        width: 95%;
-        margin: 10px;
-        max-height: 95vh;
-        border-radius: 12px;
-    }
-
-    .create_post_modal_header,
-    .create_post_modal_body,
-    .create_post_modal_footer,
-    .event_modal_header,
-    .event_modal_body,
-    .event_modal_footer {
-        padding: 15px;
-    }
-
-    .create_post_modal_footer,
-    .event_modal_footer {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .create_post_btn_cancel,
-    .create_post_btn_save,
-    .event_btn_cancel,
-    .event_btn_save {
-        width: 100%;
-        padding: 14px 20px;
-    }
-
-    .image_upload_placeholder {
-        padding: 40px 15px;
-    }
-
-    /* 모바일 게시물 모달 */
-    .post_modal .modal_content {
-        flex-direction: column;
-        max-height: 95vh;
-        margin: 10px;
-        border-radius: 12px;
-    }
-
-    .modal_left {
-        min-height: 200px;
-        max-height: 40vh;
-    }
-
-    .modal_right {
-        width: 100%;
-        max-height: 55vh;
-    }
-
-    .modal_image {
-        border-radius: 12px 12px 0 0;
-    }
-
-    .modal_header,
-    .modal_content_area,
-    .modal_actions {
-        padding: 12px 15px;
-    }
-}
-
-/* 작은 모바일 모달 */
-@media (max-width: 480px) {
-    .create_post_modal_content,
-    .event_modal_content {
-        width: 98%;
-        margin: 5px;
-        max-height: 98vh;
-        border-radius: 8px;
-    }
-
-    .create_post_modal_header h3,
-    .event_modal_header h3 {
-        font-size: 16px;
-    }
-
-    .create_post_modal_header,
-    .create_post_modal_body,
-    .create_post_modal_footer,
-    .event_modal_header,
-    .event_modal_body,
-    .event_modal_footer {
-        padding: 12px;
-    }
-
-    .image_upload_placeholder {
-        padding: 30px 10px;
-    }
-
-    .image_upload_placeholder span {
-        font-size: 14px;
-    }
-
-    .image_upload_placeholder p {
-        font-size: 12px;
-    }
-
-    /* 작은 모바일 게시물 모달 */
-    .post_modal .modal_content {
-        margin: 5px;
-        border-radius: 8px;
-    }
-
-    .modal_header,
-    .modal_content_area,
-    .modal_actions {
-        padding: 10px 12px;
-    }
-}
-
-/* ============================================
-   공통 애니메이션 키프레임
-   ============================================ */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes heartBeat {
-    0% { transform: scale(1); }
-    25% { transform: scale(1.3); }
-    50% { transform: scale(1.1); }
-    75% { transform: scale(1.25); }
-    100% { transform: scale(1); }
-}
-
-@keyframes bookmarkSave {
-    0% { transform: scale(1) translateY(0); }
-    50% { transform: scale(1.2) translateY(-2px); }
-    100% { transform: scale(1) translateY(0); }
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
-}
-
-/* ============================================
-   공통 호버 효과
-   ============================================ */
-.hover-scale {
-    transition: transform 0.2s ease;
-}
-
-.hover-scale:hover {
-    transform: scale(1.05);
-}
-
-.hover-lift {
-    transition: all 0.2s ease;
-}
-
-.hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.hover-grow {
-    transition: transform 0.2s ease;
-}
-
-.hover-grow:hover {
-    transform: scale(1.1);
-}
-
-/* ============================================
-   게시물 아이콘 영역 (하트, 북마크 등)
-   ============================================ */
-.board_svg_row {
+.group_board_schedule_title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 20px 10px;
+    margin-bottom: 15px;
 }
 
-.post_right_nav {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.group_board_schedule_title span:first-child {
+    font-size: 20px;
+    color: #212121;
+    font-weight: 600;
 }
 
-/* 아이콘 공통 스타일 */
-.post_heart_icon,
-.post_comment_icon,
-.post_share_icon,
-.post_bookmark_icon {
-    width: 24px;
-    height: 24px;
+.more_btn {
+    font-size: 12px;
+    color: #8e8e8e;
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    border: none;
-    background: none;
-    padding: 8px;
-    border-radius: 50%;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
-.post_heart_icon:hover,
-.post_comment_icon:hover,
-.post_share_icon:hover,
-.post_bookmark_icon:hover {
-    transform: scale(1.2);
+.more_btn:hover {
+    color: #387FEB;
     background: #f8f9fa;
 }
 
-/* 하트 아이콘 */
-.post_heart_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.post_heart_icon.liked svg {
-    fill: #ff3040;
-    stroke: #ff3040;
-    animation: heartBeat 0.6s ease-in-out;
-}
-
-/* 북마크 아이콘 */
-.post_bookmark_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: #212121;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-}
-
-.post_bookmark_icon.bookmarked svg {
-    fill: #212121;
-    stroke: #212121;
-    animation: bookmarkSave 0.4s ease-in-out;
-}
-
-/* 댓글 아이콘 */
-.post_comment_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: transparent;
-    stroke-width: 2;
-}
-
-/* 공유 아이콘 */
-.post_share_icon svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: transparent;
-    stroke-width: 2;
-}
-
-/* 게시물 내용 */
-.post_content_section {
-    padding: 0 20px 20px;
+.board_schedule {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
-.post_who_like {
-    font-size: 14px;
-    font-weight: 600;
-    color: #212121;
-}
-
-.post_content {
-    font-size: 14px;
-    color: #212121;
-}
-
-.post_username {
-    font-weight: 600;
-    margin-right: 8px;
-    color: #212121;
-}
-
-.post_text {
-    line-height: 1.4;
-    color: #666666;
-}
-
-.post_comment_count {
-    font-size: 14px;
-    color: #8e8e8e;
+.board_schedule_list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #F5F6F8;
+    border-radius: 10px;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    margin-bottom: 8px;
+    animation: slideUp 0.4s ease;
 }
 
-.post_comment_count:hover {
+.board_schedule_list:hover {
+    background-color: #e3f2fd;
+    border-color: #387FEB;
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.schedule_doc {
+    width: 8px;
+    height: 8px;
+    background-color: #EDA9DD;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: scaleIn 0.3s ease;
+}
+
+.schedule_info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.schedule_date {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.schedule_title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #212121;
+}
+
+.no_events {
+    text-align: center;
+    padding: 30px 20px;
+    color: #8e8e8e;
+}
+
+.create_event_btn {
+    background: linear-gradient(45deg, #387FEB, #2968c7);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.create_event_btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   그룹 채팅 영역
+   ============================================ */
+.group_chat_list_box {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    animation: slideUp 0.6s ease 0.5s both;
+}
+
+.group_chat_title_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.group_chat_title {
+    font-size: 20px;
+    color: #212121;
+    font-weight: 600;
+}
+
+.group_chat_add_btn_icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 8px;
+    border-radius: 50%;
     color: #387FEB;
+}
+
+.group_chat_add_btn_icon:hover {
+    background: #e3f2fd;
+    transform: scale(1.1);
+}
+
+.group_chatting_room {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+    animation: slideUp 0.4s ease;
+}
+
+.group_chatting_room:hover {
+    background-color: #f8f9fa;
+    border-color: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.group_chatting_room_img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.2s ease;
+}
+
+.group_chatting_room:hover .group_chatting_room_img {
+    transform: scale(1.05);
+}
+
+/* 개별 채팅방 이미지 */
+.group_chatting_room:nth-child(2) .group_chatting_room_img {
+    background-image: url('https://images.unsplash.com/photo-1552053831-71594a27632d?w=45&h=45&fit=crop&crop=face');
+}
+
+.group_chatting_room:nth-child(3) .group_chatting_room_img {
+    background-image: url('https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=45&h=45&fit=crop&crop=face');
+}
+
+.group_chatting_room:nth-child(4) .group_chatting_room_img {
+    background-image: url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+}
+
+.group_chatting_info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.group_chatting_title {
+    font-size: 15px;
+    color: #212121;
+    font-weight: 500;
+}
+
+.group_chatting_member_count {
+    font-size: 12px;
+    color: #B7B7B7;
 }
 
 /* ============================================
@@ -2419,20 +662,11 @@
 }
 
 /* 검색바 */
-.member_management_container .search_header {
-    padding: 15px 20px;
-    background: #ffffff;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 .sort_header{
     display: flex;
     padding: 20px;
     justify-content: space-between;
 }
-
 
 .member_management_container .search_input {
     flex: 1;
@@ -2843,22 +1077,1613 @@
     background-color: #f8f9fa;
 }
 
-/* Google 인증 섹션 */
-.google_auth_section {
-    text-align: center;
-    padding: 15px 0;
-    border-top: 1px solid #f0f0f0;
+/* 모달 컨테이너 - 그룹 가입 */
+.modal_container {
+    background: #ffffff;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.4s ease;
 }
 
-.google_signin_btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #4285f4;
-    color: #ffffff;
+.modal_step {
+    padding: 20px;
+}
+
+.modal_header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal_title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 8px;
+}
+
+.modal_subtitle {
+    font-size: 14px;
+    color: #8e8e8e;
+    margin-bottom: 16px;
+}
+
+.profile_selection_section {
+    margin-bottom: 20px;
+}
+
+.profile_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.modal_buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn_secondary,
+.btn_primary {
+    padding: 12px 24px;
     border: none;
     border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 14px
+    transition: all 0.2s ease;
+}
+
+.btn_secondary {
+    background: #f5f5f5;
+    color: #B7B7B7;
+}
+
+.btn_secondary:hover {
+    background: #e0e0e0;
+    color: #666666;
+}
+
+.btn_primary {
+    background: #387FEB;
+    color: #ffffff;
+}
+
+.btn_primary:hover:not(:disabled) {
+    background: #2968c7;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn_primary:disabled {
+    background: #B7B7B7;
+    color: #ffffff;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ============================================
+   반응형 디자인 - 개선된 버전
+   ============================================ */
+
+/* 대형 데스크톱 (1920px 이상) */
+@media (min-width: 1920px) {
+    .group_board_wrap {
+        max-width: 1600px;
+        margin: 15px 320px 0 140px; /* 여백 증가 */
+    }
+}
+
+/* 표준 데스크톱 (1600px - 1919px) */
+@media (min-width: 1600px) and (max-width: 1919px) {
+    .group_board_wrap {
+        max-width: 1460px;
+        margin: 15px 340px 0 130px;
+    }
+}
+
+/* 중간 데스크톱 (1400px - 1599px) */
+@media (min-width: 1400px) and (max-width: 1599px) {
+    .group_board_wrap {
+        max-width: 1300px;
+        margin: 15px 320px 0 120px; /* 기본 여백 유지 */
+    }
+
+    .group_board_left {
+        width: 70%;
+    }
+
+    .group_board_right {
+        width: 30%;
+    }
+}
+
+/* 소형 데스크톱 (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .group_board_wrap {
+        max-width: 1100px;
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 약간 줄임 */
+        gap: 25px;
+    }
+
+    .group_board_left {
+        width: 68%;
+    }
+
+    .group_board_right {
+        width: 32%;
+    }
+
+    .group_board_title_name {
+        font-size: 22px;
+    }
+
+    .board_post_img {
+        height: 450px;
+    }
+}
+
+/* 큰 태블릿 및 소형 노트북 (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .group_board_wrap {
+        max-width: 900px;
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 더 줄임 */
+        gap: 20px;
+        flex-direction: column; /* 세로 배치로 변경 */
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_name {
+        font-size: 20px;
+    }
+
+    .board_post_img {
+        height: 400px;
+    }
+
+    /* 오른쪽 섹션들을 세로로 재배치 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* 캘린더만 위에 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 아래쪽으로 배치 */
+    .group_board_schedule,
+    .group_chat_list_box {
+        order: 2;
+    }
+
+    /* 일정과 채팅을 가로로 나란히 배치 */
+    .bottom_sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .group_board_schedule {
+        grid-column: 1;
+    }
+
+    .group_chat_list_box {
+        grid-column: 2;
+    }
+}
+
+/* 중간 태블릿 (768px - 1023px) */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .group_board_wrap {
+        margin: 15px 320px 0 120px; /* 오른쪽 여백 대폭 줄임 */
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 18px 22px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .group_board_title_name {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .board_post_img {
+        height: 350px;
+    }
+
+    /* 오른쪽 섹션들 배치 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 먼저 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 가로로 나란히 아래 배치 */
+    .bottom_sections_container {
+        order: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .group_board_schedule {
+        grid-column: 1;
+    }
+
+    .group_chat_list_box {
+        grid-column: 2;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 15px;
+    }
+
+    /* 캘린더 그리드 간격 조정 */
+    .calendar_dates {
+        min-height: 180px;
+    }
+
+    .calendar_date {
+        padding: 6px 3px;
+        min-height: 28px;
+        font-size: 12px;
+    }
+}
+
+/* 작은 태블릿 (600px - 767px) */
+@media (min-width: 600px) and (max-width: 700px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 대폭 줄임: 150px → 60px */
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 15px 20px;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .group_board_title_name {
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+
+    .group_board_member_count {
+        font-size: 13px;
+    }
+
+    .board_post_img {
+        height: 280px;
+    }
+
+    /* 오른쪽 섹션들 배치 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 먼저 배치 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정과 채팅을 세로로 아래 배치 (작은 화면이므로) */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 12px;
+    }
+
+    /* 캘린더 더 컴팩트하게 */
+    .calendar_dates {
+        min-height: 150px;
+    }
+
+    .calendar_date {
+        padding: 4px 2px;
+        min-height: 24px;
+        font-size: 11px;
+    }
+
+    /* 스케줄 리스트 컴팩트 */
+    .board_schedule_list {
+        padding: 10px;
+    }
+
+    .schedule_title {
+        font-size: 12px;
+    }
+
+    .schedule_date {
+        font-size: 11px;
+    }
+}
+
+/* 큰 모바일 (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 더 줄임: 80px → 40px */
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 12px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .group_board_title_name {
+        font-size: 15px;
+    }
+
+    .group_board_member_count {
+        font-size: 12px;
+    }
+
+    .board_post_img {
+        height: 250px;
+    }
+
+    /* 오른쪽 섹션들 순서 조정 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 10px;
+    }
+
+    /* 작은 화면에서 캘린더 */
+    .calendar_header span {
+        font-size: 16px;
+    }
+
+    .calendar_dates {
+        min-height: 120px;
+    }
+
+    .calendar_date {
+        padding: 3px 1px;
+        min-height: 20px;
+        font-size: 10px;
+    }
+
+    /* 채팅 리스트 컴팩트 */
+    .group_chatting_room_img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .group_chatting_title {
+        font-size: 13px;
+    }
+
+    .group_chatting_member_count {
+        font-size: 11px;
+    }
+}
+
+/* 작은 모바일 (320px - 479px) */
+@media (min-width: 320px) and (max-width: 479px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 최소화: 40px → 20px */
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .group_board_title_name {
+        font-size: 14px;
+    }
+
+    .group_board_member_count {
+        font-size: 11px;
+    }
+
+    .board_post_img {
+        height: 200px;
+    }
+
+    /* 오른쪽 섹션들 순서 명시 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 8px;
+    }
+
+    /* 매우 컴팩트한 캘린더 */
+    .calendar_header span {
+        font-size: 14px;
+    }
+
+    .calendar_dates {
+        min-height: 100px;
+        gap: 1px;
+    }
+
+    .calendar_date {
+        padding: 2px 1px;
+        min-height: 18px;
+        font-size: 9px;
+    }
+
+    /* 최소 크기 채팅 */
+    .group_chatting_room {
+        padding: 8px;
+    }
+
+    .group_chatting_room_img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .group_chatting_title {
+        font-size: 12px;
+    }
+
+    .group_chatting_member_count {
+        font-size: 10px;
+    }
+}
+
+/* 극소형 모바일 (최대 319px) */
+@media (max-width: 319px) {
+    .group_board_wrap {
+        margin: 15px 0 0 120px; /* 오른쪽 여백 최소: 20px → 10px */
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .group_board_left,
+    .group_board_right {
+        width: 100%;
+    }
+
+    .group_board_title_box {
+        padding: 8px 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .group_board_title_name {
+        font-size: 13px;
+    }
+
+    .group_board_member_count {
+        font-size: 10px;
+    }
+
+    .board_post_img {
+        height: 180px;
+    }
+
+    /* 오른쪽 섹션들 순서 명시 */
+    .group_board_right {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* 캘린더를 맨 위에 */
+    .group_board_calendar {
+        order: 1;
+    }
+
+    /* 일정을 중간에 */
+    .group_board_schedule {
+        order: 2;
+    }
+
+    /* 채팅을 맨 아래에 */
+    .group_chat_list_box {
+        order: 3;
+    }
+
+    .board_member_row,
+    .group_board_calendar,
+    .group_board_schedule,
+    .group_chat_list_box {
+        padding: 6px;
+    }
+
+    .calendar_dates {
+        min-height: 80px;
+    }
+
+    .calendar_date {
+        padding: 1px;
+        min-height: 16px;
+        font-size: 8px;
+    }
+}
+
+/* ============================================
+   모달 반응형 스타일
+   ============================================ */
+
+/* 데스크톱 모달 */
+@media (min-width: 1024px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 85%;
+        max-width: 600px;
+    }
+
+    .post_modal .modal_content {
+        max-width: 1000px;
+    }
+}
+
+/* 태블릿 모달 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 90%;
+        max-width: 500px;
+        margin: 20px;
+        max-height: 85vh;
+    }
+
+    .post_modal .modal_content {
+        flex-direction: column;
+        max-height: 90vh;
+        max-width: 700px;
+    }
+
+    .modal_left {
+        min-height: 250px;
+        max-height: 45vh;
+    }
+
+    .modal_right {
+        width: 100%;
+        max-height: 45vh;
+    }
+
+    .modal_image {
+        border-radius: 15px 15px 0 0;
+    }
+}
+
+/* 모바일 모달 */
+@media (max-width: 767px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 95%;
+        margin: 10px;
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+
+    .create_post_modal_header,
+    .create_post_modal_body,
+    .create_post_modal_footer,
+    .event_modal_header,
+    .event_modal_body,
+    .event_modal_footer {
+        padding: 15px;
+    }
+
+    .create_post_modal_footer,
+    .event_modal_footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .create_post_btn_cancel,
+    .create_post_btn_save,
+    .event_btn_cancel,
+    .event_btn_save {
+        width: 100%;
+        padding: 14px 20px;
+    }
+
+    .image_upload_placeholder {
+        padding: 40px 15px;
+    }
+
+    /* 모바일 게시물 모달 */
+    .post_modal .modal_content {
+        flex-direction: column;
+        max-height: 95vh;
+        margin: 10px;
+        border-radius: 12px;
+    }
+
+    .modal_left {
+        min-height: 200px;
+        max-height: 40vh;
+    }
+
+    .modal_right {
+        width: 100%;
+        max-height: 55vh;
+    }
+
+    .modal_image {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .modal_header,
+    .modal_content_area,
+    .modal_actions {
+        padding: 12px 15px;
+    }
+}
+
+/* 작은 모바일 모달 */
+@media (max-width: 480px) {
+    .create_post_modal_content,
+    .event_modal_content {
+        width: 98%;
+        margin: 5px;
+        max-height: 98vh;
+        border-radius: 8px;
+    }
+
+    .create_post_modal_header h3,
+    .event_modal_header h3 {
+        font-size: 16px;
+    }
+
+    .create_post_modal_header,
+    .create_post_modal_body,
+    .create_post_modal_footer,
+    .event_modal_header,
+    .event_modal_body,
+    .event_modal_footer {
+        padding: 12px;
+    }
+
+    .image_upload_placeholder {
+        padding: 30px 10px;
+    }
+
+    .image_upload_placeholder span {
+        font-size: 14px;
+    }
+
+    .image_upload_placeholder p {
+        font-size: 12px;
+    }
+
+    /* 작은 모바일 게시물 모달 */
+    .post_modal .modal_content {
+        margin: 5px;
+        border-radius: 8px;
+    }
+
+    .modal_header,
+    .modal_content_area,
+    .modal_actions {
+        padding: 10px 12px;
+    }
+}
+
+/* ============================================
+   공통 애니메이션 키프레임
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1.1); }
+    75% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+@keyframes bookmarkSave {
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.2) translateY(-2px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.board_write_time {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.post_menu_btn {
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+    padding: 8px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    z-index: 1000;
+    display: inline-block;
+    width: 28px;
+}
+
+.post_menu_btn:hover {
+    background: #f8f9fa;
+    transform: scale(1.1);
+}
+
+.post_menu_options {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px; /* 버튼보다 아래로! */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 400;
+    min-width: 100px;
+    overflow: hidden;
+}
+
+.post_menu_options button {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* 게시물 이미지 */
+.board_post_img {
+    width: 100%;
+    height: 500px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    overflow: hidden;
+}
+
+.board_post_img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.board_post_img:hover img {
+    transform: scale(1.02);
+}
+
+/* ============================================
+   게시물 아이콘 영역 (하트, 북마크 등)
+   ============================================ */
+.board_svg_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px 10px;
+}
+
+.post_right_nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 아이콘 공통 스타일 */
+.post_heart_icon,
+.post_comment_icon,
+.post_bookmark_icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: none;
+    background: none;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.post_heart_icon:hover,
+.post_comment_icon:hover,
+.post_bookmark_icon:hover {
+    transform: scale(1.2);
+    background: #f8f9fa;
+}
+
+/* 하트 아이콘 */
+.post_heart_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.post_heart_icon.liked svg {
+    fill: #ff3040;
+    stroke: #ff3040;
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* 북마크 아이콘 */
+.post_bookmark_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.post_bookmark_icon.bookmarked svg {
+    fill: #212121;
+    stroke: #212121;
+    animation: bookmarkSave 0.4s ease-in-out;
+}
+
+/* 댓글 아이콘 */
+.post_comment_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: transparent;
+    stroke-width: 2;
+}
+
+/* 게시물 내용 */
+.post_content_section {
+    padding: 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.post_who_like {
+    font-size: 14px;
+    font-weight: 600;
+    color: #212121;
+}
+
+.post_content {
+    font-size: 14px;
+    color: #212121;
+}
+
+.post_username {
+    font-weight: 600;
+    margin-right: 8px;
+    color: #212121;
+}
+
+.post_text {
+    line-height: 1.4;
+    color: #666666;
+}
+
+.post_comment_count {
+    font-size: 14px;
+    color: #8e8e8e;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.post_comment_count:hover {
+    color: #387FEB;
+}
+
+/* ============================================
+   모달 공통 스타일
+   ============================================ */
+.post_modal,
+.create_post_modal,
+.event_modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.post_modal.show,
+.create_post_modal.show,
+.event_modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ============================================
+   게시물 보기 모달
+   ============================================ */
+.post_modal .modal_content {
+    background: #ffffff;
+    border-radius: 15px;
+    max-width: 1000px;
+    max-height: 90vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.4s ease;
+}
+
+.modal_close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10001;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.modal_close:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.modal_left {
+    flex: 1;
+    min-height: 500px;
+    max-height: 80vh;
+}
+
+.modal_image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px 0 0 15px;
+    overflow: hidden;
+}
+
+.modal_main_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.modal_main_image:hover {
+    transform: scale(1.02);
+}
+
+.modal_right {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #f0f0f0;
+}
+
+.modal_header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal_user_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal_user_details {
+    display: flex;
+    gap: 10px;
+}
+
+.modal_username {
+    font-weight: 600;
+    font-size: 14px;
+    color: #212121;
+}
+
+.modal_time {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.modal_menu_btn {
+    font-size: 16px;
+    color: #8e8e8e;
+    cursor: pointer;
+    padding: 8px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.modal_menu_btn:hover {
+    background: #f8f9fa;
+    color: #212121;
+}
+
+.modal_content_area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.modal_post_content {
+    padding: 10px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    animation: slideUp 0.4s ease;
+}
+
+.modal_text {
+    flex: 1;
+}
+
+.modal_post_username {
+    font-weight: 600;
+    margin-right: 8px;
+    font-size: 14px;
+    color: #212121;
+}
+
+.modal_post_text {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #666666;
+}
+
+.modal_comments {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment_item {
+    display: flex;
+    gap: 12px;
+    animation: slideUp 0.3s ease;
+}
+
+.comment_text {
+    flex: 1;
+}
+
+.comment_username {
+    font-weight: 600;
+    margin-right: 8px;
+    font-size: 13px;
+    color: #212121;
+}
+
+.comment_menu_btn {
+    position: relative;
+    top: 0;
+    left: 75%;
+
+    cursor: pointer;
+}
+
+.comment_menu_toggle {
+    width: 24px;
+    height: 24px;
+    fill: #cdcdcd;
+    vertical-align: middle;
+}
+
+.comment_menu_options {
+    display: none;
+    position: absolute;
+    top: 22px;
+    right: 0;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 100;
+    padding: 4px 0;
+}
+
+.comment_menu_options button {
+    display: block;
+    width: 80px;
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    text-align: left;
+    cursor: pointer;
+    color: #555;
+}
+
+.comment_menu_options button:hover {
+    background: #f7f7f7;
+}
+
+.modal_actions {
+    border-top: 1px solid #f0f0f0;
+    padding: 15px 20px;
+}
+
+.modal_buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.modal_heart_icon,
+.modal_comment_icon,
+.modal_bookmark_icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: none;
+    background: none;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.modal_heart_icon:hover,
+.modal_comment_icon:hover,
+.modal_bookmark_icon:hover {
+    transform: scale(1.2);
+    background: #f8f9fa;
+}
+
+/* 모달 하트 아이콘 */
+.modal_heart_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.modal_heart_icon.liked svg {
+    fill: #ff3040;
+    stroke: #ff3040;
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* 모달 북마크 아이콘 */
+.modal_bookmark_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #212121;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.modal_bookmark_icon.bookmarked svg {
+    fill: #212121;
+    stroke: #212121;
+    animation: bookmarkSave 0.4s ease-in-out;
+}
+
+.modal_likes {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #212121;
+}
+
+.modal_comment_input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.comment_input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px 0;
+    background: transparent;
+    color: #212121;
+    transition: all 0.2s ease;
+}
+
+.comment_input::placeholder {
+    color: #8e8e8e;
+}
+
+.comment_input:focus {
+    border-bottom: 1px solid #387FEB;
+}
+
+.comment_submit {
+    background: none;
+    border: none;
+    color: #387FEB;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 0;
+    transition: color 0.2s ease;
+}
+
+.comment_submit:hover {
+    color: #2968c7;
+}
+
+/* ============================================
+   게시글 작성 모달
+   ============================================ */
+.create_post_modal_content {
+    background: #ffffff;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.4s ease;
+}
+
+.create_post_modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    border-radius: 15px 15px 0 0;
+}
+
+.create_post_modal_header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #212121;
+}
+
+.create_post_modal_close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #8e8e8e;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.create_post_modal_close:hover {
+    background: #f8f9fa;
+    color: #212121;
+    transform: scale(1.1);
+}
+
+.create_post_modal_body {
+    padding: 20px;
+}
+
+.image_upload_section {
+    margin-bottom: 20px;
+}
+
+.image_preview_container {
+    position: relative;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.image_preview_container:hover {
+    border-color: #387FEB;
+    background-color: #f8f9fa;
+}
+
+.image_upload_placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.image_upload_placeholder:hover {
+    background-color: #f8f9fa;
+}
+
+.upload_icon {
+    margin-bottom: 15px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.image_upload_placeholder:hover .upload_icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.image_upload_placeholder span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+    margin-bottom: 8px;
+}
+
+.image_upload_placeholder p {
+    font-size: 14px;
+    color: #8e8e8e;
+    margin: 0;
+}
+
+.image_preview {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.image_preview:hover {
+    transform: scale(1.02);
+}
+
+.image_actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.image_preview_container:hover .image_actions {
+    opacity: 1;
+}
+
+.btn_change_image,
+.btn_remove_image {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_change_image {
+    background: rgba(255, 255, 255, 0.9);
+    color: #212121;
+}
+
+.btn_change_image:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn_remove_image {
+    background: rgba(255, 107, 107, 0.9);
+    color: #ffffff;
+}
+
+.btn_remove_image:hover {
+    background: #387FEB;
+    transform: translateY(-1px);
+}
+
+.create_post_form_group {
+    margin-bottom: 20px;
+    animation: slideUp 0.4s ease;
+}
+
+.create_post_form_group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #212121;
+    font-size: 14px;
+}
+
+.create_post_form_group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #f0f0f0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+    color: #212121;
 }
