@@ -13,6 +13,9 @@ import pit.pet.Board.Repository.BoardLikeRepository;
 import pit.pet.Board.Repository.BoardRepository;
 import pit.pet.Group.entity.GroupTable;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Service
@@ -106,4 +109,22 @@ public class BoardManageService {
                 .orElseThrow(() -> new IllegalArgumentException("강아지 없음"));
         return bookmarkRepository.findByDogAndBoard(dog, board).isPresent();
     }
+
+    public String calculateTimeAgo(LocalDateTime createdAt) {
+        if (createdAt == null) return "";
+        Duration duration = Duration.between(createdAt, LocalDateTime.now());
+
+        if (duration.toMinutes() < 1) {
+            return "방금 전";
+        } else if (duration.toHours() < 1) {
+            return duration.toMinutes() + "분 전";
+        } else if (duration.toDays() < 1) {
+            return duration.toHours() + "시간 전";
+        } else if (duration.toDays() < 7) {
+            return duration.toDays() + "일 전";
+        } else {
+            return createdAt.toLocalDate().toString(); // 예: 2025-06-07
+        }
+    }
+
 }

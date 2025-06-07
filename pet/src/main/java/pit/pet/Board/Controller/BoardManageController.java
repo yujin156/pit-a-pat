@@ -54,6 +54,8 @@ public class BoardManageController {
                     post.getImages().stream().map(BoardImgTable::getBiurl).collect(Collectors.toList()) :
                     new ArrayList<>()
             );
+            map.put("timeAgo", boardManageService.calculateTimeAgo(post.getBnowtime()));
+
             map.put("commentCount", post.getCommentCount());
             // 좋아요/북마크: dno 없으면 false 반환됨
             map.put("liked", boardManageService.isBoardLiked(post.getBno(), dno));

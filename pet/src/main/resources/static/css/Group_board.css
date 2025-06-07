@@ -1078,95 +1078,95 @@
 }
 
 /* 모달 컨테이너 - 그룹 가입 */
-.modal_container {
-    background: #ffffff;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: scaleIn 0.4s ease;
-}
+/*.modal_container {*/
+/*    background: #ffffff;*/
+/*    border-radius: 15px;*/
+/*    width: 90%;*/
+/*    max-width: 500px;*/
+/*    max-height: 90vh;*/
+/*    overflow-y: auto;*/
+/*    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);*/
+/*    animation: scaleIn 0.4s ease;*/
+/*}*/
 
-.modal_step {
-    padding: 20px;
-}
+/*.modal_step {*/
+/*    padding: 20px;*/
+/*}*/
 
-.modal_header {
-    text-align: center;
-    margin-bottom: 20px;
-}
+/*.modal_header {*/
+/*    text-align: center;*/
+/*    margin-bottom: 20px;*/
+/*}*/
 
-.modal_title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #212121;
-    margin-bottom: 8px;
-}
+/*.modal_title {*/
+/*    font-size: 20px;*/
+/*    font-weight: 600;*/
+/*    color: #212121;*/
+/*    margin-bottom: 8px;*/
+/*}*/
 
-.modal_subtitle {
-    font-size: 14px;
-    color: #8e8e8e;
-    margin-bottom: 16px;
-}
+/*.modal_subtitle {*/
+/*    font-size: 14px;*/
+/*    color: #8e8e8e;*/
+/*    margin-bottom: 16px;*/
+/*}*/
 
-.profile_selection_section {
-    margin-bottom: 20px;
-}
+/*.profile_selection_section {*/
+/*    margin-bottom: 20px;*/
+/*}*/
 
-.profile_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
+/*.profile_grid {*/
+/*    display: grid;*/
+/*    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));*/
+/*    gap: 15px;*/
+/*    margin-bottom: 20px;*/
+/*}*/
 
-.modal_buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
+/*.modal_buttons {*/
+/*    display: flex;*/
+/*    gap: 10px;*/
+/*    justify-content: flex-end;*/
+/*}*/
 
-.btn_secondary,
-.btn_primary {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+/*.btn_secondary,*/
+/*.btn_primary {*/
+/*    padding: 12px 24px;*/
+/*    border: none;*/
+/*    border-radius: 6px;*/
+/*    font-size: 14px;*/
+/*    font-weight: 500;*/
+/*    cursor: pointer;*/
+/*    transition: all 0.2s ease;*/
+/*}*/
 
-.btn_secondary {
-    background: #f5f5f5;
-    color: #B7B7B7;
-}
+/*.btn_secondary {*/
+/*    background: #f5f5f5;*/
+/*    color: #B7B7B7;*/
+/*}*/
 
-.btn_secondary:hover {
-    background: #e0e0e0;
-    color: #666666;
-}
+/*.btn_secondary:hover {*/
+/*    background: #e0e0e0;*/
+/*    color: #666666;*/
+/*}*/
 
-.btn_primary {
-    background: #387FEB;
-    color: #ffffff;
-}
+/*.btn_primary {*/
+/*    background: #387FEB;*/
+/*    color: #ffffff;*/
+/*}*/
 
-.btn_primary:hover:not(:disabled) {
-    background: #2968c7;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
+/*.btn_primary:hover:not(:disabled) {*/
+/*    background: #2968c7;*/
+/*    transform: translateY(-1px);*/
+/*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);*/
+/*}*/
 
-.btn_primary:disabled {
-    background: #B7B7B7;
-    color: #ffffff;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
+/*.btn_primary:disabled {*/
+/*    background: #B7B7B7;*/
+/*    color: #ffffff;*/
+/*    cursor: not-allowed;*/
+/*    transform: none;*/
+/*    box-shadow: none;*/
+/*}*/
 
 /* ============================================
    반응형 디자인 - 개선된 버전

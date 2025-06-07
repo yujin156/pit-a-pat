@@ -417,31 +417,34 @@
     </div>
 </div>
 <!-- 그룹 가입 강아지 모달 -->
-<div class="modal_overlay" id="applyToGroupModal" style="display: none;" onclick="closeApplyModal()">
-    <div class="modal_container" onclick="event.stopPropagation()">
-        <div class="modal_step" id="applyModalStep_board">
-            <div class="modal_header">
-                <h2 class="modal_title">그룹 가입 신청</h2>
-                <p class="modal_subtitle">이 그룹에 어떤 강아지로 가입하시겠어요?</p>
-                <p>가입 대상 그룹: <span id="applyModalTargetGroupName_board"></span></p>
-            </div>
-            <div class="profile_selection_section">
-                <div class="profile_grid" id="applyModalProfileGrid_board">
-                    <p>강아지 목록을 불러오는 중...</p>
-                </div>
-            </div>
-            <div class="modal_buttons">
-                <button type="button" class="btn_secondary" onclick="closeApplyModal()">취소</button>
-                <button type="button" class="btn_primary" id="submitApplyBtn_board"
-                        onclick="submitGroupApplicationOnBoard(event)" disabled>가입 신청하기
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<!--<div class="modal_overlay" id="applyToGroupModal" style="display: none;" onclick="closeApplyModal()">-->
+<!--    <div class="modal_container" onclick="event.stopPropagation()">-->
+<!--        <div class="modal_step" id="applyModalStep_board">-->
+<!--            <div class="modal_header">-->
+<!--                <h2 class="modal_title">그룹 가입 신청</h2>-->
+<!--                <p class="modal_subtitle">이 그룹에 어떤 강아지로 가입하시겠어요?</p>-->
+<!--                <p>가입 대상 그룹: <span id="applyModalTargetGroupName_board"></span></p>-->
+<!--            </div>-->
+<!--            <div class="profile_selection_section">-->
+<!--                <div class="profile_grid" id="applyModalProfileGrid_board">-->
+<!--                    <p>강아지 목록을 불러오는 중...</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="modal_buttons">-->
+<!--                <button type="button" class="btn_secondary" onclick="closeApplyModal()">취소</button>-->
+<!--                <button type="button" class="btn_primary" id="submitApplyBtn_board"-->
+<!--                        onclick="submitGroupApplicationOnBoard(event)" disabled>가입 신청하기-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 <!--<script defer th:src="@{/js/Group_board.js}"></script>-->
-<script defer src="/js/Group_board.js"></script>
-<script th:src="@{/js/Side_menu.js}"></script>
+<script th:src="@{/js/Login_center.js}" defer></script>
+<script src="/js/Group_board.js"></script>
+<script defer th:src="@{/js/Side_menu.js}"></script>
+
+<script defer th:src="@{/js/AddFamily_Modal.js}"></script>
 </body>
 </html>
