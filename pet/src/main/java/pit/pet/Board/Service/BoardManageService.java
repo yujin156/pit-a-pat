@@ -30,7 +30,7 @@ public class BoardManageService {
 
     @Transactional(readOnly = true)
     public List<BoardTable> getPostsByGroup(Long gno) {
-        return boardRepository.findByGroup_Gno(gno);
+        return boardRepository.findByGroupGnoOrderByBnowtimeDesc(gno);
     }
 
     // ✅ 좋아요 토글

@@ -14,6 +14,9 @@ public interface BoardRepository extends JpaRepository<BoardTable, Long> {
     // 특정 게시판에 포함된 게시글 목록
     List<BoardTable> findByGroup_Gno(Long gno);
 
+    // 특정 게시판에 포함된 최신순 게시글 목록
+    List<BoardTable> findByGroupGnoOrderByBnowtimeDesc(Long gno);
+
     //특정 그룹에 있는 게시글 목록
     List<BoardTable> findByGroup(GroupTable group);
     List<BoardTable> findByWriterdogIn(List<Dog> dogs);
