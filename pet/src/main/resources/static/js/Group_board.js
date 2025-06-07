@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            posts = [...data].reverse();  // ✅ 최신글이 위로
-            createPosts();                   // ✅ 글쓰기 아래로 밀리지 않게 insert
+            posts = data;
+            createPosts();
         })
         .catch(error => console.error("게시글 로딩 실패:", error));
 
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch(`/board/api/groups/${currentGnoForReload}/posts?ts=${Date.now()}`)
                     .then(res => res.json())
                     .then(updatedPosts => {
-                        posts = [...updatedPosts].reverse();
+                        posts = updatedPosts;
                         createPosts();
                     })
                     .catch(err => console.error("게시글 목록 업데이트 실패:", err));
@@ -350,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const addPostSection = document.querySelector('.board_add_post');
 
-        for (let i = 0; i < posts.length; i++) {
-            const postElement = createPostElement(posts[i], i);
+        for (let i = posts.length - 1; i >= 0; i--) {
+            const postElement = createPostElement(posts[i], posts.length - 1 - i); // ⭐️ index 재정렬
             addPostSection.insertAdjacentElement('afterend', postElement);
         }
     }
