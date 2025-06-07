@@ -386,9 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="group_boar_post_writer">
                 <div class="group_board_writer">
                     <div class="post_user_info">
-                        <div class="post_profile_img">
-                            <img src="${post.userProfile}" alt="${post.writerDogName}" onerror="this.src='https://picsum.photos/40/40'"">
-                        </div>
                         <div class="post_user_details">
                             <div class="board_write_user">${post.writerDogName}</div>
                             <span class="board_write_time">${post.timeAgo}</span>
@@ -462,9 +459,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const imagesHtml = post.images.map(url => `<img src="${url}" alt="첨부 이미지" class="modal_main_image"/>`).join('');
         const comment = comments[index];
 
-        const profileUrl = comment?.profileUrl || '/images/default_profile.jpg';
-        const dogName = comment?.dogName || '알 수 없음';
-
         modal.className = 'post_modal';
         modal.innerHTML = `
             <div class="modal_overlay">
@@ -478,9 +472,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="modal_right">
                         <div class="modal_header">
                             <div class="modal_user_info">
-                                <div class="modal_profile">
-                                    <img src="${profileUrl}" alt="${dogName}">
-                                </div>
                                 <div class="modal_user_details">
                                     <div class="modal_username">${post.writerDogName}</div>
                                     <div class="modal_time">${post.timeAgo}</div>
@@ -490,9 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="modal_content_area">
                             <div class="modal_post_content">
-                                <div class="modal_profile_small">
-                                    <img src="${profileUrl}" alt="${dogName}">
-                                </div>
                                 <div class="modal_text">
                                     <span class="modal_post_username">${post.writerDogName}</span>
                                     <span class="modal_post_text">${post.bcontent}</span>
@@ -563,9 +551,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
                     commentItem.innerHTML = `
-                    <div class="comment_profile">
-                        <img src="${commenterProfileUrl}" alt="${commenterDogName}" onerror="this.src='https://picsum.photos/30/30'">
-                    </div>
                     <div class="comment_text">
                         <span class="comment_username">${commenterDogName}</span>
                         <span>${commentText}</span>
@@ -746,9 +731,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         const commentsDiv = modal.querySelector('.modal_comments');
                         const commentHtml = `
                 <div class="comment_item" data-cno="${data.bcno}">
-                    <div class="comment_profile">
-                        <img src="/img/default-profile.jpg" alt="user">
-                    </div>
                     <div class="comment_text">
                         <span class="comment_username">${data.dogName}</span>
                         <span>${data.bccomment}</span>
