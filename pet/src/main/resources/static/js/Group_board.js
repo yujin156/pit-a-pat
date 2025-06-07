@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const addPostSection = document.querySelector('.board_add_post');
 
         for (let i = posts.length - 1; i >= 0; i--) {
-            const postElement = createPostElement(posts[i], posts.length - 1 - i); // ⭐️ index 재정렬
+            const postElement = createPostElement(posts[i], i);
             addPostSection.insertAdjacentElement('afterend', postElement);
         }
     }
