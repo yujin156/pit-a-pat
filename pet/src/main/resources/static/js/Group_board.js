@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const commentSubmitBtn = document.querySelector('.comment_submit');
     currentGno = window.location.pathname.split("/").pop();
 
-    loadMyGroupDogs(gno);
+    // loadMyGroupDogs(gno);
 
     console.log('✅ gno:', gno);
 
@@ -136,12 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            posts = data;
-            const container = document.querySelector('.board_member_row');
-            posts.forEach((post, index) => {
-                const element = createPostElement(post, index);
-                container.appendChild(element);
-            });
+            posts = [...data].reverse();  // ✅ 최신글이 위로
+            createPosts();                   // ✅ 글쓰기 아래로 밀리지 않게 insert
         })
         .catch(error => console.error("게시글 로딩 실패:", error));
 
@@ -202,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch(`/board/api/groups/${currentGnoForReload}/posts?ts=${Date.now()}`)
                     .then(res => res.json())
                     .then(updatedPosts => {
-                        posts = updatedPosts;
+                        posts = [...updatedPosts].reverse();
                         createPosts();
                     })
                     .catch(err => console.error("게시글 목록 업데이트 실패:", err));
@@ -229,22 +225,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('🚀 페이지 로드 완료 - 초기화 시작');
 
-    function loadMyGroupDogs(gno) {
-        console.log('✅ loadMyGroupDogs - gno:', gno);
-        fetch(`/board/api/my-group-dogs?gno=${gno}`)
-            .then(response => response.json())
-            .then(data => {
-                const select = document.getElementById('dno');
-                select.innerHTML = '<option value="">-- 선택하세요 --</option>';
-                data.forEach(dog => {
-                    const option = document.createElement('option');
-                    option.value = dog.dno;
-                    option.textContent = dog.dname;
-                    select.appendChild(option);
-                });
-            })
-            .catch(error => console.error('❌ 강아지 목록 불러오기 실패:', error));
-    }
+    // function loadMyGroupDogs(gno) {
+    //     console.log('✅ loadMyGroupDogs - gno:', gno);
+    //     fetch(`/board/api/my-group-dogs?gno=${gno}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const select = document.getElementById('dno');
+    //             select.innerHTML = '<option value="">-- 선택하세요 --</option>';
+    //             data.forEach(dog => {
+    //                 const option = document.createElement('option');
+    //                 option.value = dog.dno;
+    //                 option.textContent = dog.dname;
+    //                 select.appendChild(option);
+    //             });
+    //         })
+    //         .catch(error => console.error('❌ 강아지 목록 불러오기 실패:', error));
+    // }
 
     function setEditImage(imageUrl, imgId) {
         const imagePreview = document.getElementById('imagePreview');
@@ -350,15 +346,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function createPosts() {
         const leftContainer = document.querySelector('.group_board_left');
         const existingPosts = document.querySelectorAll('.group_board');
-
-        // 기존 게시물 모두 제거
         existingPosts.forEach(post => post.remove());
 
-        // for문으로 게시물 생성
+        const addPostSection = document.querySelector('.board_add_post');
+
         for (let i = 0; i < posts.length; i++) {
-            const post = posts[i];
-            const postElement = createPostElement(post, i);
-            leftContainer.appendChild(postElement);
+            const postElement = createPostElement(posts[i], i);
+            addPostSection.insertAdjacentElement('afterend', postElement);
         }
     }
 
@@ -388,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="post_user_info">
                         <div class="post_user_details">
                             <div class="board_write_user">${post.writerDogName}</div>
-                            <span class="board_write_time">${post.timeAgo}</span>
+                            <span class="board_write_time">${post.timeAgo || ''}</span>
                         </div>
                     </div>
                     <div class="post_menu_btn">
@@ -1121,7 +1115,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (modal) {
             console.log('✅ showCreatePostModal groupId:', groupId);
-            loadMyGroupDogs(groupId);
 
             // ⭐️ 작성/수정에 따라 textarea name 바꾸기
             const postContent = document.getElementById('postContent');
@@ -1863,53 +1856,53 @@ function closeApplyModal() { // 이 함수는 그룹 만들기 모달의 close�
     }
 }
 
-async function loadMyDogsForApplyModalOnBoard(dogsGridElement, submitButtonElement) {
-    // (이전 답변의 loadMyDogsForApplyModal 함수 내용과 거의 동일하게 구현)
-    // API 호출: /groups/api/my-dogs
-    // 성공 시: dogsGridElement에 profile_card 들을 생성하여 추가 (각 카드 클릭 시 handleDogSelectionForApplyModalOnBoard 호출)
-    // 실패 또는 강아지 없을 시: 적절한 메시지 표시 및 submitButtonElement 비활성화
-    try {
-        const response = await fetch('/groups/api/my-dogs');
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`내 강아지 목록 로드 실패 (ApplyModal): ${response.status} ${errorText}`);
-        }
-        const dogs = await response.json();
-
-        dogsGridElement.innerHTML = '';
-        if (!dogs || dogs.length === 0) {
-            dogsGridElement.innerHTML = '<p>가입 신청에 사용할 등록된 강아지가 없습니다.</p>';
-            if(submitButtonElement) submitButtonElement.disabled = true;
-            return;
-        }
-
-        dogs.forEach(dog => {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'profile_card'; // 그룹 만들기 3단계와 동일한 CSS 클래스 사용 가능
-            cardDiv.dataset.dogDno = dog.dno;
-            cardDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl || '/images/default_dog_profile.png'}')`;
-            cardDiv.style.cursor = 'pointer';
-            cardDiv.innerHTML = `
-                <div class="profile_info_overlay">
-                    <div class="profile_name">${dog.dname}</div>
-                    <div class="profile_details">
-                        <span class="profile_detail_item">${dog.speciesName || ''}</span>
-                        <span class="profile_detail_item">${dog.size || ''}</span>
-                        <span class="profile_detail_item">${dog.gender || ''}</span>
-                    </div>
-                </div>
-            `;
-            cardDiv.addEventListener('click', function() {
-                handleDogSelectionForApplyModalOnBoard(dog.dno, this, dogsGridElement, submitButtonElement);
-            });
-            dogsGridElement.appendChild(cardDiv);
-        });
-    } catch (error) {
-        console.error("가입 신청 모달용 내 강아지 목록 로드 오류:", error);
-        dogsGridElement.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
-        if(submitButtonElement) submitButtonElement.disabled = true;
-    }
-}
+// async function loadMyDogsForApplyModalOnBoard(dogsGridElement, submitButtonElement) {
+//     // (이전 답변의 loadMyDogsForApplyModal 함수 내용과 거의 동일하게 구현)
+//     // API 호출: /groups/api/my-dogs
+//     // 성공 시: dogsGridElement에 profile_card 들을 생성하여 추가 (각 카드 클릭 시 handleDogSelectionForApplyModalOnBoard 호출)
+//     // 실패 또는 강아지 없을 시: 적절한 메시지 표시 및 submitButtonElement 비활성화
+//     try {
+//         const response = await fetch('/groups/api/my-dogs');
+//         if (!response.ok) {
+//             const errorText = await response.text();
+//             throw new Error(`내 강아지 목록 로드 실패 (ApplyModal): ${response.status} ${errorText}`);
+//         }
+//         const dogs = await response.json();
+//
+//         dogsGridElement.innerHTML = '';
+//         if (!dogs || dogs.length === 0) {
+//             dogsGridElement.innerHTML = '<p>가입 신청에 사용할 등록된 강아지가 없습니다.</p>';
+//             if(submitButtonElement) submitButtonElement.disabled = true;
+//             return;
+//         }
+//
+//         dogs.forEach(dog => {
+//             const cardDiv = document.createElement('div');
+//             cardDiv.className = 'profile_card'; // 그룹 만들기 3단계와 동일한 CSS 클래스 사용 가능
+//             cardDiv.dataset.dogDno = dog.dno;
+//             cardDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl || '/images/default_dog_profile.png'}')`;
+//             cardDiv.style.cursor = 'pointer';
+//             cardDiv.innerHTML = `
+//                 <div class="profile_info_overlay">
+//                     <div class="profile_name">${dog.dname}</div>
+//                     <div class="profile_details">
+//                         <span class="profile_detail_item">${dog.speciesName || ''}</span>
+//                         <span class="profile_detail_item">${dog.size || ''}</span>
+//                         <span class="profile_detail_item">${dog.gender || ''}</span>
+//                     </div>
+//                 </div>
+//             `;
+//             cardDiv.addEventListener('click', function() {
+//                 handleDogSelectionForApplyModalOnBoard(dog.dno, this, dogsGridElement, submitButtonElement);
+//             });
+//             dogsGridElement.appendChild(cardDiv);
+//         });
+//     } catch (error) {
+//         console.error("가입 신청 모달용 내 강아지 목록 로드 오류:", error);
+//         dogsGridElement.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
+//         if(submitButtonElement) submitButtonElement.disabled = true;
+//     }
+// }
 
 function handleDogSelectionForApplyModalOnBoard(dogDno, clickedCardElement, dogsGridElement, submitButtonElement) {
     // (이전 답변의 handleDogSelectionForApplyModal 함수 내용과 거의 동일하게 구현)

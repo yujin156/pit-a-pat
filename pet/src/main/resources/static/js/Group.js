@@ -298,6 +298,7 @@ function createNewGroup(event) {
             closeModal(); // 모달 닫기
 
             fetchAndUpdateMyGroups();
+            fetchAndUpdateAllGroups();
 
         })
         .catch(error => {
@@ -340,7 +341,7 @@ function loadMyDogs() {
             ${!isMainDog ? `<div class="profile_card_menu" onclick="event.stopPropagation(); ModalManager.openProfileMenu('${dog.dno}')"></div>` : ''} 
             
             <div class="profile_info_overlay">
-                <div class="profile_name">${dog.dname}</div> 
+                <div class="profile_name_modal">${dog.dname}</div> 
                 <div class="profile_details">
                     <span class="profile_detail_item">${dog.speciesName}</span> 
                     <span class="profile_detail_item">${dog.size}</span> 
@@ -430,5 +431,28 @@ async function fetchAndUpdateMyGroups() {
         }
     } catch (error) {
         console.error('내 그룹 목록 다시 불러오는 중 오류:', error);
+    }
+}
+
+async function fetchAndUpdateAllGroups() {
+    try {
+        const response = await fetch('/groups/api/all');
+        if (!response.ok) {
+            console.error('전체 그룹 목록 다시 불러오기 실패:', await response.text());
+            return;
+        }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            allGroups = data;
+            console.log('✅ 전체 그룹 목록 성공적으로 업데이트됨:', allGroups);
+
+            if (currentTab === 'all') {
+                updateTabContent('all');
+            }
+        } else {
+            console.error('전체 그룹 목록 업데이트 실패: 서버 응답이 배열이 아님', data);
+        }
+    } catch (error) {
+        console.error('전체 그룹 목록 다시 불러오는 중 오류:', error);
     }
 }

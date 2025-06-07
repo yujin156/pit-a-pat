@@ -58,7 +58,6 @@ public class GroupService {
                 Path filepath = Paths.get(uploadDir, filename);
                 Files.createDirectories(filepath.getParent());
                 Files.copy(request.getGimg().getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("✅ 이미지 저장 경로: " + filepath.toAbsolutePath());
 
                 group.setGimg("/uploads/img/" + filename);
             } catch (Exception e) {

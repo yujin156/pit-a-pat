@@ -98,9 +98,6 @@ public class DogController {
                                      Model model) {
 
         List<DogKeyword1> keywords = keyword1Repository.findAll();
-        for (DogKeyword1 keyword1 : keywords) {
-            System.out.println("  👉 " + keyword1.getDktag());
-        }
 
         model.addAttribute("keyword1List", keywords);
         model.addAttribute("dogId", dogId);
