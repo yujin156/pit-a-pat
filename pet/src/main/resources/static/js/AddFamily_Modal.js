@@ -594,21 +594,21 @@ function handleProfileComplete() {
             return res.text();
         })
         .then(message => {
-            // 기존 로컬 배열 추가 대신 서버 목록 새로고침!
-            if (typeof window.fetchAndRenderDogProfiles === 'function'  && typeof window.mypageFetchAndRenderDogProfiles == 'function') {
-                window.mypageFetchAndRenderDogProfiles();
+            // 등록 후 동기화: 둘 중 존재하는 것만!
+            if (typeof window.fetchAndRenderDogProfiles === 'function') {
                 window.fetchAndRenderDogProfiles();
             }
-
+            if (typeof window.mypageFetchAndRenderDogProfiles === 'function') {
+                window.mypageFetchAndRenderDogProfiles();
+            }
+            // 알림/모달 닫기
             if (typeof showStatusNotification === "function") {
                 showStatusNotification(message, 'success');
             } else {
                 alert(message);
             }
-
             closeAddFamilyModal();
-        })
-        .catch(err => {
+        }).catch(err => {
             const message = err.message || "알 수 없는 오류가 발생했습니다.";
             if (typeof showStatusNotification === "function") {
                 showStatusNotification("❌ 등록 실패: " + message, 'error');
