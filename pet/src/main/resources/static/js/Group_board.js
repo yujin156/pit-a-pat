@@ -5,6 +5,7 @@ const GOOGLE_CONFIG = {
     DISCOVERY_DOC: 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
     SCOPES: 'https://www.googleapis.com/auth/calendar'
 };
+let leaderGmno = null;
 
 // 캘린더 상태 관리
 let calendarState = {
@@ -26,6 +27,7 @@ let selectedDogDnoForBoardApply = null; // 이 페이지의 가입 신청 모달
 
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
+
     const menuButton = document.querySelector('.group_board_setting');  // 메뉴 버튼 (SVG)
     const menu = document.getElementById('group_menu'); // 메뉴
     const gno = window.location.pathname.split("/").pop();
@@ -38,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const commentSubmitBtn = document.querySelector('.comment_submit');
     currentGno = window.location.pathname.split("/").pop();
-
+    loadGroupMembers(currentGno);
     // "가입대기자/멤버 관리" 클릭 시
     memberManagementTab.addEventListener('click', function() {
         // 게시글 영역 숨기기
@@ -1787,53 +1789,89 @@ function closeApplyModal() { // 이 함수는 그룹 만들기 모달의 close�
     }
 }
 
-// async function loadMyDogsForApplyModalOnBoard(dogsGridElement, submitButtonElement) {
-//     // (이전 답변의 loadMyDogsForApplyModal 함수 내용과 거의 동일하게 구현)
-//     // API 호출: /groups/api/my-dogs
-//     // 성공 시: dogsGridElement에 profile_card 들을 생성하여 추가 (각 카드 클릭 시 handleDogSelectionForApplyModalOnBoard 호출)
-//     // 실패 또는 강아지 없을 시: 적절한 메시지 표시 및 submitButtonElement 비활성화
-//     try {
-//         const response = await fetch('/groups/api/my-dogs');
-//         if (!response.ok) {
-//             const errorText = await response.text();
-//             throw new Error(`내 강아지 목록 로드 실패 (ApplyModal): ${response.status} ${errorText}`);
-//         }
-//         const dogs = await response.json();
-//
-//         dogsGridElement.innerHTML = '';
-//         if (!dogs || dogs.length === 0) {
-//             dogsGridElement.innerHTML = '<p>가입 신청에 사용할 등록된 강아지가 없습니다.</p>';
-//             if(submitButtonElement) submitButtonElement.disabled = true;
-//             return;
-//         }
-//
-//         dogs.forEach(dog => {
-//             const cardDiv = document.createElement('div');
-//             cardDiv.className = 'profile_card'; // 그룹 만들기 3단계와 동일한 CSS 클래스 사용 가능
-//             cardDiv.dataset.dogDno = dog.dno;
-//             cardDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl || '/images/default_dog_profile.png'}')`;
-//             cardDiv.style.cursor = 'pointer';
-//             cardDiv.innerHTML = `
-//                 <div class="profile_info_overlay">
-//                     <div class="profile_name">${dog.dname}</div>
-//                     <div class="profile_details">
-//                         <span class="profile_detail_item">${dog.speciesName || ''}</span>
-//                         <span class="profile_detail_item">${dog.size || ''}</span>
-//                         <span class="profile_detail_item">${dog.gender || ''}</span>
-//                     </div>
-//                 </div>
-//             `;
-//             cardDiv.addEventListener('click', function() {
-//                 handleDogSelectionForApplyModalOnBoard(dog.dno, this, dogsGridElement, submitButtonElement);
-//             });
-//             dogsGridElement.appendChild(cardDiv);
-//         });
-//     } catch (error) {
-//         console.error("가입 신청 모달용 내 강아지 목록 로드 오류:", error);
-//         dogsGridElement.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
-//         if(submitButtonElement) submitButtonElement.disabled = true;
-//     }
-// }
+
+document.addEventListener('click', async function(e) {
+    // 승인
+    if (e.target.classList.contains('member_accept')) {
+        const gmno = e.target.dataset.gmno;
+        if (!confirm("정말로 승인하시겠습니까?")) return;
+        await updateMemberStatus(gmno, "ACCEPTED");
+        await loadPendingMembersForGroup(currentGno); // 갱신
+    }
+    // 거절
+    if (e.target.classList.contains('member_refusal')) {
+        const gmno = e.target.dataset.gmno;
+        if (!confirm("정말로 거절하시겠습니까?")) return;
+        await updateMemberStatus(gmno, "REJECTED");
+        await loadPendingMembersForGroup(currentGno); // 갱신
+    }
+});
+
+async function updateMemberStatus(gmno, status) {
+    try {
+        const body = `status=${status}`;
+        const res = await fetch(`/groups/${currentGno}/members/${gmno}/status`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || '변경 실패');
+        }
+        alert(`${status === 'ACCEPTED' ? '승인' : '거절'} 처리 완료!`);
+    } catch (err) {
+        alert(err.message || '처리 중 오류');
+    }
+}
+
+
+
+
+
+async function loadMyDogsForApplyModalOnBoard(dogsGridElement, submitButtonElement) {
+    try {
+        const response = await fetch('/groups/api/my-dogs');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`내 강아지 목록 로드 실패 (ApplyModal): ${response.status} ${errorText}`);
+        }
+        const dogs = await response.json();
+
+        // ✅ 그리드 클래스명 수정
+        dogsGridElement.className = 'apply_modal_avatar_grid';
+        dogsGridElement.innerHTML = '';
+        if (!dogs || dogs.length === 0) {
+            dogsGridElement.innerHTML = '<p>가입 신청에 사용할 등록된 강아지가 없습니다.</p>';
+            if(submitButtonElement) submitButtonElement.disabled = true;
+            return;
+        }
+
+        dogs.forEach(dog => {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'apply_modal_avatar_card';
+            cardDiv.dataset.dogDno = dog.dno;
+
+            cardDiv.innerHTML = `
+                <img src="${dog.avatarUrl || '/images/default_dog_profile.png'}" class="apply_modal_avatar_img" alt="${dog.dname}">
+                <span class="apply_modal_avatar_name">${dog.dname}</span>
+            `;
+
+            cardDiv.addEventListener('click', function() {
+                dogsGridElement.querySelectorAll('.apply_modal_avatar_card.selected').forEach(card => card.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedDogDnoForBoardApply = dog.dno;
+                if(submitButtonElement) submitButtonElement.disabled = false;
+            });
+            dogsGridElement.appendChild(cardDiv);
+        });
+    } catch (error) {
+        console.error("가입 신청 모달용 내 강아지 목록 로드 오류:", error);
+        dogsGridElement.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
+        if(submitButtonElement) submitButtonElement.disabled = true;
+    }
+}
+
 
 function handleDogSelectionForApplyModalOnBoard(dogDno, clickedCardElement, dogsGridElement, submitButtonElement) {
     // (이전 답변의 handleDogSelectionForApplyModal 함수 내용과 거의 동일하게 구현)
@@ -1849,6 +1887,56 @@ function handleDogSelectionForApplyModalOnBoard(dogDno, clickedCardElement, dogs
     selectedDogDnoForBoardApply = dogDno;
     if(submitButtonElement) submitButtonElement.disabled = false;
 }
+
+
+async function loadPendingMembersForGroup(gno) {
+    try {
+        // gno: 현재 그룹 번호, 또는 전역 currentGno 사용
+        const res = await fetch(`/groups/${gno}/pending-members`);
+        if (!res.ok) throw new Error('가입대기자 불러오기 실패');
+        const pendingList = await res.json();
+        pendingList.forEach(member => console.log(member));
+
+        const pendingTab = document.querySelector('.member_accept_tap');
+        pendingTab.innerHTML = '';
+
+        if (!pendingList || pendingList.length === 0) {
+            pendingTab.innerHTML = '<div class="no_pending">가입 대기중인 강아지가 없습니다.</div>';
+            return;
+        }
+
+        pendingList.forEach(member => {
+            const imgUrl = member.dogImgUrl || '/images/default_dog_profile.png';
+            // member.gmno, member.dogName, member.dogProfileImg 등 필요
+            const div = document.createElement('div');
+            div.className = 'member_contain';
+            div.innerHTML = `
+                <div class="member_profile_img"><img src="${imgUrl}" alt="강아지 프로필"></div>
+                <span class="member_profile_name">${member.dogName || '이름없음'}</span>
+                <button class="member_accept" data-gmno="${member.gmno}">승인</button>
+                <button class="member_refusal" data-gmno="${member.gmno}">거절</button>
+            `;
+            pendingTab.appendChild(div);
+        });
+    } catch (err) {
+        console.error(err);
+        document.querySelector('.member_accept_tap').innerHTML = '<div class="no_pending">불러오기 실패</div>';
+    }
+}
+
+function switchMemberTab(type) {
+    document.querySelectorAll('.tab_button').forEach(btn => btn.classList.remove('active'));
+    if(type === 'management') {
+        document.querySelector('.member_management_tap').classList.add('active');
+        document.querySelector('.member_accept_tap').classList.remove('active');
+    } else {
+        document.querySelector('.member_management_tap').classList.remove('active');
+        document.querySelector('.member_accept_tap').classList.add('active');
+        // 대기자 탭 클릭 시 목록 새로 불러오기
+        loadPendingMembersForGroup(currentGno);
+    }
+}
+
 
 async function submitGroupApplicationOnBoard(event) { // 함수 이름 변경
     const submitBtn = event.target;
@@ -1897,9 +1985,12 @@ async function submitGroupApplicationOnBoard(event) { // 함수 이름 변경
         // 여기서는 menu-status를 다시 fetch하여 버튼 상태와 currentUserGroupStatus를 업데이트하고,
         // updateUIAccessBasedOnStatus()를 호출하는 것을 가정합니다.
         fetch(`/groups/${currentGno}/menu-status`)
-            .then(res => {
-                if(!res.ok) return null;
-                return res.json();
+            .then(response => response.json())
+            .then(data => {
+                console.log("[menu-status 응답]", data); // ⭐ 확인!
+                currentUserGroupStatus = data.status;
+                leaderGmno = data.gleader;
+                updateUIAccessBasedOnStatus();
             })
             .then(data => {
                 if(data) {
@@ -1921,3 +2012,66 @@ async function submitGroupApplicationOnBoard(event) { // 함수 이름 변경
         submitBtn.textContent = '가입 신청하기';
     }
 }
+// API에서 멤버 받아서 렌더링
+async function loadGroupMembers(gno) {
+    try {
+        const res = await fetch(`/groups/${gno}/members`);
+        if (!res.ok) throw new Error('멤버 불러오기 실패');
+        const members = await res.json();
+        const container = document.querySelector('.member_management_tap');
+        container.innerHTML = ''; // 기존 내용 비움
+
+        if (!members || members.length === 0) {
+            container.innerHTML = '<div class="no_members">멤버가 없습니다.</div>';
+            return;
+        }
+        members.forEach(member => {
+            // 리더 여부
+            const leaderHtml = member.isLeader ? `
+                <div class="leder_icon">
+                         <div class="crown_icon">
+                            <svg id="그룹_162528" data-name="그룹 162528" xmlns="http://www.w3.org/2000/svg"
+                                 xmlns:xlink="http://www.w3.org/1999/xlink" width="15.605" height="8.92"
+                                 viewBox="0 0 15.605 8.92">
+                                <defs>
+                                    <clipPath id="clip-path">
+                                        <rect id="사각형_147995" data-name="사각형 147995" width="15.605" height="8.92"
+                                              transform="translate(0 0)" fill="#f5f6f8"/>
+                                    </clipPath>
+                                </defs>
+                                <g id="그룹_162527" data-name="그룹 162527" clip-path="url(#clip-path)">
+                                    <path id="패스_83456" data-name="패스 83456"
+                                          d="M11.217,4.14,8,.12a.218.218,0,0,0-.39,0L4.387,4.14a.742.742,0,0,1-.86.23L.347,3.1a.2.2,0,0,0-.1-.02.236.236,0,0,0-.16.06.255.255,0,0,0-.08.25l1.34,5.34a.246.246,0,0,0,.24.19h12.44a.255.255,0,0,0,.24-.19h-.01L15.6,3.39a.255.255,0,0,0-.08-.25.245.245,0,0,0-.26-.04l-3.18,1.27a.75.75,0,0,1-.86-.23"
+                                          fill="#f5f6f8"/>
+                                </g>
+                            </svg>
+                        </div>
+                    <span>리더</span>
+                </div>
+            ` : '';
+            // 프로필 이미지, 기본이미지 대체
+            const imgUrl = member.dogImgUrl || '/images/default_dog_profile.png';
+            const div = document.createElement('div');
+            div.className = 'member_contain';
+            div.innerHTML = `
+                <div class="member_profile_img"><img src="${imgUrl}" alt="강아지"></div>
+                <span class="member_profile_name">${member.dogName || '이름없음'}</span>
+                ${leaderHtml}
+                <button class="member_setting_icon" data-dno="${member.dno}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="5" height="23" viewBox="0 0 5 23">
+                            <circle cx="2.5" cy="2.5" r="2.5" fill="#b7b7b7"/>
+                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(0 9)" fill="#b7b7b7"/>
+                            <circle cx="2.5" cy="2.5" r="2.5" transform="translate(0 18)" fill="#b7b7b7"/>
+                        </svg>
+                </button>
+            `;
+            container.appendChild(div);
+        });
+    } catch (e) {
+        console.error(e);
+        document.querySelector('.member_management_tap').innerHTML = '<div class="no_members">멤버 불러오기 오류</div>';
+    }
+}
+// 사용 예시 (DOMContentLoaded 등에서)
+
+window.openApplyModalOnBoard = openApplyModalOnBoard; // <-- 추가!

@@ -747,6 +747,7 @@
     background-size: cover;
     background-position: center;
     transition: transform 0.2s ease;
+    overflow: hidden;
 }
 
 .member_management_container .member_profile_img:hover {
@@ -2686,4 +2687,206 @@
     min-height: 100px;
     line-height: 1.5;
     color: #212121;
+}
+
+
+
+/* 그룹 가입 신청 모달 오버레이 */
+.apply_modal_overlay {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1200;
+    background: rgba(20, 20, 20, 0.42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+.apply_modal_avatar_grid {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    margin-bottom: 24px;
+}
+
+.apply_modal_avatar_card {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: border-color 0.2s;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.apply_modal_avatar_card.selected {
+    border-color: #387FEB;
+    box-shadow: 0 0 0 2px #387FEB55;
+}
+
+.apply_modal_avatar_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.apply_modal_avatar_name {
+    position: absolute;
+    bottom: -26px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    font-weight: 600;
+    background: none;
+    pointer-events: none;
+}
+/* 모달 컨테이너 */
+.apply_modal_container {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(44,62,80,0.22);
+    padding: 38px 32px 26px 32px;
+    min-width: 350px;
+    max-width: 400px;
+    width: 95vw;
+    animation: applyModalFadeIn .18s cubic-bezier(.77,-0.14,.29,1.22);
+    position: relative;
+}
+@keyframes applyModalFadeIn {
+    0% { opacity: 0; transform: scale(.95);}
+    100% { opacity: 1; transform: scale(1);}
+}
+
+.apply_modal_header {
+    margin-bottom: 14px;
+    text-align: left;
+}
+.apply_modal_title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 6px;
+    letter-spacing: -1px;
+}
+.apply_modal_subtitle {
+    color: #606060;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.apply_modal_target_group {
+    font-weight: bold;
+    color: #387FEB;
+    background: #f0f8ff;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-left: 4px;
+    letter-spacing: -1px;
+}
+
+/* 프로필 선택 */
+.apply_profile_section {
+    margin: 20px 0 16px 0;
+}
+.apply_profile_grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 13px;
+    min-height: 90px;
+}
+.apply_profile_card {
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(30, 64, 175, 0.08);
+    width: 140px;
+    height: 74px;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: box-shadow 0.18s, border 0.18s;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+.apply_profile_card.selected {
+    border: 2.5px solid #387FEB;
+    box-shadow: 0 4px 14px rgba(56,127,235,0.17);
+}
+.apply_profile_info {
+    width: 100%;
+    background: rgba(20,20,20,0.19);
+    color: #fff;
+    padding: 7px 10px 6px 10px;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.98rem;
+}
+.apply_profile_name { font-weight: bold; margin-bottom: 1px; }
+.apply_profile_details { font-size: 0.87rem; opacity: 0.83; }
+
+/* 버튼 영역 */
+.apply_modal_buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 18px;
+}
+.apply_btn_secondary,
+.apply_btn_primary {
+    padding: 10px 22px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.13s, color 0.13s;
+}
+.apply_btn_secondary {
+    background: #f5f6f7;
+    color: #444;
+}
+.apply_btn_secondary:hover {
+    background: #e9eaea;
+}
+.apply_btn_primary {
+    background: #387FEB;
+    color: #fff;
+}
+.apply_btn_primary:disabled {
+    background: #b8cbe6;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .apply_modal_container {
+        padding: 18px 5vw 18px 5vw;
+        min-width: unset;
+        max-width: 98vw;
+    }
+    .apply_profile_grid {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    .apply_profile_card {
+        width: 92vw;
+        min-width: 170px;
+        max-width: 340px;
+        height: 60px;
+    }
 }

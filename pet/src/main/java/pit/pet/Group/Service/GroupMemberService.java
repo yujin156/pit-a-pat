@@ -1,8 +1,12 @@
 package pit.pet.Group.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import pit.pet.Account.Repository.DogRepository;
+import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
+import pit.pet.Account.User.User;
 import pit.pet.Group.Repository.GroupMemberRepository;
 import pit.pet.Group.Repository.GroupRepository;
 import pit.pet.Group.entity.GroupMemberTable;
@@ -17,6 +21,8 @@ import java.util.Optional;
 public class GroupMemberService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
+    private final DogRepository dogRepository;
 
     /**
      * ✅ 그룹 가입 신청 (대기 상태로 등록)
@@ -43,11 +49,24 @@ public class GroupMemberService {
      * ✅ 가입 요청 승인된 그룹만 - 내 그룹으로
      */
 
+    public Long getLeaderGmnoByGroup(Long gno) {
+        // LEADER 상태의 멤버 리스트 중 첫 번째(보통 1명일 것) gmno 반환
+        List<GroupMemberTable> leaders = groupMemberRepository.findByGroupTable_GnoAndState(gno, MemberStatus.LEADER);
+        if (leaders.isEmpty()) {
+            return null;
+        }
+        return leaders.get(0).getGmno();
+    }
+
+
     public List<GroupMemberTable> findByDogsAndStatus(List<Dog> dogs, String status) {
         MemberStatus memberStatus = MemberStatus.valueOf(status); // 예: "APPROVED"를 ENUM으로 변환
         return groupMemberRepository.findByDogInAndState(dogs, memberStatus);
     }
 
+    public List<GroupMemberTable> getWaitMembers(Long gno) {
+        return groupMemberRepository.findByGroupTable_GnoAndState(gno, MemberStatus.WAIT);
+    }
     /**
      * ✅ 가입 요청 승인 / 거부 (리더만 가능)
      */
@@ -83,31 +102,36 @@ public class GroupMemberService {
         return null; // 리더에 해당하는 멤버를 찾지 못한 경우
     }
 
-    public void handleJoinRequest(Long gmno, MemberStatus status, Long leaderGmno) {
+    public void handleJoinRequest(Long gmno, MemberStatus status, UserDetails principal) {
         GroupMemberTable member = groupMemberRepository.findById(gmno)
                 .orElseThrow(() -> new RuntimeException("가입 요청 멤버가 존재하지 않습니다."));
         GroupTable group = member.getGroupTable();
 
-        // 리더 권한 확인
-        if (!group.getGleader().equals(leaderGmno)) {
-            throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다.");
+        // principal에서 유저 정보와, 해당 유저가 가진 강아지들의 dno들 조회
+        User user = userRepository.findByUemail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        List<Dog> myDogs = dogRepository.findByOwner(user);
+
+        // 리더 dog.dno와 내 dog.dno가 일치하는지 체크
+        boolean isLeader = myDogs.stream().anyMatch(dog -> dog.getDno().equals(group.getGleader()));
+        if (!isLeader) {
+            throw new RuntimeException("가입 승인 또는 거부 권한이 없습니다. (리더만 가능)");
         }
 
+        // 상태 변경 로직
         if (status == MemberStatus.ACCEPTED) {
-            // 상태가 처음 승인될 경우에만 인원수 +1
-            if (status == MemberStatus.ACCEPTED) {
-                if (member.getState() != MemberStatus.ACCEPTED) {
-                    member.setState(MemberStatus.ACCEPTED);
-                    group.setGmembercount(group.getGmembercount() + 1);
-                    groupRepository.save(group);
-                }
-                groupMemberRepository.save(member);
-            } else if (status == MemberStatus.REJECTED) {
-                // 무조건 삭제 (가입 요청 거부)
-                groupMemberRepository.delete(member);
+            if (member.getState() != MemberStatus.ACCEPTED) {
+                member.setState(MemberStatus.ACCEPTED);
+                group.setGmembercount(group.getGmembercount() + 1);
+                groupRepository.save(group);
             }
+            groupMemberRepository.save(member);
+        } else if (status == MemberStatus.REJECTED) {
+            // 무조건 삭제 (가입 요청 거부)
+            groupMemberRepository.delete(member);
         }
     }
+
 
     public List<GroupMemberTable> getAllMembers(Long gno) {
         return groupMemberRepository.findByGroupTable_Gno(gno);

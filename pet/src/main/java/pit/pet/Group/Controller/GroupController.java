@@ -2,6 +2,7 @@ package pit.pet.Group.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,7 @@ import pit.pet.Group.Request.UpdateMemberStatusRequest;
 import pit.pet.Group.Service.GroupMemberService;
 import pit.pet.Group.Service.GroupService;
 import pit.pet.Group.entity.GroupMemberTable;
+import pit.pet.Group.entity.GroupMemberTableDto;
 import pit.pet.Group.entity.GroupTable;
 import pit.pet.Group.entity.GroupTableDTO;
 
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/groups")
 public class GroupController {
@@ -173,17 +176,30 @@ public class GroupController {
 
     @GetMapping("/api/my-groups")
     @ResponseBody
-    public List<GroupTableDTO> getMyGroups(@AuthenticationPrincipal UserDetails principal) {
+    public List<GroupMemberTableDto> getMyGroups(@AuthenticationPrincipal UserDetails principal) {
+
         if (principal == null) {
-            return List.of();  // 로그인하지 않았다면 빈 배열 반환
+            return List.of();
         }
 
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        List<Dog> myDogs = dogRepository.findByOwner(me);
+        List<GroupMemberTable> memberships = groupMemberService.findByDogs(myDogs);
 
-        // `GroupService`에서 DTO로 변환된 그룹 목록 반환
-        return groupService.getMyGroups(me);
+        for (GroupMemberTable m : memberships) {
+            System.out.println("[DEBUG] 그룹: " + m.getGroupTable().getGname() + " / 상태: " + m.getState());
+        }
+
+        List<GroupMemberTableDto> dtos = memberships.stream()
+                .map(GroupMemberTableDto::new)
+                .toList();
+
+        System.out.println("[DEBUG] 반환하는 DTO 개수 = " + dtos.size());
+        return dtos;
     }
+
+
 
     //현재 접속자 지위 확인
 
@@ -268,11 +284,31 @@ public class GroupController {
 
     // 가입 승인/거절 처리
     @PostMapping("/{gno}/members/{gmno}/status")
-    public String updateMemberStatus(@PathVariable Long gno,
-                                     @PathVariable Long gmno,
-                                     @ModelAttribute UpdateMemberStatusRequest request) {
-        groupMemberService.handleJoinRequest(gmno, request.getStatus(), request.getLeaderGmno());
+    public String updateMemberStatus(
+            @PathVariable Long gno,
+            @PathVariable Long gmno,
+            @ModelAttribute UpdateMemberStatusRequest request,
+            @AuthenticationPrincipal UserDetails principal
+    ) {
+        groupMemberService.handleJoinRequest(gmno, request.getStatus(), principal); // principal 넘기기
         return "redirect:/groups/" + gno + "/manage";
+    }
+
+
+    @GetMapping("/{gno}/members")
+    @ResponseBody
+    public List<GroupMemberTableDto> getGroupMembers(@PathVariable Long gno) {
+        List<GroupMemberTable> members = groupMemberService.getAllMembers(gno);
+        // 리더 gmno 기준으로 isLeader 플래그를 dto에 같이 내려주면 프론트에서 crown 렌더에 유용
+        Long leaderGmno = groupMemberService.getLeaderGmnoByGroup(gno);
+
+        // DTO 변환 + 리더 여부 플래그 추가
+        return members.stream()
+                .map(m -> {
+                    GroupMemberTableDto dto = new GroupMemberTableDto(m);
+                    dto.setIsLeader(m.getGmno().equals(leaderGmno));
+                    return dto;
+                }).toList();
     }
 
     // 멤버 탈퇴
@@ -327,4 +363,14 @@ public class GroupController {
 
         return "Group/Group_board";
     }
+
+    @GetMapping("/{gno}/pending-members")
+    @ResponseBody
+    public List<GroupMemberTableDto> getPendingMembers(@PathVariable Long gno) {
+        // groupMemberService에서 WAIT만 필터링해서 반환하도록 구현
+        List<GroupMemberTable> waitings = groupMemberService.getWaitMembers(gno);
+        return waitings.stream().map(GroupMemberTableDto::new).toList();
+    }
+
+
 }
