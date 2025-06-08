@@ -140,7 +140,6 @@
 .add_post_btn {
     border-radius: 10px;
     border: none;
-    display: flex !important;
     flex-direction: row;
     gap: 10px;
     align-items: center;
