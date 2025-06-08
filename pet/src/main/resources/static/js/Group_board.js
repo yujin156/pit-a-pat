@@ -1714,7 +1714,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateUIAccessBasedOnStatus() {
-    const addPostButton = document.querySelector('.add_post_btn'); // 게시물 추가 버튼
+    const addPostButton = document.querySelector('.board_add_post'); // 게시물 추가 버튼
     const commentInputAreas = document.querySelectorAll('.modal_comment_input'); // 예시 선택자
     const root = document.body;
 

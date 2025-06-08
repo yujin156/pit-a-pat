@@ -18,10 +18,13 @@
 
     <div class="header_section">
         <div class="tab_navigation">
-            <!-- ✅ 로그인 시: 내 그룹/전체 그룹/가입 현황, 비로그인 시: 전체 그룹만 -->
-            <div class="tab_item" data-tab="my" onclick="switchTab('my')">내 그룹</div>
+            <th:block th:if="${isAuthenticated}">
+                <div class="tab_item" data-tab="my" onclick="switchTab('my')">내 그룹</div>
+            </th:block>
             <div class="tab_item" data-tab="all" onclick="switchTab('all')">전체 그룹</div>
-            <div class="tab_item" data-tab="application" onclick="switchTab('application')">가입 현황</div>
+            <th:block th:if="${isAuthenticated}">
+                <div class="tab_item" data-tab="application" onclick="switchTab('application')">가입 현황</div>
+            </th:block>
         </div>
 
         <div class="search_section">
