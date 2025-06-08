@@ -14,7 +14,7 @@ import pit.pet.Account.Repository.DogKeyword1Repository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.User;
 import pit.pet.Account.User.DogKeyword1;
-import pit.pet.Api.SgisRegionService; // ✅ 추가
+import pit.pet.Api.SgisRegionService;
 
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class MatchingController {
     private MatchingService matchingService;
 
     @Autowired
-    private SgisRegionService sgisRegionService; // ✅ 추가
+    private SgisRegionService sgisRegionService;
 
     /**
      * 매칭 페이지 메인
@@ -70,6 +70,8 @@ public class MatchingController {
                     if (user != null) {
                         List<Dog> userDogs = dogService.findByOwner(user);
                         System.out.println("사용자 강아지 수: " + userDogs.size());
+
+                        // ✅ 수정: 강아지가 2마리 이상일 때만 드롭다운 표시
                         showProfileSelector = userDogs.size() >= 2;
 
                         // Dog 엔티티를 Map으로 변환하여 순환 참조 방지
@@ -178,6 +180,47 @@ public class MatchingController {
     }
 
     /**
+     * ✅ 초기 데이터 로드 API 추가
+     */
+    @GetMapping("/api/initial")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getInitialData(
+            @RequestParam(defaultValue = "15") int limit,
+            @AuthenticationPrincipal UserDetails principal) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            boolean isLoggedIn = (principal != null);
+            List<Dog> dogs;
+
+            if (isLoggedIn) {
+                dogs = matchingService.findRandomDogsForUser(principal.getUsername(), limit);
+            } else {
+                dogs = matchingService.findRandomDogs(limit);
+            }
+
+            List<Map<String, Object>> safeDogsData = new ArrayList<>();
+            for (Dog dog : dogs) {
+                safeDogsData.add(convertDogToSafeMap(dog));
+            }
+
+            response.put("success", true);
+            response.put("dogs", safeDogsData);
+            response.put("count", safeDogsData.size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.err.println("초기 데이터 로드 오류: " + e.getMessage());
+            response.put("success", false);
+            response.put("message", "데이터 로드에 실패했습니다.");
+            response.put("dogs", Collections.emptyList());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
      * ✅ Dog 엔티티를 안전한 Map으로 변환 (주소 변환 추가)
      */
     private Map<String, Object> convertDogToSafeMap(Dog dog) {
@@ -216,7 +259,6 @@ public class MatchingController {
                     addressData.put("county", dog.getOwner().getAddress().getCounty());
                     addressData.put("fullAddress", fullAddress);
 
-
                 } catch (Exception e) {
                     // 주소 변환 실패 시 기본값
                     addressData.put("city", "위치");
@@ -234,7 +276,7 @@ public class MatchingController {
                 dogData.put("owner", Map.of("address", addressData));
             }
 
-            // 키워드 정보 처리
+            // ✅ 키워드1만 처리 (키워드2 제거)
             if (dog.getKeywords1() != null && !dog.getKeywords1().isEmpty()) {
                 List<Map<String, Object>> keywordsData = new ArrayList<>();
                 for (DogKeyword1 keyword : dog.getKeywords1()) {
@@ -318,7 +360,6 @@ public class MatchingController {
         }
     }
 
-
     /**
      * 전체 강아지 랜덤 조회 API
      */
@@ -357,7 +398,7 @@ public class MatchingController {
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> searchDogs(
             @RequestParam(name = "ugender", required = false) String gender,
-            @RequestParam(name = "speciesId", required = false) String speciesId, // breed -> speciesId로 수정
+            @RequestParam(name = "speciesId", required = false) String speciesId,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String county,
             @RequestParam(required = false) String town,
@@ -371,10 +412,10 @@ public class MatchingController {
 
             if (isLoggedIn) {
                 dogs = matchingService.searchDogsForUser(
-                        gender, speciesId, city, county, town, keyword1, principal.getUsername(), limit); // breed -> speciesId
+                        gender, speciesId, city, county, town, keyword1, principal.getUsername(), limit);
             } else {
                 dogs = matchingService.searchDogsForGuest(
-                        gender, speciesId, city, county, town, keyword1, limit); // breed -> speciesId
+                        gender, speciesId, city, county, town, keyword1, limit);
             }
 
             List<Map<String, Object>> safeDogsData = new ArrayList<>();
