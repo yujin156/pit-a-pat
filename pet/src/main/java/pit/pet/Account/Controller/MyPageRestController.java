@@ -19,6 +19,7 @@ import pit.pet.Board.Repository.BoardRepository;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +35,13 @@ public class MyPageRestController {
     private final DogService dogService;
 
     // 내가 쓴 게시글
+
     @GetMapping("/posts")
     public List<Map<String, Object>> getMyPosts(@AuthenticationPrincipal CustomUserDetails principal) {
         User user = userRepository.findByUemail(principal.getUsername()).orElseThrow();
         List<Dog> myDogs = dogRepository.findByOwner(user);
         List<BoardTable> myBoards = boardRepository.findByWriterdogIn(myDogs);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return myBoards.stream().map(board -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", board.getBno());
@@ -46,10 +49,10 @@ public class MyPageRestController {
             map.put("title", board.getBdesc());
             map.put("description", board.getBcontent());
             LocalDateTime nowtime = board.getBnowtime();
-            map.put("time", nowtime);
+            // 날짜를 문자열로 변환해서 내려줌 (⭐️)
+            map.put("time", nowtime != null ? nowtime.format(formatter) : null);
             map.put("groupId", board.getGroup().getGno());
             map.put("groupName", board.getGroup().getGname());
-//            map.put("date", board.getBnowtime().toString());
             return map;
         }).toList();
     }

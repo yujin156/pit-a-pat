@@ -194,6 +194,8 @@ function fetchAndRenderPosts() {
         })
         .catch(err => {
             console.error("게시글 불러오기 실패:", err);
+            console.log('postsData:', postsData, Array.isArray(postsData));
+
             document.getElementById('posts-container').innerHTML = '<span>게시글 불러오기 오류</span>';
         });
 }
