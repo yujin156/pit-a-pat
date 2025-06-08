@@ -26,15 +26,14 @@
 }
 
 .match-header h1 {
-    font-size: 48px;
-    font-weight: bold;
-    color: #2c3e50;
+    font-size: 2rem;
+    color: #212121;
     margin: 0 0 10px 0;
 }
 
 .match-header p {
-    font-size: 18px;
-    color: #7f8c8d;
+    color: #B7B7B7;
+    font-size: 0.9rem;
     margin: 0;
 }
 

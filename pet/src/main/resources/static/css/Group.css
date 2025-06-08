@@ -3,7 +3,6 @@
 .group_wrap {
     flex: 1;
     max-width: 1460px;
-    padding: 30px 20px;
     margin: 0 320px 0 120px;
     animation: fadeIn 0.8s ease;
 }
@@ -12,14 +11,14 @@
    ===================================================*/
 
 .group_title {
-    font-size: 45px;
-    color: #0B0B0B;
+    font-size: 2rem;
+    color: #212121;
 }
 
 .group_sub_title {
-    font-size: 25px;
-    margin: 0 0 20px 0;
     color: #B7B7B7;
+    font-size: 0.9rem;
+    margin: 0 0 20px 0;
 }
 
 /* 헤더 및 네비게이션
