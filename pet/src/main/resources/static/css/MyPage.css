@@ -14,7 +14,6 @@
 /* Header */
 .myPage_title {
     grid-column: 1 / -1;
-    margin-bottom: 10px;
 }
 
 .myPage_title h1 {
