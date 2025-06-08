@@ -155,10 +155,8 @@ public class GroupService {
         GroupTable group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다. ID: " + groupId));
 
-        System.out.println("[SVC checkUserStatus] Group ID: " + groupId + ", User ID: " + userId);
 
         Long leaderDno = group.getGleader();
-        System.out.println("[SVC checkUserStatus] Group's stored leaderDno: " + leaderDno);
 
         if (leaderDno == null) {
             System.out.println("[SVC checkUserStatus] Stored leaderDno is NULL. Cannot determine leader via this DNO.");
@@ -184,16 +182,12 @@ public class GroupService {
         boolean isMember = group.getGroupMembers().stream()
                 .anyMatch(member -> {
                     boolean isOwnerOfMemberDog = member.getDog().getOwner().getUno().equals(userId);
-                    // System.out.println("[SVC checkUserStatus] Checking member - Dog: " + member.getDog().getDname() + ", Owner UNO: " + member.getDog().getOwner().getUno() + ", Is current user: " + isOwnerOfMemberDog + ", Member State: " + member.getState());
                     return isOwnerOfMemberDog && member.getState() == MemberStatus.ACCEPTED;
                 });
 
         if (isMember) {
-            System.out.println("[SVC checkUserStatus] User is a MEMBER (but not identified as leader).");
             return "MEMBER";
         }
-
-        System.out.println("[SVC checkUserStatus] User is NOT_JOINED.");
         return "NOT_JOINED";
     }
 

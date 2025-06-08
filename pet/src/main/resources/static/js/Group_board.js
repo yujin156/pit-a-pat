@@ -39,10 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const commentSubmitBtn = document.querySelector('.comment_submit');
     currentGno = window.location.pathname.split("/").pop();
 
-    // loadMyGroupDogs(gno);
-
-    console.log('✅ gno:', gno);
-
     // "가입대기자/멤버 관리" 클릭 시
     memberManagementTab.addEventListener('click', function() {
         // 게시글 영역 숨기기
@@ -75,9 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                 console.error('menu-status API 호출 실패:', response.status);
                 currentUserGroupStatus = "NOT_JOINED";
-                if (response.status === 401) {
-                    console.log("사용자 로그인되지 않음. 기능 제한.");
-                }
                 return null;
             }
             return response.json();
@@ -86,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data) { // response.ok가 아니어서 data가 undefined일 수 있음
                 currentUserGroupStatus = data.status; // 전역 변수에 상태 저장
-                console.log("Current user group status:", currentUserGroupStatus);
 
                 // 기존 메뉴 버튼 표시 로직 (Leader, Member, Not_Joined에 따라)
                 const memberManagement = document.getElementById("member-management");
@@ -119,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     newJoinButton.addEventListener('click', function() {
                         const groupNameElement = document.querySelector('.group_board_title_name');
                         const groupName = groupNameElement ? groupNameElement.textContent : `그룹 (ID: ${currentGno})`;
-                        console.log(`"가입하기" 버튼 클릭됨 -> openApplyModalOnBoard(${currentGno}, "${groupName}") 호출`);
                         openApplyModalOnBoard(currentGno, groupName);
                     });
                 }
@@ -135,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(`/board/api/groups/${gno}/posts?ts=${Date.now()}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             posts = data;
             createPosts();
         })
@@ -192,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.text();
             })
             .then(data => {
-                console.log(isEditMode ? '✅ 게시글 수정 성공' : '✅ 게시글 작성 성공', data);
                 hideCreatePostModal();
                 const currentGnoForReload = formData.get('gno') || window.location.pathname.split("/").pop();
                 fetch(`/board/api/groups/${currentGnoForReload}/posts?ts=${Date.now()}`)
@@ -223,10 +212,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    console.log('🚀 페이지 로드 완료 - 초기화 시작');
 
     // function loadMyGroupDogs(gno) {
-    //     console.log('✅ loadMyGroupDogs - gno:', gno);
     //     fetch(`/board/api/my-group-dogs?gno=${gno}`)
     //         .then(response => response.json())
     //         .then(data => {
@@ -265,7 +252,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 캘린더 즉시 초기화 함수
     function initializeCalendarImmediate() {
-        console.log('📅 캘린더 즉시 초기화 시작');
         renderCalendarNow();
         renderBasicEventsList();
     }
@@ -275,10 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const calendarDates = document.getElementById('calendarDates');
         const currentMonth = document.getElementById('currentMonth');
 
-        console.log('📅 캘린더 요소 확인:', {
-            calendarDates: !!calendarDates,
-            currentMonth: !!currentMonth
-        });
 
         if (!calendarDates || !currentMonth) {
             console.error('❌ 캘린더 요소를 찾을 수 없습니다');
@@ -290,7 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const month = now.getMonth();
 
         currentMonth.textContent = `${year}년 ${month + 1}월`;
-        console.log(`📅 현재 월 설정: ${year}년 ${month + 1}월`);
 
         // 월의 첫 날과 마지막 날
         const firstDay = new Date(year, month, 1);
@@ -301,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
         startDate.setDate(firstDay.getDate() - firstDay.getDay());
 
         calendarDates.innerHTML = '';
-        console.log('📅 날짜 생성 시작...');
 
         // 6주 * 7일 = 42개 날짜 생성
         for (let i = 0; i < 42; i++) {
@@ -320,18 +300,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // 오늘 날짜 하이라이트
             if (isToday(currentDate)) {
                 dateElement.classList.add('today');
-                console.log('✅ 오늘 날짜 표시:', currentDate.getDate());
             }
 
             // 클릭 이벤트 추가
             dateElement.addEventListener('click', function() {
-                console.log('날짜 클릭:', currentDate.getDate());
             });
 
             calendarDates.appendChild(dateElement);
         }
-
-        console.log('✅ 캘린더 날짜 생성 완료 - 42개 날짜 표시');
     }
 
     // 오늘 날짜 확인 함수
@@ -375,7 +351,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const dogName = post.writerDogName || '알 수 없음';
-        console.log('🐞 createPostElement post:', post);
         postDiv.innerHTML = `
             <div class="group_boar_post_writer">
                 <div class="group_board_writer">
@@ -693,14 +668,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 'content' 변수는 이 스코프 어딘가에서 이미 값을 가지고 있어야 합니다.
                 // const content = input.value.trim(); 와 같이요.
 
-                // 👇👇👇 이 로그들을 반드시 추가하고 확인해주세요! 👇👇👇
-                console.log("--- 댓글 전송 직전 값 확인 ---");
-                console.log("bno:", bno);
-                console.log("dno:", dno);
-                console.log("content:", content); // content 변수가 정의된 부분 확인 필요
-                console.log("gno (from modal.getAttribute('data-gno')):", gno);
-                console.log("-----------------------------");
-
                 if (!gno) { // 만약을 위한 방어 코드 (이전에 넣으셨다면 그대로 두세요)
                     alert('자바스크립트: gno 값이 없습니다! 모달의 data-gno 속성을 확인하세요.');
                     console.error('자바스크립트: gno is null or undefined before fetch.');
@@ -755,8 +722,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const commentItem = e.target.closest('.comment_item');
             const cno = commentItem.getAttribute('data-cno');
 
-            console.log("삭제 클릭: ", commentItem, cno);
-
             if (confirm("정말 삭제하시겠습니까?")) {
                 fetch(`/board/comment/api/comments/${cno}`, { method: "DELETE" })
                     .then(res => {
@@ -782,7 +747,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 2️⃣ 거기서 data-post-id로 bno 가져오기
             const bno = postElement.getAttribute('data-post-id');
-            console.log('✅ 수정할 게시글 번호 (bno):', bno);
 
             // 3️⃣ 모달 열기 전에 bno hidden input에 채우기
             const bnoInput = document.getElementById('bno');
@@ -794,9 +758,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`/board/api/post/${bno}`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log('✅ 불러온 수정용 데이터:', data);
-                    console.log('‼️ data.gno 값 확인:', data.gno);
-
                     const gnoInput = document.querySelector('input[name="gno"]');
                     if (gnoInput) {
                         if (data.gno === null || typeof data.gno === 'undefined') {
@@ -814,7 +775,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     if (data.images && data.images.length > 0 && data.imageIds && data.imageIds.length > 0) {
-                        console.log("setEditImage 호출! imgId:", data.imageIds[0]);
                         setEditImage(data.images[0], data.imageIds[0]);
                     } else {
                         console.warn("이미지 PK가 없음. imageIds:", data.imageIds);
@@ -949,8 +909,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (addPostBtn) {
             const groupId = addPostBtn.getAttribute('data-group-id');
             isEditMode = false; // 여기!!
-
-            console.log('✅ groupId (위임방식):', groupId);
 
             // ✅ 방어코드: groupId가 없으면 중단
             if (!groupId || groupId === 'undefined') {
@@ -1096,7 +1054,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // const addPostBtn = document.querySelector('.add_post_btn');
     // if (addPostBtn) {
     //     addPostBtn.addEventListener('click', function() {
-    //         console.log('📝 게시글 작성 모달 열기');
     //         const groupId = this.getAttribute('data-group-id'); // 예를 들어 data-group-id 속성으로 받아오도록!
     //         showCreatePostModal(groupId);
     //
@@ -1114,7 +1071,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('createPostModal');
 
         if (modal) {
-            console.log('✅ showCreatePostModal groupId:', groupId);
 
             // ⭐️ 작성/수정에 따라 textarea name 바꾸기
             const postContent = document.getElementById('postContent');
@@ -1124,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     postContent.setAttribute('name', 'content');
                 }
-                console.log('✅ textarea name 속성:', postContent.getAttribute('name'));
             }
 
             // 🪄 gno 채우기
@@ -1237,11 +1192,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const removeImageBtn = document.getElementById('removeImageBtn');
         const previewContainer = document.getElementById('imagePreviewContainer');
 
-        if (imageUpload && imageUpload.files.length > 0) {
-            console.log('이미지 파일 선택됨:', imageUpload.files);
-        } else {
-            console.log('이미지 파일이 선택되지 않았습니다');
-        }
 
         // 플레이스홀더 클릭 시 파일 선택
         if (imageUploadPlaceholder) {
@@ -1261,12 +1211,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (removeImageBtn) {
             removeImageBtn.addEventListener('click', () => {
                 const imagePreview = document.getElementById('imagePreview');
-                console.log('remove 클릭 - imgId:', imagePreview?.dataset.imgId); // 추가
                 if (isEditMode && imagePreview && imagePreview.dataset.imgId) {
                     if (!deleteImgIds.includes(imagePreview.dataset.imgId)) {
                         deleteImgIds.push(imagePreview.dataset.imgId);
                     }
-                    console.log('삭제할 PK 리스트:', deleteImgIds); // 추가
                 }
                 resetImageUpload();
             });
@@ -1405,8 +1353,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 성공 메시지
         showSuccessMessage('게시글이 성공적으로 작성되었습니다! 🎉');
-
-        console.log('✅ 새 게시글 생성:', newPost);
     }
 
     function showSuccessMessage(message) {
@@ -1448,13 +1394,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 이벤트 리스너 설정
     function setupEventListeners() {
-        console.log('🎯 이벤트 리스너 설정 시작');
 
         // 구글 로그인 버튼
         const signInBtn = document.getElementById('googleSignInBtn');
         if (signInBtn) {
             signInBtn.addEventListener('click', signInGoogle);
-            console.log('✅ 구글 로그인 버튼 이벤트 설정');
         }
 
         // 캘린더 네비게이션
@@ -1463,37 +1407,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (prevMonth) {
             prevMonth.addEventListener('click', () => {
-                console.log('◀ 이전 월 클릭');
                 calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() - 1);
                 renderCalendarNow();
             });
-            console.log('✅ 이전 월 버튼 이벤트 설정');
         }
 
         if (nextMonth) {
             nextMonth.addEventListener('click', () => {
-                console.log('▶ 다음 월 클릭');
                 calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() + 1);
                 renderCalendarNow();
             });
-            console.log('✅ 다음 월 버튼 이벤트 설정');
         }
 
         // 일정 추가 버튼
         const addEventBtn = document.getElementById('addEventBtn');
         if (addEventBtn) {
             addEventBtn.addEventListener('click', () => {
-                console.log('➕ 일정 추가 버튼 클릭');
                 if (calendarState.isSignedIn && calendarState.apiLoaded) {
                     showEventModal();
                 } else {
                     showEventModal(); // API 없어도 모달 표시
                 }
             });
-            console.log('✅ 일정 추가 버튼 이벤트 설정');
         }
-
-        console.log('✅ 모든 이벤트 리스너 설정 완료');
     }
 
     // 기본 일정 목록 렌더링
@@ -1525,7 +1461,6 @@ document.addEventListener('DOMContentLoaded', function() {
             eventsList.appendChild(eventElement);
         });
 
-        console.log('✅ 기본 일정 목록 렌더링 완료');
     }
 
     // 이벤트 모달 표시
@@ -1636,7 +1571,6 @@ document.addEventListener('DOMContentLoaded', function() {
             created: new Date().toISOString()
         };
 
-        console.log('새 이벤트 생성:', newEvent);
 
         // 로컬에 저장
         addLocalEvent(newEvent);
@@ -1693,12 +1627,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 구글 API 관련 함수들 (기본 구현)
     async function initializeGoogleAPI() {
-        console.log('🔄 구글 API 초기화 시작...');
         console.warn('⚠️  구글 API 키가 설정되지 않았습니다. 기본 캘린더를 표시합니다.');
     }
 
     async function signInGoogle() {
-        console.log('구글 로그인 시도');
     }
 
     // CSS 애니메이션 추가
@@ -1777,7 +1709,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 100);
     });
 
-    console.log('반려견 소셜 미팅 플랫폼 로드 완료! 🐾');
 });
 
 function updateUIAccessBasedOnStatus() {
@@ -1917,7 +1848,6 @@ function handleDogSelectionForApplyModalOnBoard(dogDno, clickedCardElement, dogs
     clickedCardElement.classList.add('selected');
     selectedDogDnoForBoardApply = dogDno;
     if(submitButtonElement) submitButtonElement.disabled = false;
-    console.log("가입 신청할 강아지 선택됨 (Board Apply Modal):", selectedDogDnoForBoardApply);
 }
 
 async function submitGroupApplicationOnBoard(event) { // 함수 이름 변경
