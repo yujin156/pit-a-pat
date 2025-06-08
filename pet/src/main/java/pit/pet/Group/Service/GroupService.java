@@ -192,6 +192,7 @@ public class GroupService {
     }
 
 
+
     public Long getLeaderGmno(Long gno, List<Dog> myDogs) {
         GroupTable group = groupRepository.findById(gno)
                 .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));

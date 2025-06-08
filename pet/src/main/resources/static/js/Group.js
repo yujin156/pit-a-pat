@@ -1,106 +1,111 @@
 // ✅ 승인된 내 그룹 목록 (서버에서 채움)
 let myGroups = [];
 let allGroups = [];
-const applicationGroups = [
-    {
-        id: 1,
-        status: 'pending',
-        title: '예비 사냥개들의 모임',
-        imageUrl: '/img/group1.jpg',
-        avatarUrl: '/img/dog1.jpg'
-    },
-    {
-        id: 2,
-        status: 'approved',
-        title: '반려견 훈련 클럽',
-        imageUrl: '/img/group2.jpg',
-        avatarUrl: '/img/dog2.jpg'
-    },
-    {
-        id: 3,
-        status: 'approved',
-        title: '내향적 강아지들의 모임',
-        imageUrl: '/img/Choco.jpg',
-        avatarUrl: '/img/kangKun.jpg'
-    },
-    {
-        id: 4,
-        status: 'rejected',
-        title: '산책 소리에 반응하는 모임',
-        imageUrl: '/img/group3.jpg',
-        avatarUrl: '/img/dog3.jpg'
-    }
-];
-
-const recommendedGroups = [
-    { id: 'rec1', title: '하루 산책 3시간 모임', category: '산책', imageUrl: '/img/kangKun.jpg' },
-    { id: 'rec2', title: '물속성 강아지', category: '산책', imageUrl: '/img/dog1.jpg' },
-    { id: 'rec3', title: '장난감 뽀서', category: '산책', imageUrl: '/img/dog2.jpg' },
-    { id: 'rec4', title: '대형견 전용 놀이터', category: '놀이', imageUrl: '/img/group2.jpg' },
-    { id: 'rec5', title: '소형견 사교 모임', category: '사교', imageUrl: '/img/group1.jpg' },
-    { id: 'rec6', title: '강아지 수영 클럽', category: '운동', imageUrl: '/img/group3.jpg' },
-    { id: 'rec7', title: '펫 카페 투어', category: '여행', imageUrl: '/img/dog3.jpg' },
-    { id: 'rec8', title: '강아지 훈련 워크샵', category: '훈련', imageUrl: '/img/group3.jpg' }
-];
-
-// ========================================
-// 추천 그룹 관리
-// ========================================
-
-const Templates = {recommendedCard(group) {
-        return `
-            <div class="recommended_card" onclick="GroupManager.viewGroup('${group.id}')">
-                <div class="rec_image" style="background-image: url('${group.imageUrl}')"></div>
-                <div class="rec_info">
-                    <span class="rec_category">${group.category}</span>
-                    <div class="rec_title">${group.title}</div>
-                </div>
-            </div>
-        `;
-    }
-};
-
-function renderRecommendedGroups(limit = 5) {
-    const recommendedGrid = document.getElementById('recommendedGrid');
-    if (!recommendedGrid) return;
-
-    const groupsToShow = recommendedGroups.slice(0, limit);
-    recommendedGrid.innerHTML = groupsToShow.map(group => Templates.recommendedCard(group)).join('');
-}
-
-function showAllRecommendedGroups() {
-    renderRecommendedGroups(recommendedGroups.length);
-    const moreLink = document.querySelector('.more_link');
-    if (moreLink) moreLink.style.display = 'none';
-}
-
+let applicationGroups = [];
 // 선택된 관심사
+
+//
+// const applicationGroups = [Add commentMore actions
+//     {
+//         id: 1,
+//         status: 'pending',
+//         title: '예비 사냥개들의 모임',
+//         imageUrl: '/img/group1.jpg',
+//         avatarUrl: '/img/dog1.jpg'
+//     },
+//     {
+//         id: 2,
+//         status: 'approved',
+//         title: '반려견 훈련 클럽',
+//         imageUrl: '/img/group2.jpg',
+//         avatarUrl: '/img/dog2.jpg'
+//     },
+//     {
+//         id: 3,
+//         status: 'approved',
+//         title: '내향적 강아지들의 모임',
+//         imageUrl: '/img/Choco.jpg',
+//         avatarUrl: '/img/kangKun.jpg'
+//     },
+//     {
+//         id: 4,
+//         status: 'rejected',
+//         title: '산책 소리에 반응하는 모임',
+//         imageUrl: '/img/group3.jpg',
+//         avatarUrl: '/img/dog3.jpg'
+//     }
+// ];
+//
+// const recommendedGroups = [
+//     { id: 'rec1', title: '하루 산책 3시간 모임', category: '산책', imageUrl: '/img/kangKun.jpg' },
+//     { id: 'rec2', title: '물속성 강아지', category: '산책', imageUrl: '/img/dog1.jpg' },
+//     { id: 'rec3', title: '장난감 뽀서', category: '산책', imageUrl: '/img/dog2.jpg' },
+//     { id: 'rec4', title: '대형견 전용 놀이터', category: '놀이', imageUrl: '/img/group2.jpg' },
+//     { id: 'rec5', title: '소형견 사교 모임', category: '사교', imageUrl: '/img/group1.jpg' },
+//     { id: 'rec6', title: '강아지 수영 클럽', category: '운동', imageUrl: '/img/group3.jpg' },
+//     { id: 'rec7', title: '펫 카페 투어', category: '여행', imageUrl: '/img/dog3.jpg' },
+//     { id: 'rec8', title: '강아지 훈련 워크샵', category: '훈련', imageUrl: '/img/group3.jpg' }
+// ];
+//
+// // ========================================
+// // 추천 그룹 관리
+// // ========================================
+//
+// const Templates = {recommendedCard(group) {
+//         return `
+//             <div class="recommended_card" onclick="GroupManager.viewGroup('${group.id}')">
+//                 <div class="rec_image" style="background-image: url('${group.imageUrl}')"></div>
+//                 <div class="rec_info">
+//                     <span class="rec_category">${group.category}</span>
+//                     <div class="rec_title">${group.title}</div>
+//                 </div>
+//             </div>
+//         `;
+//     }
+// };
+//
+// function renderRecommendedGroups(limit = 5) {
+//     const recommendedGrid = document.getElementById('recommendedGrid');
+//     if (!recommendedGrid) return;
+//
+//     const groupsToShow = recommendedGroups.slice(0, limit);
+//     recommendedGrid.innerHTML = groupsToShow.map(group => Templates.recommendedCard(group)).join('');
+// }
+//
+// function showAllRecommendedGroups() {
+//     renderRecommendedGroups(recommendedGroups.length);
+//     const moreLink = document.querySelector('.more_link');
+//     if (moreLink) moreLink.style.display = 'none';Add commentMore actions
+// }
 let selectedInterest = null;
 // 중복 요청 방지 플래그
 let creatingGroup = false;
-
+let selectedDogId = null;
 // ✅ 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
-
-    renderRecommendedGroups();
-
-// ✅ 더보기 이벤트 연결
-    const moreLink = document.querySelector('.more_link');
-    if (moreLink) {
-        moreLink.addEventListener('click', showAllRecommendedGroups);
-    }
-
-    // ✅ Promise.all로 fetch 모두 끝나고 나서 탭 렌더링
+//     document.getElementById('groupsGrid').innerHTML = getApplicationStatusHTML();Add commentMore actions
+//
+//     renderRecommendedGroups();
+//
+// // ✅ 더보기 이벤트 연결
+//     const moreLink = document.querySelector('.more_link');
+//     if (moreLink) {
+//         moreLink.addEventListener('click', showAllRecommendedGroups);
+//     }
     Promise.all([
         fetch('/groups/api/my-groups')
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
-                    myGroups = data;
+                    // 상태 분리
+                    myGroups = data.filter(g => g.memberStatus === 'ACCEPTED');
+                    applicationGroups = data.filter(g => g.memberStatus === 'WAIT');
+
                 } else {
                     console.error('내 그룹 데이터 오류: 배열이 아닙니다', data);
                 }
+
             })
             .catch(error => console.error('내 그룹 데이터 오류:', error)),
 
@@ -114,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }).catch(error => console.error('전체 그룹 데이터 오류:', error))
     ]).then(() => {
-        // ⭐️ 모든 fetch가 끝나고 나서 로그인   여부에 따라 첫 화면 렌더링!
+        // ⭐️ 모든 fetch가 끝나고 나서 로그인 여부에 따라 첫 화면 렌더링!
         if (isAuthenticated) {
             switchTab('my');
         } else {
@@ -248,16 +253,17 @@ function searchGroups() {
 
 
 function getApplicationStatusHTML() {
+    if (!applicationGroups.length) {
+        return `<div class="empty-message">가입 대기중인 그룹이 없습니다.</div>`;
+    }
     return applicationGroups.map(group => `
-        <div class="group_card ${group.status}" onclick="viewGroup('${group.id}')">
-            <div class="status_badge ${group.status}">${group.status === 'pending' ? '가입 대기중' : group.status === 'approved' ? '가입 승인' : '가입 거절'}</div>
-            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.id}')">⋯</div>
-            <div class="card_image" style="background-image: url('${group.imageUrl}')"></div>
-            <div class="member_profile">
-                <div class="profile_avatar" style="background-image: url('${group.avatarUrl}')"></div>
-            </div>
+        <div class="group_card pending" onclick="viewGroup('${group.gno}')">
+            <div class="status_badge pending">가입 대기중</div>
+            <div class="card_menu" onclick="event.stopPropagation(); openGroupMenu('${group.gno}')">⋯</div>
+            <div class="card_image" style="background-image: url('${group.gimg ? group.gimg : '/groups/images/default.jpg'}')"></div>
             <div class="card_info">
-                <span class="card_title">${group.title}</span>
+                <span class="card_title">${group.gname}</span>
+                <span class="card_content">${group.gcontent}</span>
             </div>
         </div>
     `).join('');
@@ -385,64 +391,83 @@ function createNewGroup(event) {
             creatingGroup = false; // 중복 요청 방지 플래그 해제
         });
 }
-
 function loadMyDogs() {
-
-    fetch('/groups/api/my-dogs') // 또는 '/api/my-dogs' 일 수 있습니다.
+    fetch('/groups/api/my-dogs')
         .then(response => response.json())
-        .then(dogs => { // dogs는 DogDTO 객체의 배열입니다.
+        .then(dogs => {
             const profileGrid = document.getElementById('profileGrid');
             profileGrid.innerHTML = '';
 
             if (!dogs || dogs.length === 0) {
-
                 profileGrid.innerHTML = '<p>등록된 강아지 정보가 없습니다.</p>';
+                selectedDogId = null;
+                if (document.getElementById('completeBtn')) {
+                    document.getElementById('completeBtn').disabled = true;
+                }
                 return;
             }
 
-            dogs.forEach(dog => { // 여기서 dog는 DogDTO의 필드를 가진 객체입니다.
+            // 대표 강아지(isMain)가 있다면 자동 선택, 없으면 첫 강아지 선택
+            let mainDogDno = null;
+            if (dogs.some(d => d.isMain)) {
+                mainDogDno = dogs.find(d => d.isMain).dno;
+            }
+
+            dogs.forEach(dog => {
+                const avatarUrl = dog.avatarUrl || '/images/default_dog_profile.png';
+                const isMainDog = mainDogDno ? dog.dno === mainDogDno : false;
 
                 const card = document.createElement('div');
-
-                const isMainDog = false; // 예시: dog.isMain 이라는 필드가 DogDTO에 있다고 가정하거나, 로직으로 판단
-
+                card.className = 'profile_card' + (isMainDog ? ' selected' : '');
+                card.setAttribute('data-profile-id', dog.dno);
+                card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${avatarUrl}')`;
 
                 card.innerHTML = `
-        <div class="profile_card ${isMainDog ? 'selected' : ''}" 
-             data-profile-id="${dog.dno}"                         
-             onclick="ModalManager.selectProfile('${dog.dno}')"    
-             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('${dog.avatarUrl}');">
-            
-            ${!isMainDog ? `<div class="profile_card_menu" onclick="event.stopPropagation(); ModalManager.openProfileMenu('${dog.dno}')"></div>` : ''} 
-            
-            <div class="profile_info_overlay">
-                <div class="profile_name_modal">${dog.dname}</div> 
-                <div class="profile_details">
-                    <span class="profile_detail_item">${dog.speciesName}</span> 
-                    <span class="profile_detail_item">${dog.size}</span> 
-                    <span class="profile_detail_item">${dog.gender}</span>
-                </div>
-            </div>
-        </div>
-    `;
+                    <div class="profile_info_overlay">
+                        <div class="profile_name_modal">${dog.dname}</div>
+                        <div class="profile_details">
+                            <span class="profile_detail_item">${dog.speciesName || ''}</span>
+                            <span class="profile_detail_item">${dog.size || ''}</span>
+                            <span class="profile_detail_item">${dog.gender || ''}</span>
+                        </div>
+                    </div>
+                `;
 
-                card.firstElementChild.addEventListener('click', () => { // 생성된 .profile_card div에 이벤트 리스너 추가
+                card.addEventListener('click', function () {
                     document.querySelectorAll('.profile_card').forEach(c => c.classList.remove('selected'));
-                    card.firstElementChild.classList.add('selected'); // 실제 선택되는 요소에 selected 클래스 추가
+                    this.classList.add('selected');
                     selectedDogId = dog.dno;
-                    if (document.getElementById('completeBtn')) {
-                        document.getElementById('completeBtn').disabled = false;
-                    }
+                    const completeBtn = document.getElementById('completeBtn');
+                    if (completeBtn) completeBtn.disabled = false;
                 });
+
                 profileGrid.appendChild(card);
+
+                // 최초 로딩 시 대표 강아지 자동 선택
+                if (isMainDog) {
+                    selectedDogId = dog.dno;
+                    const completeBtn = document.getElementById('completeBtn');
+                    if (completeBtn) completeBtn.disabled = false;
+                }
             });
+
+            // 대표 강아지가 없으면 첫 번째 강아지 자동 선택
+            if (!selectedDogId && dogs.length > 0) {
+                profileGrid.firstChild.classList.add('selected');
+                selectedDogId = dogs[0].dno;
+                const completeBtn = document.getElementById('completeBtn');
+                if (completeBtn) completeBtn.disabled = false;
+            }
         })
         .catch(error => {
             console.error('내 강아지 불러오기 오류:', error);
             const profileGrid = document.getElementById('profileGrid');
-            if (profileGrid) { // 오류 발생 시 사용자에게 알림
+            if (profileGrid) {
                 profileGrid.innerHTML = '<p>강아지 정보를 불러오는 중 오류가 발생했습니다.</p>';
             }
+            selectedDogId = null;
+            const completeBtn = document.getElementById('completeBtn');
+            if (completeBtn) completeBtn.disabled = true;
         });
 }
 
@@ -484,21 +509,23 @@ function viewGroup(groupId) {
     window.location.href = `/groups/${groupId}`;
 }
 function openGroupMenu(groupId) { alert(`${groupId} 그룹 메뉴를 열었습니다.`); }
-
 async function fetchAndUpdateMyGroups() {
     try {
-        const response = await fetch('/groups/api/my-groups'); // 내 그룹 목록 API 경로
+        const response = await fetch('/groups/api/my-groups');
         if (!response.ok) {
             console.error('내 그룹 목록 다시 불러오기 실패:', await response.text());
-            // 실패 시 사용자에게 알림을 주거나, 이전 목록을 그대로 유지할 수 있습니다.
-            return; // 여기서 중단하거나, 이전 데이터를 유지
+            return;
         }
         const data = await response.json();
         if (Array.isArray(data)) {
-            myGroups = data; // 🌟 전역 myGroups 배열 업데이트!
-            // 현재 'my' 탭이 활성화되어 있다면 화면도 바로 갱신
+            // 상태 분리 (여기도 memberStatus로!)
+            myGroups = data.filter(g => g.memberStatus === 'ACCEPTED');
+            applicationGroups = data.filter(g => g.memberStatus === 'WAIT');
             if (currentTab === 'my') {
                 updateTabContent('my');
+            }
+            if (currentTab === 'application') {
+                updateTabContent('application');
             }
         } else {
             console.error('내 그룹 목록 업데이트 실패: 서버 응답이 배열이 아님', data);
