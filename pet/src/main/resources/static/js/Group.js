@@ -16,10 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/groups/api/my-groups')
             .then(response => response.json())
             .then(data => {
-                console.log('✅ 내 그룹 데이터:', data);  // 응답 데이터 확인
                 if (Array.isArray(data)) {
                     myGroups = data;
-                    console.log('✅ 내 그룹 데이터가 배열입니다:', data);
                 } else {
                     console.error('내 그룹 데이터 오류: 배열이 아닙니다', data);
                 }
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (Array.isArray(data)) {
                     allGroups = data;
-                    console.log('✅ 전체 그룹 데이터:', data);
                 } else {
                     console.error('전체 그룹 데이터 오류:', data);
                 }
@@ -292,7 +289,6 @@ function createNewGroup(event) {
             return response.text(); // 성공 시 텍스트 응답 (서버 응답 형식에 따라 .json()으로 변경 가능)
         })
         .then(message => {
-            console.log('그룹 생성 성공:', message);
             alert("그룹이 성공적으로 생성되었습니다!"); // 사용자에게 성공 알림
 
             closeModal(); // 모달 닫기
@@ -325,7 +321,6 @@ function loadMyDogs() {
             }
 
             dogs.forEach(dog => { // 여기서 dog는 DogDTO의 필드를 가진 객체입니다.
-                // console.log(dog); // DogDTO 내용 확인용 (dno, dname, speciesName, avatarUrl)
 
                 const card = document.createElement('div');
 
@@ -421,7 +416,6 @@ async function fetchAndUpdateMyGroups() {
         const data = await response.json();
         if (Array.isArray(data)) {
             myGroups = data; // 🌟 전역 myGroups 배열 업데이트!
-            console.log('✅ 내 그룹 목록 성공적으로 업데이트됨:', myGroups);
             // 현재 'my' 탭이 활성화되어 있다면 화면도 바로 갱신
             if (currentTab === 'my') {
                 updateTabContent('my');
@@ -444,7 +438,6 @@ async function fetchAndUpdateAllGroups() {
         const data = await response.json();
         if (Array.isArray(data)) {
             allGroups = data;
-            console.log('✅ 전체 그룹 목록 성공적으로 업데이트됨:', allGroups);
 
             if (currentTab === 'all') {
                 updateTabContent('all');

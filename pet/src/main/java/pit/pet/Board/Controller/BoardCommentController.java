@@ -101,10 +101,6 @@ public class BoardCommentController {
     @ResponseBody
     public Map<String, Object> createCommentApi(@RequestBody BoardCommentCreateRequest request,
                                                 @AuthenticationPrincipal UserDetails principal) {
-        System.out.println("게시글 번호 (bno): " + request.getBno());
-        System.out.println("강아지 번호 (dno): " + request.getDno());
-        System.out.println("댓글 내용 (content): " + request.getContent());
-        System.out.println("그룹 번호 (gno): " + request.getGno());
 
         User me = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));

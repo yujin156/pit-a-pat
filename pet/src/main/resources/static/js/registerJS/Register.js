@@ -8,7 +8,6 @@ let currentDogIndex = 1;
 let totalDogs = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ Register 시스템 로드됨');
     initializeTermsCheckboxes();
     updateStep();
     startDogImageRotation();
@@ -63,8 +62,6 @@ function validateRequiredTerms() {
 
 // 스텝 업데이트
 function updateStep() {
-    console.log("현재 currentStep:", currentStep);
-    console.log("찾을 id:", `step${currentStep}_text`);
 
     document.querySelectorAll('.content_step').forEach(step => step.classList.remove('active'));
     document.getElementById(`content_step${currentStep}`).classList.add('active');
@@ -192,7 +189,6 @@ function nextStep() {
 
         // Step4 iframe이 로드되고 나서 dogId가 생성되는 시점에 아래 로직 실행
         activeIframe.onload = () => {
-            console.log('✅ Step4 iframe onload 발생');
             const iframeDoc = activeIframe.contentDocument || activeIframe.contentWindow.document;
 
             // Step4에서 dogId 생성
