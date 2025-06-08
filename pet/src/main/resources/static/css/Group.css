@@ -315,17 +315,23 @@
 .rec_category {
     display: inline-block;
     padding: 3px 8px;
-    background: #e3f2fd;
-    color: #1976d2;
+    background: #387FEB;
+    color: #FFFFFF;
     border-radius: 10px;
     font-size: 11px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .rec_title {
-    font-size: 13px;
-    color: #000;
-    line-height: 1.3;
+    font-size: 0.85rem;
+    color: #0B0B0B;
+    margin-bottom: 5px;
+}
+
+.rec_subject{
+    font-size: 0.65rem;
+    color: #4c4c4c;
+    margin-bottom: 5px;
 }
 
 /* 상태 배지

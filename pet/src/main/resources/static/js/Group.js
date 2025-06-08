@@ -37,14 +37,14 @@ let applicationGroups = [];
 // ];
 //
  const recommendedGroups = [
-     { id: 'rec1', title: '하루 산책 3시간 모임', category: '산책', imageUrl: '/img/kangKun.jpg' },
-     { id: 'rec2', title: '물속성 강아지', category: '산책', imageUrl: '/img/dog1.jpg' },
-     { id: 'rec3', title: '장난감 뽀서', category: '산책', imageUrl: '/img/dog2.jpg' },
-     { id: 'rec4', title: '대형견 전용 놀이터', category: '놀이', imageUrl: '/img/group2.jpg' },
-     { id: 'rec5', title: '소형견 사교 모임', category: '사교', imageUrl: '/img/group1.jpg' },
-     { id: 'rec6', title: '강아지 수영 클럽', category: '운동', imageUrl: '/img/group3.jpg' },
-     { id: 'rec7', title: '펫 카페 투어', category: '여행', imageUrl: '/img/dog3.jpg' },
-     { id: 'rec8', title: '강아지 훈련 워크샵', category: '훈련', imageUrl: '/img/group3.jpg' }
+     { id: 'rec1', title: '하루 산책 3시간 모임', category: '산책', imageUrl: 'https://plus.unsplash.com/premium_photo-1663133844035-aedd7ddcfca8?q=80&w=3518&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', subject: '3시간 동안 매일 산책은 힘든것 같아요'},
+     { id: 'rec2', title: '물속성 강아지', category: '여행', imageUrl: 'https://images.unsplash.com/photo-1516222338250-863216ce01ea?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '오늘도 수영장에서 안나와요'},
+     { id: 'rec3', title: '함께 드라이브 합시다', category: '여행', imageUrl: 'https://images.unsplash.com/photo-1559190394-df5a28aab5c5?q=80&w=3369&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '6시간 드라이브 :)' },
+     { id: 'rec4', title: '대형견 전용 놀이터', category: '놀이', imageUrl: 'https://images.unsplash.com/photo-1494947665470-20322015e3a8?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '뛰어노느라 집에 안가요ㅜㅜ'},
+     { id: 'rec5', title: '소형견 사교 모임', category: '사교', imageUrl: 'https://images.unsplash.com/photo-1583336663277-620dc1996580?q=80&w=3538&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '작고 소중한 악동들' },
+     { id: 'rec6', title: '강아지 수영 클럽', category: '운동', imageUrl: 'https://images.unsplash.com/photo-1626529184607-29c2712ce9ad?q=80&w=3534&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '여름엔 물놀이!!'},
+     { id: 'rec7', title: '간식 공유', category: '동네', imageUrl: 'https://images.unsplash.com/photo-1597806999047-9456837df754?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ,  subject: '맛있는것에 대가가 있다'},
+     { id: 'rec8', title: '강아지 훈련 워크샵', category: '훈련', imageUrl: 'https://plus.unsplash.com/premium_photo-1679521026521-e7929aae047d?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' , subject: '오늘의 힘든 훈련' }
  ];
 //jpg
 // // ========================================
@@ -58,6 +58,7 @@ let applicationGroups = [];
                  <div class="rec_info">
                      <span class="rec_category">${group.category}</span>
                      <div class="rec_title">${group.title}</div>
+                     <span class="rec_subject">${group.subject}</span>
                  </div>
              </div>
          `;
