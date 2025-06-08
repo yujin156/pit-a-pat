@@ -1713,13 +1713,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function updateUIAccessBasedOnStatus() {
     const addPostButton = document.querySelector('.add_post_btn'); // 게시물 추가 버튼
-    // 게시물 모달 내 댓글 입력 관련 요소들은 모달이 열릴 때 처리하거나, 전역적으로 클래스를 부여해서 제어
     const commentInputAreas = document.querySelectorAll('.modal_comment_input'); // 예시 선택자
+    const root = document.body;
+
+    // 먼저 모든 상태 초기화
+    root.classList.remove("member", "leader", "not-joined");
+
+    if (currentUserGroupStatus === "LEADER") {
+        root.classList.add("leader");
+    } else if (currentUserGroupStatus === "MEMBER") {
+        root.classList.add("member");
+    } else {
+        root.classList.add("not-joined");
+    }
+
+    if (addPostButton) {
+        addPostButton.style.display =
+            currentUserGroupStatus === "LEADER" || currentUserGroupStatus === "MEMBER"
+                ? "flex" : "none";
+    }
+
 
     if (currentUserGroupStatus === "LEADER" || currentUserGroupStatus === "MEMBER") {
-        // 멤버 또는 리더일 경우: 글쓰기, 댓글쓰기 가능
         if (addPostButton) {
-            addPostButton.style.display = 'block'; // 또는 'flex', 'inline-block' 등 원래대로
+            addPostButton.style.display = 'block';
             // addPostButton.disabled = false; // 버튼일 경우
         }
         commentInputAreas.forEach(area => {

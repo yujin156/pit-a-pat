@@ -2687,3 +2687,7 @@
     line-height: 1.5;
     color: #212121;
 }
+
+.not-joined .board_add_post {
+    display: none !important;  /* 글쓰기 영역만 */
+}
