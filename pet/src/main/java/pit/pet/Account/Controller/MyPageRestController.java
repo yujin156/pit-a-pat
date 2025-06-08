@@ -18,6 +18,7 @@ import pit.pet.Board.Repository.BoardCommentRepository;
 import pit.pet.Board.Repository.BoardRepository;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,11 @@ public class MyPageRestController {
             map.put("image", (!board.getImages().isEmpty() ? board.getImages().get(0).getBiurl() : "/img/default.jpg"));
             map.put("title", board.getBdesc());
             map.put("description", board.getBcontent());
-            map.put("date", board.getBnowtime().toString());
+            LocalDateTime nowtime = board.getBnowtime();
+            map.put("time", nowtime);
+            map.put("groupId", board.getGroup().getGno());
+            map.put("groupName", board.getGroup().getGname());
+//            map.put("date", board.getBnowtime().toString());
             return map;
         }).toList();
     }
