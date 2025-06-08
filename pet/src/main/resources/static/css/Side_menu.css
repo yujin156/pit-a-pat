@@ -134,15 +134,14 @@
     width: 120px;
     border-radius: 30px;
     justify-content: center;
-    background-color: transparent;
     border: 1px solid #F4E7F1;
 }
 
-.menu:hover .main:hover:not(.active),
-.menu:hover .mach:hover:not(.active),
-.menu:hover .friend:hover:not(.active),
-.menu:hover .menu_group:hover:not(.active),
-.menu:hover .myPage:hover:not(.active) {
+.menu:hover .main:hover,
+.menu:hover .mach:hover,
+.menu:hover .friend:hover,
+.menu:hover .menu_group:hover,
+.menu:hover .myPage:hover{
     background-color: #F4E7F1;
     border: none;
 }

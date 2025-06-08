@@ -43,6 +43,7 @@ public class MatchingController {
      */
     @GetMapping
     public String matchingPage(@AuthenticationPrincipal UserDetails principal, Model model) {
+        model.addAttribute("currentPage", "matchingPage");
         try {
             // 기본값들을 먼저 설정
             model.addAttribute("isLoggedIn", false);
@@ -170,6 +171,7 @@ public class MatchingController {
             model.addAttribute("showProfileSelector", false);
             model.addAttribute("matchingDogs", Collections.emptyList());
             model.addAttribute("keywords", Collections.emptyList());
+
 
             return "Match/Match";
         }
