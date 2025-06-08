@@ -14,7 +14,6 @@ import pit.pet.Account.Repository.UserRepository;
 import pit.pet.Account.User.Dog;
 import pit.pet.Account.User.DogDTO;
 import pit.pet.Account.User.User;
-import pit.pet.Board.Entity.BoardTable;
 import pit.pet.Board.Service.BoardManageService;
 import pit.pet.Group.Repository.GroupMemberRepository;
 import pit.pet.Group.Request.ApplyGroupRequest;
@@ -26,7 +25,6 @@ import pit.pet.Group.entity.GroupMemberTable;
 import pit.pet.Group.entity.GroupTable;
 import pit.pet.Group.entity.GroupTableDTO;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +130,9 @@ public class GroupController {
     @GetMapping("/list")
     public String groupList(Model model,
                             @AuthenticationPrincipal UserDetails principal) {
+        model.addAttribute("currentPage", "groupPage");
         // 🔥 전체 그룹 목록
+
         List<GroupTableDTO> groups = groupService.getAllGroups();
         model.addAttribute("groupList", groups);
 

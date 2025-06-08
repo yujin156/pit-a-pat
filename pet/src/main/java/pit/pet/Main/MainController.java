@@ -61,6 +61,7 @@ public class MainController {
         if (error != null) {
             model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
+        model.addAttribute("currentPage", "mainPage");
         return "Home";
     }
 

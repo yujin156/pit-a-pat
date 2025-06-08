@@ -38,8 +38,8 @@
     <!-- 메뉴 아이템 영역 -->
     <div class="menuContent">
         <!-- HOME 메뉴 -->
-        <div class="main">
-            <a href="/" class="menu_a">
+        <div class="main" th:classappend="${currentPage} == 'mainPage' ? 'active' : ''">
+        <a href="/" class="menu_a">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15.314"
                          height="15.82" viewBox="0 0 15.314 15.82">
@@ -65,7 +65,7 @@
         </div>
 
         <!-- MATCH 메뉴 -->
-        <div class="mach">
+        <div class="mach" th:classappend="${currentPage} == 'matchingPage' ? 'active' : ''">
             <a href="/matching" class="menu_a">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18.851" height="17.248" viewBox="0 0 18.851 17.248">
@@ -79,7 +79,7 @@
         </div>
 
         <!-- FRIEND 메뉴 -->
-        <div class="friend">
+        <div class="friend" th:classappend="${currentPage} == 'friendPage' ? 'active' : ''">
             <a href="/dog-friends/list" class="menu_a">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20.08" height="16.2" viewBox="0 0 20.08 16.2">
@@ -111,7 +111,7 @@
 
         <!-- GROUP 메뉴 -->
 
-        <div class="menu_group">
+        <div class="menu_group" th:classappend="${currentPage} == 'groupPage' ? 'active' : ''">
             <a href="/groups/list" class="menu_a">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16.245" height="15.608"
@@ -140,7 +140,7 @@
         </div>
 
         <!-- MY PAGE 메뉴 -->
-        <div class="myPage">
+        <div class="myPage" th:classappend="${currentPage} == 'myPage' ? 'active':'' ">
             <a href="/user/mypage" class="menu_a">
                 <div class="icon">
 <!--                <svg xmlns="http://www.w3.org/2000/svg" width="12.07" height="18.329"-->
