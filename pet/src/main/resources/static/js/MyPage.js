@@ -55,7 +55,7 @@ function createPostCard(post) {
     ).join('');
 
     return `
-        <article class="myPage_post_card" data-post-id="${post.id}">
+        <article class="myPage_post_card" data-post-id="${post.id}" data-group-id="${post.groupId}" data-group-name="${post.groupName}">
             <img src="${post.image}" alt="${post.title}" class="myPage_post_image">
             <div class="myPage_post_content">
                 <h3>${post.title}</h3>
@@ -273,8 +273,11 @@ function attachPostEventListeners() {
         card.addEventListener('click', (e) => {
             if (e.target.closest('.myPage_post_menu')) return;
             const postId = card.dataset.postId;
+            const groupId = card.dataset.groupId;
+            const groupName = card.dataset.groupName;
             const title = card.querySelector('h3').textContent;
-            alert(`"${title}" 게시글 상세보기로 이동합니다. (ID: ${postId})`);
+            alert(`"${title}" 게시글 상세보기로 이동합니다. (${groupName})`);
+            window.location.href=`/groups/${groupId}`
         });
     });
 
