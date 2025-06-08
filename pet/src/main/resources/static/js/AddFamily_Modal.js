@@ -454,7 +454,7 @@ function handleProfileImageUpload(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const uploadArea = document.getElementById('imageUploadArea');
-            uploadArea.innerHTML = `<img src="${e.target.result}" class="uploaded_image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">`;
+            uploadArea.innerHTML = `<img src="${e.target.result}" class="uploaded_image">`;
             uploadArea.classList.add('has_image');
             uploadedImage = e.target.result;
         };
