@@ -122,62 +122,90 @@
     position: relative;
     overflow: hidden;
 }
+
 .slider_container {
+    position: absolute;
+    display: flex;
+    left: 0;
+    top: 0;
+    transition: left 0.5s ease;
+}
+
+/* 강아지 카드 스타일 수정 */
+.p_dog {
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    width: 300px;
+    min-width: 300px;
+    height: 400px;
+    flex-shrink: 0;
+    margin: 0 10px;
+}
+
+/* 이미지 백그라운드 - 전체 카드를 덮도록 수정 */
+.dog_img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    position: absolute;
-    left: 0;
-    transition: left 0.5s ease; /* 부드러운 전환 효과 */
-}
-/* 강아지 카드 스타일 */
-.p_dog {
-    min-width: 280px;
-    height: 350px;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 0 1px #387FEB;
-    background: white;
-    margin: 25px 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    flex-shrink: 0; /* 카드가 줄어들지 않도록 */
-}
-
-.p_dog:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 1px #387FEB;
-    z-index: 10;
-    transition: all 0.5s ease;
-}
-
-.dog_img {
-    width: 100%;
-    height: 70%;
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
+    border-radius: 30px;
+    z-index: 1;
+}
 
-    border-radius: 20px;
+.p_dog::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    z-index: 2;
+    border-radius: inherit;
+    mix-blend-mode: multiply;
+    pointer-events: none;
 }
 
 .name_hart {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    z-index: 3;
     display: flex;
-    padding: 20px 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: #fff;
+    font-size: 2rem;
 }
 
 .dog_name {
-    font-size: 18px;
-    margin-right: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hart_icon {
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.hart_icon > svg {
+    width: 60px;
+}
+
+.hart_icon:hover {
+    transform: scale(1.1);
 }
 
 .hart_icon svg {
-    fill: #F5F6F8;
+    fill: rgba(255, 255, 255, 0.8);
     transition: fill 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .hart_icon.active svg {
@@ -185,20 +213,29 @@
 }
 
 .keyword {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    z-index: 3;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+    padding: 0 20px;
 }
 
 .white_label, .blue_label {
-    padding: 5px 20px;
-    border-radius: 15px;
-    font-size: 10px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    white-space: nowrap;
+    font-weight: 500;
 }
 
 .white_label {
-    border: 1px solid #387FEB;
-    color: #212121;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    backdrop-filter: blur(4px);
 }
 
 .blue_label {
@@ -214,38 +251,48 @@
     display: none; /* 인디케이터 숨김 */
 }
 
+/* 반응형 스타일 */
 @media (max-width: 768px) {
     .slider_outer {
-        height: 350px; /* 높이 유지 */
+        height: 350px;
     }
 
     .p_dog {
-        min-width: 240px; /* 카드 최소 너비 유지 */
-        width: 240px;     /* 고정 너비 설정 */
-        height: 300px;
-        flex-shrink: 0;   /* 카드가 줄어들지 않도록 */
+        min-width: 240px;
+        width: 240px;
+        height: 320px;
+        margin: 0 8px;
     }
 
-    .dog_img {
-        height: 180px;    /* 이미지 높이 고정 */
+    .name_hart {
+        bottom: 50px;
+        font-size: 20px;
+    }
+
+    .keyword {
+        bottom: 15px;
     }
 }
 
 @media (max-width: 480px) {
     .slider_outer {
-        height: 320px; /* 높이 조정 */
+        height: 320px;
     }
 
     .p_dog {
-        min-width: 220px; /* 더 작은 화면에서도 최소 크기 유지 */
+        min-width: 220px;
         width: 220px;
         height: 280px;
-        margin: 20px 8px;
-        flex-shrink: 0;
+        margin: 0 6px;
     }
 
-    .dog_img {
-        height: 160px;
+    .name_hart {
+        bottom: 45px;
+        font-size: 18px;
+    }
+
+    .keyword {
+        bottom: 12px;
     }
 }
 
