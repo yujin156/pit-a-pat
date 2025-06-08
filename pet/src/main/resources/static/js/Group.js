@@ -1,6 +1,78 @@
 // ✅ 승인된 내 그룹 목록 (서버에서 채움)
 let myGroups = [];
 let allGroups = [];
+const applicationGroups = [
+    {
+        id: 1,
+        status: 'pending',
+        title: '예비 사냥개들의 모임',
+        imageUrl: '/img/group1.jpg',
+        avatarUrl: '/img/dog1.jpg'
+    },
+    {
+        id: 2,
+        status: 'approved',
+        title: '반려견 훈련 클럽',
+        imageUrl: '/img/group2.jpg',
+        avatarUrl: '/img/dog2.jpg'
+    },
+    {
+        id: 3,
+        status: 'approved',
+        title: '내향적 강아지들의 모임',
+        imageUrl: '/img/Choco.jpg',
+        avatarUrl: '/img/kangKun.jpg'
+    },
+    {
+        id: 4,
+        status: 'rejected',
+        title: '산책 소리에 반응하는 모임',
+        imageUrl: '/img/group3.jpg',
+        avatarUrl: '/img/dog3.jpg'
+    }
+];
+
+const recommendedGroups = [
+    { id: 'rec1', title: '하루 산책 3시간 모임', category: '산책', imageUrl: '/img/kangKun.jpg' },
+    { id: 'rec2', title: '물속성 강아지', category: '산책', imageUrl: '/img/dog1.jpg' },
+    { id: 'rec3', title: '장난감 뽀서', category: '산책', imageUrl: '/img/dog2.jpg' },
+    { id: 'rec4', title: '대형견 전용 놀이터', category: '놀이', imageUrl: '/img/group2.jpg' },
+    { id: 'rec5', title: '소형견 사교 모임', category: '사교', imageUrl: '/img/group1.jpg' },
+    { id: 'rec6', title: '강아지 수영 클럽', category: '운동', imageUrl: '/img/group3.jpg' },
+    { id: 'rec7', title: '펫 카페 투어', category: '여행', imageUrl: '/img/dog3.jpg' },
+    { id: 'rec8', title: '강아지 훈련 워크샵', category: '훈련', imageUrl: '/img/group3.jpg' }
+];
+
+// ========================================
+// 추천 그룹 관리
+// ========================================
+
+const Templates = {recommendedCard(group) {
+        return `
+            <div class="recommended_card" onclick="GroupManager.viewGroup('${group.id}')">
+                <div class="rec_image" style="background-image: url('${group.imageUrl}')"></div>
+                <div class="rec_info">
+                    <span class="rec_category">${group.category}</span>
+                    <div class="rec_title">${group.title}</div>
+                </div>
+            </div>
+        `;
+    }
+};
+
+function renderRecommendedGroups(limit = 5) {
+    const recommendedGrid = document.getElementById('recommendedGrid');
+    if (!recommendedGrid) return;
+
+    const groupsToShow = recommendedGroups.slice(0, limit);
+    recommendedGrid.innerHTML = groupsToShow.map(group => Templates.recommendedCard(group)).join('');
+}
+
+function showAllRecommendedGroups() {
+    renderRecommendedGroups(recommendedGroups.length);
+    const moreLink = document.querySelector('.more_link');
+    if (moreLink) moreLink.style.display = 'none';
+}
 
 // 선택된 관심사
 let selectedInterest = null;
@@ -10,6 +82,15 @@ let creatingGroup = false;
 // ✅ 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
+    document.getElementById('groupsGrid').innerHTML = getApplicationStatusHTML();
+
+    renderRecommendedGroups();
+
+// ✅ 더보기 이벤트 연결
+    const moreLink = document.querySelector('.more_link');
+    if (moreLink) {
+        moreLink.addEventListener('click', showAllRecommendedGroups);
+    }
 
     // ✅ Promise.all로 fetch 모두 끝나고 나서 탭 렌더링
     Promise.all([
@@ -34,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }).catch(error => console.error('전체 그룹 데이터 오류:', error))
     ]).then(() => {
-        // ⭐️ 모든 fetch가 끝나고 나서 로그인 여부에 따라 첫 화면 렌더링!
+        // ⭐️ 모든 fetch가 끝나고 나서 로그인   여부에 따라 첫 화면 렌더링!
         if (isAuthenticated) {
             switchTab('my');
         } else {
