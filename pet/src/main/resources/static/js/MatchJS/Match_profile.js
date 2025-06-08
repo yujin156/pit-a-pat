@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const notification = document.createElement('div');
         notification.className = 'match-notification';
         notification.innerHTML = message;
-        notification.style.cssText = `
+        notification.matchProfileStyle .cssText = `
             position: fixed;
             top: 20px;
             left: 50%;
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 3초 후 제거
         setTimeout(() => {
             if (notification.parentNode) {
-                notification.style.animation = 'slideUpNotification 0.3s ease-in';
+                notification.matchProfileStyle .animation = 'slideUpNotification 0.3s ease-in';
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.remove();
@@ -132,8 +132,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 애니메이션 CSS 추가
-const style = document.createElement('style');
-style.textContent = `
+const matchProfileStyle  = document.createElement('style');
+matchProfileStyle .textContent = `
     @keyframes slideDownNotification {
         from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
         to { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -143,4 +143,4 @@ style.textContent = `
         to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(matchProfileStyle );

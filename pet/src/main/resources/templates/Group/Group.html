@@ -62,7 +62,7 @@
 <div class="modal_overlay" id="createGroupModal" onclick="closeModal()">
     <div class="modal_container" onclick="event.stopPropagation()">
         <!-- 1단계: 관심사 선택 -->
-        <div class="modal_step" id="step1">
+        <div class="modal_step_group" id="step1_group">
             <input type="hidden" id="interestHiddenInput">
             <div class="modal_header">
                 <h2 class="modal_title">어떤 관심사로 시작할까요?</h2>
@@ -114,12 +114,12 @@
             </div>
             <div class="modal_buttons">
                 <button class="btn_secondary" onclick="closeModal()">취소</button>
-                <button class="btn_primary" id="nextStep1" onclick="nextStep(2)" disabled>다음</button>
+                <button class="btn_primary" id="nextStep_group1" onclick="nextStep_group(2)" disabled>다음</button>
             </div>
         </div>
 
         <!-- 2단계: 모임 정보 입력 -->
-        <div class="modal_step" id="step2" style="display: none;">
+        <div class="modal_step_group" id="step2_group" style="display: none;">
             <div class="modal_header">
                 <h2 class="modal_title">모임 이름</h2>
                 <p class="modal_subtitle">모임 기본 프로필을 작성 해주세요.</p>
@@ -146,12 +146,12 @@
             </div>
             <div class="modal_buttons">
                 <button class="btn_secondary" onclick="prevStep(1)">이전</button>
-                <button class="btn_primary" id="nextStep2" onclick="nextStep(3)">다음</button>
+                <button class="btn_primary" id="nextStep_group2" onclick="nextStep_group(3)">다음</button>
             </div>
         </div>
 
         <!-- 3단계: 메인 프로필 선택 -->
-        <div class="modal_step" id="step3" style="display: none;">
+        <div class="modal_step_group" id="step3_group" style="display: none;">
             <div class="modal_header">
                 <h2 class="modal_title">메인 프로필 선택</h2>
                 <p class="modal_subtitle">이 그룹에서 사용할 메인 프로필을 선택해주세요</p>

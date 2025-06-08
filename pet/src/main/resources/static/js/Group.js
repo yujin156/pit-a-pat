@@ -198,15 +198,15 @@ function closeModal() {
     resetForm();
 }
 function showStep(stepNumber) {
-    document.querySelectorAll('.modal_step').forEach(step => step.style.display = 'none');
-    document.getElementById(`step${stepNumber}`).style.display = 'block';
+    document.querySelectorAll('.modal_step_group').forEach(step => step.style.display = 'none');
+    document.getElementById(`step${stepNumber}_group`).style.display = 'block';
 
     if (stepNumber === 3) {
         loadMyDogs();
     }
 }
-function nextStep(stepNumber) { showStep(stepNumber); }
-function prevStep(stepNumber) { showStep(stepNumber); }
+function nextStep_group(stepNumber) { showStep(stepNumber); }
+function prevStep_group(stepNumber) { showStep(stepNumber); }
 
 function selectInterest(interest) {
     document.querySelectorAll('.interest_card').forEach(card => card.classList.remove('selected'));
@@ -219,7 +219,7 @@ function selectInterest(interest) {
     updateNextButton();
 }
 function updateNextButton() {
-    const nextBtn = document.getElementById('nextStep1');
+    const nextBtn = document.getElementById('nextStep_group1');
     nextBtn.disabled = !(selectedInterest && selectedInterest !== '');
 }
 
