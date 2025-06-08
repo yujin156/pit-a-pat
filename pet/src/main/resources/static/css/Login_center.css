@@ -392,13 +392,17 @@ h3{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 15px;
     color: #387feb;
     cursor: pointer;
 }
 
 .plus_btn {
     margin-right: 8px;
+}
+
+.add_family > span {
+    font-size: 15px;
 }
 
 .image-upload-area {
