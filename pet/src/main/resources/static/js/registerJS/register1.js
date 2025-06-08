@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         checkDuplicate("email", email, (result) => {
-            console.log("이메일 중복 확인 결과:", result);
         });
     });
 
@@ -43,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         checkDuplicate("phone", phone, (result) => {
-            console.log("전화번호 중복 확인 결과:", result);
         });
     });
 
@@ -52,15 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
         $sigungu = $("#sigungu"),
         $dong = $("#dong");
 
-    console.log("✅ 시작됨 - fetch /api/regions/sido 직전");
 
     fetch("/api/regions/sido")
         .then(res => {
-            console.log("✅ fetch /api/regions/sido 응답 상태:", res.status);
             return res.json();
         })
         .then(list => {
-            console.log("✅ 받아온 시도 목록:", list);
             list.forEach(r => {
                 $sido.append(new Option(r.name, r.code));
             });
@@ -71,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $sido.on("change", () => {
         const code = $sido.val();
-        console.log("✅ 시도 선택:", code);
         $sigungu.prop("disabled", !code)
             .empty().append("<option value=''>— 선택 —</option>");
         $dong.prop("disabled", true)
@@ -81,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/api/regions/sigungu?code=${encodeURIComponent(code)}`)
             .then(res => res.json())
             .then(list => {
-                console.log("✅ 받아온 시군구 목록:", list);
                 list.forEach(r => {
                     $sigungu.append(new Option(r.name, r.code));
                 });
@@ -90,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $sigungu.on("change", () => {
         const code = $sigungu.val();
-        console.log("✅ 시군구 선택:", code);
         $dong.prop("disabled", !code)
             .empty().append("<option value=''>— 선택 —</option>");
         if (!code) return;
@@ -98,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/api/regions/dong?code=${encodeURIComponent(code)}`)
             .then(res => res.json())
             .then(list => {
-                console.log("✅ 받아온 동 목록:", list);
                 list.forEach(r => {
                     $dong.append(new Option(r.name, r.code));
                 });

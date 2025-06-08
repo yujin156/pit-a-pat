@@ -226,7 +226,10 @@ public class AccountController {
     @GetMapping("/mypage")
     public String mypage(Model model,
                          @AuthenticationPrincipal CustomUserDetails principal) {
-
+        if(principal == null) {
+            return "Account/Login";
+        }
+        model.addAttribute("currentPage", "myPage");
         // 로그인한 사용자 정보 가져오기
         User user = userRepository.findByUemail(principal.getUsername())
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
