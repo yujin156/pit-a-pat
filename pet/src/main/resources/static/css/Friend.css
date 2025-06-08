@@ -31,15 +31,15 @@
 
 /* ===== 타이틀 영역 ===== */
 .friend_title {
-    font-size: 45px;
-    color: #0B0B0B;
+    font-size: 2rem;
+    color: #212121;
     margin-bottom: 10px;
 }
 
 .friend_sub_title {
-    font-size: 20px;
-    margin: 0 0 20px 0;
     color: #B7B7B7;
+    font-size: 0.9rem;
+    margin: 0 0 20px 0;
 }
 
 /* ===== 프로필 선택 드롭다운 ===== */
