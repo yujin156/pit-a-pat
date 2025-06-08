@@ -11,17 +11,121 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     waitForAddFamilyModal();
-});
 
-document.addEventListener('DOMContentLoaded', function() {
+    // 강아지 프로필도 함께 로드
     fetchAndRenderDogProfiles();
 });
 
+// ===== 전역 함수들 (스코프 문제 해결) =====
+
+// 강아지 상태 변경 이벤트 설정 - 전역으로 이동
+function setupStatusChangeEvents() {
+    const statusDropdowns = document.querySelectorAll('.status_dropdown');
+
+    statusDropdowns.forEach(dropdown => {
+        dropdown.addEventListener('change', function() {
+            const dogId = parseInt(this.dataset.dogId);
+            const newStatus = this.value;
+            updateDogStatus(dogId, newStatus);
+        });
+    });
+}
+
+// 강아지 상태 업데이트 API 호출 - 전역으로 이동
+function updateDogStatus(dogId, status) {
+    fetch('/dog/update-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `dogId=${dogId}&status=${encodeURIComponent(status)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('상태 업데이트 성공:', data);
+                showStatusNotification(`상태가 "${status}"로 변경되었습니다.`, 'success');
+            } else {
+                console.error('상태 업데이트 실패:', data.message);
+                showStatusNotification(data.message || '상태 변경에 실패했습니다.', 'error');
+
+                // 실패 시 이전 상태로 되돌리기
+                const dropdown = document.querySelector(`[data-dog-id="${dogId}"]`);
+                if (dropdown) {
+                    dropdown.value = '온라인';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('상태 업데이트 요청 실패:', error);
+            showStatusNotification('네트워크 오류가 발생했습니다.', 'error');
+        });
+}
+
+// 상태 변경 알림 표시 - 전역으로 이동
+function showStatusNotification(message, type = 'info') {
+    // 기존 알림 제거
+    const existingNotification = document.querySelector('.status-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // 알림 색상 설정
+    let bgColor = '#387FEB';
+    if (type === 'success') bgColor = '#4CAF50';
+    if (type === 'error') bgColor = '#f44336';
+
+    // 알림 엘리먼트 생성
+    const notification = document.createElement('div');
+    notification.className = 'status-notification';
+    notification.innerHTML = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 25px;
+        background: ${bgColor};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        animation: slideInRight 0.3s ease-out;
+        max-width: 250px;
+    `;
+
+    document.body.appendChild(notification);
+
+    // 3초 후 제거
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
+// ✅ 완전히 새로운 프로필 그리드 렌더링 함수 (위치 변경 없음)
 function renderDogsGrid(dogs) {
     const grid = document.querySelector('.profiles_grid');
     if (!grid) return;
+
     grid.innerHTML = '';
-    dogs.forEach(dog => {
+
+    // ✅ 강아지 수에 따른 클래스 설정
+    if (dogs.length === 1) {
+        grid.className = 'profiles_grid single-dog';
+    } else {
+        grid.className = 'profiles_grid multiple-dogs';
+    }
+
+    // ✅ 항상 원래 순서대로 렌더링 (위치 변경 없음)
+    dogs.forEach((dog, index) => {
         const item = document.createElement('div');
         item.className = 'profile_item';
         item.dataset.dogId = dog.dno;
@@ -40,10 +144,12 @@ function renderDogsGrid(dogs) {
                 </div>
             `;
         }
+
         item.innerHTML = `
             ${imgDiv}
             <div class="profile_name">${dog.dname}</div>
         `;
+
         grid.appendChild(item);
     });
 }
@@ -114,88 +220,23 @@ function initializeLoginCenter() {
             const { dogId, dogName, dog } = e.detail;
             console.log('로그인센터: 프로필 변경 감지:', dogName || '선택 해제');
 
+            // ✅ 프로필 변경 시 위치 변경이나 시각적 효과 제거
+            // 단순히 타이틀과 친구 목록만 업데이트
             if (dogId && dog) {
-                updateProfileDisplay(dog);
                 updateFavoritesTitle(dogName);
                 loadFavoriteFriends();
                 showStatusNotification(`${dogName}(으)로 프로필이 변경되었습니다.`, 'success');
             } else {
                 // 선택 해제됨
-                clearProfileSelection();
                 updateFavoritesTitle('친한');
             }
         });
     }
 
-    // ===== 프로필 표시 업데이트 (시각적 효과만) =====
-    function updateProfileDisplay(selectedDog) {
-        if (!selectedDog || !window.dogsData) return;
-
-        console.log('로그인센터 프로필 표시 업데이트:', selectedDog.dname);
-
-        // 선택된 강아지를 맨 앞으로 이동 + 시각적 강조
-        const reorderedDogs = [
-            selectedDog,
-            ...window.dogsData.filter(dog => dog.dno !== selectedDog.dno)
-        ];
-
-        renderProfileGrid(reorderedDogs, selectedDog.dno);
-    }
-
-    // ===== 프로필 선택 해제 =====
-    function clearProfileSelection() {
-        console.log('로그인센터 프로필 선택 해제');
-
-        // 모든 선택 표시 제거
-        const allItems = document.querySelectorAll('.profile_item');
-        allItems.forEach(item => {
-            item.classList.remove('selected');
-        });
-
-        // 원래 순서로 복구 (dogsData 순서)
-        if (window.dogsData) {
-            renderProfileGrid(window.dogsData, null);
-        }
-    }
-
-    // ===== 프로필 그리드 렌더링 (시각적 강조 포함) =====
-    function renderProfileGrid(dogs, selectedDogId) {
-        const profilesGrid = document.querySelector('.profiles_grid');
-        if (!profilesGrid) return;
-
-        profilesGrid.innerHTML = '';
-
-        dogs.forEach(dog => {
-            const profileItem = document.createElement('div');
-            profileItem.className = 'profile_item';
-            profileItem.dataset.dogId = dog.dno;
-
-            // 선택된 강아지인지 확인
-            if (dog.dno == selectedDogId) {
-                profileItem.classList.add('selected');
-            }
-
-            // 이미지 처리
-            let imageHtml;
-            if (dog.image && dog.image.diurl) {
-                imageHtml = `<img src="${dog.image.diurl}" alt="${dog.dname} 프로필 이미지">`;
-            } else {
-                const firstLetter = dog.dname.charAt(0);
-                imageHtml = `<span>${firstLetter}</span>`;
-            }
-
-            profileItem.innerHTML = `
-                <div class="profile_image ${!dog.image || !dog.image.diurl ? 'profile_initial' : ''}">
-                    ${imageHtml}
-                </div>
-                <div class="profile_name">${dog.dname}</div>
-            `;
-
-            profilesGrid.appendChild(profileItem);
-        });
-
-        console.log('로그인센터 프로필 그리드 렌더링 완료');
-    }
+    // ===== 프로필 표시 업데이트 함수 제거 =====
+    // updateProfileDisplay 함수 완전 제거
+    // clearProfileSelection 함수 완전 제거
+    // renderProfileGrid 함수 완전 제거
 
     // ===== 즐겨찾기 타이틀 업데이트 =====
     function updateFavoritesTitle(dogName) {
@@ -207,102 +248,6 @@ function initializeLoginCenter() {
                 favoritesTitle.innerHTML = '친한 친구 즐겨찾기';
             }
         }
-    }
-
-    // ===== 강아지 상태 관리 =====
-
-    // 강아지 상태 변경 이벤트 설정
-    function setupStatusChangeEvents() {
-        const statusDropdowns = document.querySelectorAll('.status_dropdown');
-
-        statusDropdowns.forEach(dropdown => {
-            dropdown.addEventListener('change', function() {
-                const dogId = parseInt(this.dataset.dogId);
-                const newStatus = this.value;
-                updateDogStatus(dogId, newStatus);
-            });
-        });
-    }
-
-    // 강아지 상태 업데이트 API 호출
-    function updateDogStatus(dogId, status) {
-        fetch('/dog/update-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `dogId=${dogId}&status=${encodeURIComponent(status)}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('상태 업데이트 성공:', data);
-                    showStatusNotification(`상태가 "${status}"로 변경되었습니다.`, 'success');
-                } else {
-                    console.error('상태 업데이트 실패:', data.message);
-                    showStatusNotification(data.message || '상태 변경에 실패했습니다.', 'error');
-
-                    // 실패 시 이전 상태로 되돌리기
-                    const dropdown = document.querySelector(`[data-dog-id="${dogId}"]`);
-                    if (dropdown) {
-                        dropdown.value = '온라인';
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('상태 업데이트 요청 실패:', error);
-                showStatusNotification('네트워크 오류가 발생했습니다.', 'error');
-            });
-    }
-
-    // ===== 알림 시스템 =====
-
-    // 상태 변경 알림 표시
-    function showStatusNotification(message, type = 'info') {
-        // 기존 알림 제거
-        const existingNotification = document.querySelector('.status-notification');
-        if (existingNotification) {
-            existingNotification.remove();
-        }
-
-        // 알림 색상 설정
-        let bgColor = '#387FEB';
-        if (type === 'success') bgColor = '#4CAF50';
-        if (type === 'error') bgColor = '#f44336';
-
-        // 알림 엘리먼트 생성
-        const notification = document.createElement('div');
-        notification.className = 'status-notification';
-        notification.innerHTML = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 80px;
-            right: 25px;
-            background: ${bgColor};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 10000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: slideInRight 0.3s ease-out;
-            max-width: 250px;
-        `;
-
-        document.body.appendChild(notification);
-
-        // 3초 후 제거
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }
-        }, 3000);
     }
 
     // ===== 모달 시스템 (AddFamily_Modal.js 연동) =====
@@ -365,7 +310,7 @@ function initializeLoginCenter() {
             });
     }
 
-    // 즐겨찾기 친구 목록 렌더링
+    // ✅ 즐겨찾기 친구 목록 렌더링 (친구 없을 때 항상 표시)
     function renderFavoriteFriends() {
         const friendList = document.getElementById('friendList');
         if (!friendList) return;
@@ -376,8 +321,8 @@ function initializeLoginCenter() {
             friendList.innerHTML = `
                 <div class="empty-friends">
                     <div class="empty-friends-icon">🐕</div>
-                    <div>아직 친구가 없어요!</div>
-                    <div>매칭에서 새로운 친구를 찾아보세요</div>
+                    <div class="empty-friends-text">아직 친구가 없어요!<br>매칭에서 새로운 친구를 찾아보세요</div>
+                    <button onclick="window.location.href='/matching'" class="goto-friends-btn">친구 만들러 가기</button>
                 </div>
             `;
             return;
@@ -489,27 +434,11 @@ function initializeLoginCenter() {
 
     // ===== 초기화 함수들 =====
 
-    // 페이지 로드 시 초기화
+    // ✅ 페이지 로드 시 초기화 - 위치 변경 로직 제거
     function initializeProfileOrder() {
-        // DogProfileManager와 연동하여 현재 선택 상태 확인
-        function waitForProfileManager() {
-            if (window.dogProfileManager) {
-                const selectedDog = window.dogProfileManager.getSelectedDog();
-                if (selectedDog) {
-                    updateProfileDisplay(selectedDog);
-                    updateFavoritesTitle(selectedDog.dname);
-                    console.log('로그인센터: 기존 선택 상태 복원:', selectedDog.dname);
-                } else {
-                    // 선택된 강아지가 없으면 기본 상태
-                    clearProfileSelection();
-                    updateFavoritesTitle('친한');
-                    console.log('로그인센터: 기본 상태로 설정');
-                }
-            } else {
-                setTimeout(waitForProfileManager, 100);
-            }
-        }
-        waitForProfileManager();
+        // 단순히 기본 타이틀 설정만 수행
+        updateFavoritesTitle('친한');
+        console.log('로그인센터: 기본 상태로 설정 (위치 변경 없음)');
     }
 
     // ===== 전역 함수 노출 =====
@@ -522,13 +451,12 @@ function initializeLoginCenter() {
 
     // 모든 이벤트 리스너 및 초기화 실행
     setupProfileChangeListener();
-    setupStatusChangeEvents();
     setupAddFamilyButton();
     setupFriendManagementButtons();
     initializeProfileOrder();
     loadFavoriteFriends();
 
-    console.log('Login_center.js 초기화 완료');
+    console.log('Login_center.js 초기화 완료 (위치 변경 기능 제거됨)');
 }
 
 // CSS 애니메이션 추가
