@@ -48,7 +48,6 @@ h3{
     margin: 0;
     padding: 0;
     font-weight: normal;
-    color: #212121;
 }
 
 .login_box{
@@ -235,10 +234,11 @@ h3{
 /*/////////로그인 후/////////////*/
 /* ////////////////////////////*/
 
+/* ✅ 핵심 수정: 로그인센터 동적 높이 조정 */
 .AWrap {
     width: 280px;
-    height: auto;
-    min-height: 500px;
+    min-height: 500px; /* 최소 높이 유지 */
+    height: auto; /* 동적 높이 */
     background-color: #F4E7F1;
     border-radius: 20px;
     padding: 23px 20px;
@@ -264,15 +264,67 @@ h3{
     margin: 15px 0 25px 0;
 }
 
-/* ===== 프로필 그리드 스타일 수정 - 클릭 기능 제거 ===== */
+/* ===== ✅ 완전히 개선된 프로필 그리드 스타일 ===== */
+.profiles_grid {
+    position: relative;
+    height: 80px; /* 고정 높이 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
 
+/* ✅ 프로필 아이템 - 겹치는 스타일 */
+.profile_item {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: default; /* 클릭 불가능 표시 */
+}
 
+/* ✅ 강아지 수에 관계없이 이름 항상 숨김 */
+.profile_name {
+    display: none !important; /* 항상 이름 숨김 */
+}
 
+/* ✅ 여러 마리일 때 - 겹치는 배치 (항상 적용) */
+.profiles_grid .profile_item:nth-child(1) {
+    left: 0;
+    z-index: 10;
+}
 
-/* 호버 효과 제거 (클릭할 수 없으므로) */
-.profile_item:hover {
-    /* 호버 효과 최소화 */
-    transform: none;
+.profiles_grid .profile_item:nth-child(2) {
+    left: 40px;
+    z-index: 9;
+}
+
+.profiles_grid .profile_item:nth-child(3) {
+    left: 80px;
+    z-index: 8;
+}
+
+.profiles_grid .profile_item:nth-child(4) {
+    left: 120px;
+    z-index: 7;
+}
+
+.profiles_grid .profile_item:nth-child(5) {
+    left: 160px;
+    z-index: 6;
+}
+
+.profiles_grid .profile_item:nth-child(n+6) {
+    left: 200px;
+    z-index: 5;
+}
+
+/* ✅ 1마리일 때 - 정중앙 배치 */
+.profiles_grid.single-dog .profile_item {
+    position: static;
+    transform: none !important;
+    left: auto !important;
 }
 
 .profile_image {
@@ -281,47 +333,36 @@ h3{
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     transition: all 0.3s ease;
 }
 
-
+.profile_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 /* 이미지 없을 때 이름 첫 글자 표시 */
 .profile_initial {
-    background-color: #B3D4FF;
+    background: linear-gradient(135deg, #387FEB, #6FA4FF);
     color: white;
     font-size: 24px;
     font-weight: bold;
 }
 
-.profile_name {
-    font-size: 12px;
-    color: #212121;
-    text-align: center;
-    max-width: 60px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transition: all 0.3s ease;
+/* ✅ 선택 효과 완전 제거 - 시각적 강조나 위치 변경 없음 */
+.profile_item.selected {
+    /* 시각적 효과 모두 제거 */
 }
-
-/* ===== 선택된 프로필 스타일 (핵심 수정 부분) ===== */
-
 
 .profile_item.selected .profile_image {
-    /* 파란 테두리 강조 */
-    border: 3px solid #387FEB !important;
-    box-shadow: 0 0 10px rgba(56, 127, 235, 0.3);
-}
-
-/* 선택된 프로필 이름 스타일 */
-.profile_item.selected .profile_name {
-    color: #387FEB;
-    font-weight: bold;
+    /* 테두리 변경 제거 */
+    border: 2px solid #fff; /* 기본 상태 유지 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* 기본 그림자 유지 */
 }
 
 .divider {
@@ -331,17 +372,19 @@ h3{
     margin: 20px 0;
 }
 
-/* 강아지별 상태 관리 스타일 수정 */
+/* ✅ 강아지별 상태 관리 - 스크롤 제거, 동적 높이 */
 .pet_statuses {
-    max-height: 200px;
-    overflow-y: auto;
+    /* max-height 제거 */
+    /* overflow-y 제거 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .pet_status {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 10px 0;
 }
 
 .status_label {
@@ -392,17 +435,13 @@ h3{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 15px;
+    margin-top: 30px;
     color: #387feb;
     cursor: pointer;
 }
 
 .plus_btn {
     margin-right: 8px;
-}
-
-.add_family > span {
-    font-size: 15px;
 }
 
 .image-upload-area {
@@ -565,6 +604,7 @@ textarea {
 /*////////////////*/
 /*//////친한친구/////*/
 
+/* ✅ 친한친구 컨테이너 - 항상 표시 */
 .favorites-container {
     width: 280px;
     background-color: #F5F6F8;
@@ -572,6 +612,7 @@ textarea {
     padding: 20px;
     box-sizing: border-box;
     margin-top: 20px;
+    /* 항상 표시되도록 수정 */
 }
 
 .favorites-header {
@@ -759,7 +800,7 @@ textarea {
     display: none;
 }
 
-/* 빈 친구 목록 상태 */
+/* ✅ 친구가 없을 때 상태 - 항상 표시 */
 .empty-friends {
     text-align: center;
     padding: 20px;
@@ -772,37 +813,27 @@ textarea {
     margin-bottom: 8px;
 }
 
-/* ✅ 가로 정렬만 추가 - 나머지 구조 유지 */
-.profiles_grid {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 8px 12px;
-    gap: 0;
-    overflow: hidden;
+.empty-friends-text {
+    margin-bottom: 15px;
+    line-height: 1.4;
 }
 
-/* ✅ 선택된 프로필: 이미지에만 테두리 */
-.profile_item.selected img {
-    border: 2px solid #4285f4;
-    border-radius: 50%;
+/* ✅ 친구 만들러 가기 버튼 스타일 */
+.goto-friends-btn {
+    background-color: #387FEB;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
 }
 
-/* ✅ 상태 텍스트 */
-.dog-status {
-    font-size: 11px;
-    color: #666;
-    text-align: center;
-    margin-top: 4px;
-    line-height: 1.2;
-}
-
-
-.profile_item {
-    margin-left: -12px;
-}
-
-.profile_item:first-child {
-    margin-left: 0;
+.goto-friends-btn:hover {
+    background-color: #2c6cd6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
 }

@@ -98,7 +98,6 @@ public class DogFriendController {
             @RequestParam(value = "dogId", required = false) Long dogId,
             Model model,
             @AuthenticationPrincipal UserDetails principal) {
-        model.addAttribute("currentPage", "friendPage");
 
         log.info("=== 친구 목록 조회 시작 ===");
 

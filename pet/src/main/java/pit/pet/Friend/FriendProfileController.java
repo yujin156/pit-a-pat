@@ -102,9 +102,7 @@ public class FriendProfileController {
             Map<String, Object> currentProfile = friendProfiles.get(currentIndex);
 
             model.addAttribute("currentProfile", currentProfile);
-            model.addAttribute("allProfiles", friendProfiles);
-            model.addAttribute("currentIndex", currentIndex);
-            model.addAttribute("totalFriends", friendProfiles.size());
+
 
             log.info("친구 프로필 데이터 전달 완료: {} (전체 친구 {}마리)",
                     currentProfile.get("name"), friendProfiles.size());
