@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmBtn = document.getElementById('confirm-delete');
         deleteModal = document.getElementById('delete-modal');
         toastMsg = document.getElementById('toast-message');
+
+        // ✅ 채팅 아이콘 선택 (disabled가 아닌 것)
         chatIcon = document.querySelector('.profile_chat_icon:not(.disabled)');
     }
 
@@ -75,11 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmBtn.addEventListener('click', deleteFriend);
         }
 
-        // 채팅 버튼
-        if (chatIcon) {
-            chatIcon.addEventListener('click', handleChatClick);
-            chatIcon.style.cursor = 'pointer';
-        }
+        // ✅ 채팅 버튼 이벤트 설정
+        setupChatIconEvents();
 
         // 키보드 네비게이션
         document.addEventListener('keydown', handleKeyboardNavigation);
@@ -91,6 +90,80 @@ document.addEventListener('DOMContentLoaded', function() {
                     hideDeleteModal();
                 }
             });
+        }
+    }
+
+    // ✅ 채팅 아이콘 이벤트 설정 함수
+    function setupChatIconEvents() {
+        // 모든 채팅 아이콘에 이벤트 리스너 추가 (활성화된 것과 비활성화된 것 모두)
+        const allChatIcons = document.querySelectorAll('.profile_chat_icon');
+
+        allChatIcons.forEach(icon => {
+            icon.addEventListener('click', handleChatIconClick);
+            icon.style.cursor = 'pointer';
+        });
+    }
+
+    // ✅ 채팅 아이콘 클릭 처리
+    function handleChatIconClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const chatIcon = e.currentTarget;
+
+        // disabled 상태 확인
+        if (chatIcon.classList.contains('disabled')) {
+            showToast('채팅을 시작할 수 없습니다. 친구 관계를 확인해주세요.', 'error');
+            return;
+        }
+
+        // friendRequestId 확인
+        const friendRequestId = chatIcon.dataset.friendRequestId;
+
+        if (!friendRequestId) {
+            showToast('채팅 정보를 찾을 수 없습니다.', 'error');
+            return;
+        }
+
+        // 현재 강아지 정보
+        const currentDog = dogProfiles[currentDogIndex];
+        if (!currentDog) {
+            showToast('강아지 정보를 찾을 수 없습니다.', 'error');
+            return;
+        }
+
+        console.log('채팅 시작:', currentDog.name, 'Request ID:', friendRequestId);
+
+        // 채팅창 열기
+        openChatWindow(friendRequestId, currentDog.name);
+    }
+
+    // ✅ 채팅창 열기 함수
+    function openChatWindow(friendRequestId, dogName) {
+        const chatUrl = `/chat/${friendRequestId}`;
+        const windowName = `chat_${friendRequestId}`;
+        const windowFeatures = 'width=600,height=800,scrollbars=yes,resizable=yes,location=no,menubar=no,toolbar=no';
+
+        try {
+            const chatWindow = window.open(chatUrl, windowName, windowFeatures);
+
+            if (chatWindow) {
+                chatWindow.focus();
+                showToast(`${dogName}와의 채팅을 시작합니다!`, 'success');
+            } else {
+                // 팝업이 차단된 경우
+                showToast('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.', 'error');
+
+                // 대안으로 현재 창에서 열기 옵션 제공
+                setTimeout(() => {
+                    if (confirm('팝업이 차단되어 있습니다. 현재 창에서 채팅을 여시겠습니까?')) {
+                        window.location.href = chatUrl;
+                    }
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('채팅창 열기 실패:', error);
+            showToast('채팅창을 열 수 없습니다.', 'error');
         }
     }
 
@@ -190,17 +263,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!dogProfiles[currentDogIndex]) return;
 
         const dog = dogProfiles[currentDogIndex];
-        const chatIcon = document.querySelector('.profile_chat_icon');
 
-        if (dog.friendRequestId) {
-            chatIcon.classList.remove('disabled');
-            chatIcon.style.cursor = 'pointer';
-            chatIcon.title = '채팅하기';
-        } else {
-            chatIcon.classList.add('disabled');
-            chatIcon.style.cursor = 'not-allowed';
-            chatIcon.title = '채팅 불가능';
-        }
+        // 모든 채팅 아이콘 찾기
+        const allChatIcons = document.querySelectorAll('.profile_chat_icon');
+
+        allChatIcons.forEach(chatIcon => {
+            if (dog.friendRequestId) {
+                chatIcon.classList.remove('disabled');
+                chatIcon.style.cursor = 'pointer';
+                chatIcon.title = '채팅하기';
+                chatIcon.dataset.friendRequestId = dog.friendRequestId;
+            } else {
+                chatIcon.classList.add('disabled');
+                chatIcon.style.cursor = 'not-allowed';
+                chatIcon.title = '채팅 불가능';
+                delete chatIcon.dataset.friendRequestId;
+            }
+        });
     }
 
     // ===== 즐겨찾기 토글 =====
@@ -243,26 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('즐겨찾기 처리 오류:', error);
                 showToast('오류가 발생했습니다.', 'error');
             });
-    }
-
-    // ===== 채팅 버튼 클릭 처리 =====
-    function handleChatClick() {
-        if (!dogProfiles[currentDogIndex]) return;
-
-        const dog = dogProfiles[currentDogIndex];
-        const requestId = dog.friendRequestId;
-
-        if (requestId) {
-            console.log('채팅 시작:', dog.name, 'Request ID:', requestId);
-            showToast(`${dog.name}와의 채팅을 시작합니다!`, 'info');
-
-            // 새 창에서 채팅 열기
-            setTimeout(() => {
-                window.open(`/chat/${requestId}`, 'chatWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
-            }, 500);
-        } else {
-            showToast('채팅 정보를 찾을 수 없습니다.', 'error');
-        }
     }
 
     // ===== 삭제 모달 표시 =====
@@ -433,20 +492,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`토스트 메시지 [${type}]:`, message);
     }
 
-    // ===== 프로필 선택 안내 (친구가 없을 때) =====
-    function showProfileSelectionGuide() {
-        const container = document.querySelector('.f_profile');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="profile-selection-guide">
-                <div class="guide-icon">🐕</div>
-                <h3>친구가 없습니다</h3>
-                <p>매칭을 통해 새로운 친구를 만들어보세요!</p>
-                <button onclick="window.location.href='/matching'" class="guide-btn">매칭하러 가기</button>
-            </div>`;
-    }
-
     // ===== 글로벌 함수들 =====
     window.goBackToFriendList = function() {
         showLoading();
@@ -465,99 +510,9 @@ document.addEventListener('DOMContentLoaded', function() {
         getCurrentIndex: () => currentDogIndex,
         navigateTo: (index) => navigateToProfile(index),
         toggleFav: () => toggleFavorite(),
-        chat: () => handleChatClick()
+        openChat: (friendRequestId, dogName) => openChatWindow(friendRequestId, dogName)
     };
 
     // ===== 초기화 실행 =====
     init();
 });
-
-// ===== CSS 스타일 추가 =====
-const style = document.createElement('style');
-style.textContent = `
-    .profile-selection-guide {
-        text-align: center;
-        padding: 80px 20px;
-        color: #7f8c8d;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-        min-height: 400px;
-        justify-content: center;
-    }
-
-    .guide-icon {
-        font-size: 80px;
-        margin-bottom: 20px;
-        opacity: 0.7;
-    }
-
-    .profile-selection-guide h3 {
-        font-size: 28px;
-        color: #387FEB;
-        margin: 0;
-    }
-
-    .profile-selection-guide p {
-        font-size: 16px;
-        margin: 0;
-        line-height: 1.5;
-        max-width: 400px;
-    }
-
-    .guide-btn {
-        padding: 15px 30px;
-        background: #387FEB;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .guide-btn:hover {
-        background: #2c6cd6;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(56, 127, 235, 0.3);
-    }
-
-    .loading-spinner {
-        text-align: center;
-    }
-
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #387FEB;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .profile_chat_icon.disabled {
-        opacity: 0.5;
-        cursor: not-allowed !important;
-    }
-
-    .profile_chat_icon:not(.disabled):hover {
-        transform: scale(1.1);
-        transition: transform 0.2s ease;
-    }
-
-    .f_profile_left_btn.hidden,
-    .f_profile_right_btn.hidden {
-        opacity: 0;
-        pointer-events: none;
-        visibility: hidden;
-    }
-`;
-document.head.appendChild(style);
