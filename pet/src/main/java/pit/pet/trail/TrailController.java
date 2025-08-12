@@ -1,14 +1,11 @@
 package pit.pet.trail;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pit.pet.Review.TrailPost;
 import pit.pet.Review.TrailPostService;
 
 import java.util.List;
@@ -61,6 +58,18 @@ public class TrailController {
         List<LatLngDto> path = objectMapper.readValue(
                 t.getPathJson(), new TypeReference<>() {});
         return ResponseEntity.ok(path);
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<List<TrailDto>> recommendByDog(@RequestParam Long dogId) {
+        List<TrailDto> recommended = trailService.recommendByDog(dogId);
+        return ResponseEntity.ok(recommended);
+    }
+
+    @GetMapping("/recommend/{dogId}")
+    public ResponseEntity<List<TrailDto>> recommend(@PathVariable Long dogId) {
+        List<TrailDto> trails = trailService.recommendByDog(dogId);
+        return ResponseEntity.ok(trails);
     }
 
 
