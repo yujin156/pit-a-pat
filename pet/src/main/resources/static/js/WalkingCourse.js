@@ -100,32 +100,30 @@ function createWalkingItem(data) {
     `;
 }
 
-
 function toggleAllTrails() {
     allTrailsVisible = !allTrailsVisible;
 
     const allTrailsSection = document.getElementById("allTrailsSection");
     const recommendList = document.getElementById("recommend-list");
-    const loadRecommendBtn = document.getElementById("loadRecommendBtn");
-    const dogIdSelect = document.getElementById("dogIdSelect");
-    const loadingSpinner = document.getElementById("loadingSpinner");
-    const toggleBtn = document.querySelector("button[onclick='toggleAllTrails()']");
-    toggleBtn.textContent = allTrailsVisible ? "추천 보기" : "전체 둘레길 보기";
+    const dogSelect = document.getElementById("recommendSelectSection");
+    const toggleBtn = document.getElementById("toggleViewBtn");
 
     if (allTrailsVisible) {
+        toggleBtn.textContent = "추천 보기";
+        allTrailsSection.style.display = 'block';
         recommendList.style.display = 'none';
-        loadRecommendBtn.style.display = 'none';
-        dogIdSelect.style.display = 'none';
-        loadingSpinner.style.display = 'none';
+        dogSelect.style.display = 'none';
         loadTrailListFromServer();
     } else {
+        toggleBtn.textContent = "전체 둘레길 보기";
+        allTrailsSection.style.display = 'none';
         recommendList.style.display = 'block';
-        loadRecommendBtn.style.display = 'inline-block';
-        dogIdSelect.style.display = 'inline-block';
+        dogSelect.style.display = 'block';
         const dogId = $('#dogIdSelect').val();
         if (dogId) loadAiRecommendations(dogId);
     }
 }
+
 function drawTrailPath(trail) {
     currentPolylines.forEach(line => line.setMap(null));
     currentPolylines = [];
@@ -404,4 +402,46 @@ function reverseGeocode(lat, lng, callback) {
         }
     });
 }
+// 버튼 누르면 AI 추천 불러오기
+$('#loadRecommendBtn').on('click', () => {
+    const dogId = $('#dogIdSelect').val();
+    if (dogId) loadAiRecommendations(dogId);
+});
+function loadAiRecommendations(dogId) {
+    $('#loadingSpinner').show();
+    const listEl = document.getElementById('walkingItemList');
+    listEl.innerHTML = '';
 
+    // 🔹 타이틀
+    const title = document.createElement('div');
+    title.innerHTML = '🐶 <span style="color:#3366FF; font-weight:bold;">추천된 둘레길</span>';
+    title.style.margin = '10px 0';
+    listEl.appendChild(title);
+
+    fetch(`/api/trails/recommend/${dogId}`)
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(trails => {
+            filteredData = trails.map(trail => ({
+                ...trail,
+                subtitle: 'AI 추천 코스', // 기존 전체 코스와 구분
+                recommendedDogs: [trail.dogSize || '정보 없음'],
+                title: trail.name,
+                rating: trail.averageRating,
+                distance: `${trail.lengthKm.toFixed(1)}km`,
+                startPoint: trail.startPoint || '',
+                endPoint: trail.endPoint || '',
+                difficulty: trail.difficulty || '',
+                address: trail.address || '',
+            }));
+
+            // renderWalkingList 재사용
+            renderWalkingList(false);
+        })
+        .catch(err => {
+            console.error('AI 추천 실패:', err);
+            alert("추천 로딩 실패");
+        })
+        .finally(() => {
+            $('#loadingSpinner').hide();
+        });
+}

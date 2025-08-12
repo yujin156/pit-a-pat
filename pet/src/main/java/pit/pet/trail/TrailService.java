@@ -11,7 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import pit.pet.Account.Repository.DogRepository;
+import pit.pet.Account.User.Dog;
 import pit.pet.Review.TrailPostRepository;
+import pit.pet.Review.TrailPostService;
+import pit.pet.recommand.AiRecommendationService;
+import pit.pet.recommand.PromptBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +29,11 @@ public class TrailService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final TrailPostRepository reviewRepository;
+    private final DogRepository dogRepository;
+    private final PromptBuilder promptBuilder;
+    private final AiRecommendationService aiRecommendationService; // ✅ 추가
+    private final TrailPostService trailPostService;
+
 
     private String classifyDifficulty(double km) {
         if (km < 5.0)         return "EASY";
@@ -237,6 +247,62 @@ public class TrailService {
                 .build();
         trailRepository.save(t);
         return String.format("저장 완료: %s (%s, %.2fkm)", name, diff, km);
+    }
+
+    public List<TrailDto> recommendByDog(Long dogId) {
+        Dog dog = dogRepository.findById(dogId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강아지"));
+
+        String prompt = promptBuilder.buildPrompt(dog);
+        List<String> recommendedNames = aiRecommendationService.getRecommendations(prompt); // AI 추천
+
+        System.out.println("🐶 추천된 이름 리스트: " + recommendedNames);
+
+        // 추천이 비어있다면 기본 키워드 사용
+        List<String> finalRecommendedNames = recommendedNames.isEmpty()
+                ? List.of("서울", "북한산", "제주") // or 임의 키워드
+                : recommendedNames;
+
+        List<Trail> allTrails = trailRepository.findAll();
+        System.out.println("📦 전체 트레일 수: " + allTrails.size());
+
+        // 이름 필터 (공백 제거 후 포함되는지 확인)
+        List<Trail> matchedTrails = allTrails.stream()
+                .filter(trail -> finalRecommendedNames.stream()
+                        .anyMatch(recommend ->
+                                trail.getName().replaceAll("\\s+", "")
+                                        .contains(recommend.replaceAll("\\s+", "")))
+                )
+                .toList();
+
+        System.out.println("🎯 최종 추천 트레일 수: " + matchedTrails.size());
+        System.out.println("✅ 추천된 트레일 이름:");
+        matchedTrails.forEach(t -> System.out.println(" - " + t.getName()));
+
+        return matchedTrails.stream()
+                .map(trail -> {
+                    List<LatLngDto> path = parsePath(trail.getPathJson());
+                    return new TrailDto(
+                            trail.getId(), trail.getName(), trail.getLengthKm(),
+                            trail.getDifficulty(),
+                            trail.getSidoCode(), trail.getSigunguCode(), trail.getEmdCode(),
+                            trail.getSidoCode() + " " + trail.getSigunguCode() + " " + trail.getEmdCode(),
+                            trailPostService.getAverageRatingByTrail(trail.getId()),
+                            path
+                    );
+                })
+                .toList();
+    }
+
+
+
+
+    private List<LatLngDto> parsePath(String json) {
+        try {
+            return objectMapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<List<LatLngDto>>() {});
+        } catch (Exception e) {
+            return List.of();
+        }
     }
     
 }

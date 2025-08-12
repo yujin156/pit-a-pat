@@ -51,21 +51,32 @@
                 <input type="text" placeholder="동네 검색하기" id="searchInput">
             </search>
 
-            <div class="dog_select">
+            <!-- 🔽 추천/전체 전환 버튼 추가 -->
+            <div style="margin-top: 10px;">
+                <button id="toggleViewBtn" onclick="toggleAllTrails()">전체 둘레길 보기</button>
+            </div>
+
+            <!-- 🔽 강아지 선택 박스 (추천 보기에서만 사용) -->
+            <div class="dog_select" id="recommendSelectSection">
                 <select id="dogIdSelect">
                     <option th:each="dog : ${myDogs}" th:value="${dog.dno}" th:text="${dog.dname}">강아지</option>
                 </select>
             </div>
 
+            <!-- 🔽 로딩 스피너 -->
             <div id="loadingSpinner" style="display:none; margin-top:10px;">
                 <img src="/images/loading-spinner.gif" alt="로딩중..." width="30" height="30">
             </div>
+
+            <!-- 🔽 추천된 둘레길 목록 -->
             <ul id="recommend-list" style="margin-top:15px;"></ul>
 
+            <!-- 🔽 전체 둘레길 목록 (기본은 숨김) -->
             <div id="allTrailsSection" style="display:none; margin-top:20px;">
                 <h4>전체 둘레길 목록</h4>
                 <ul id="trail-list"></ul>
             </div>
+
         </header>
 
         <div class="walking_content">
